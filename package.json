@@ -1,0 +1,22 @@
+{
+  "name": "gulag-web-node",
+  "version": "1.0.0",
+  "description": "gulag web frontend in node js",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sutekina/osu-gulag-web.js.git"
+  },
+  "keywords": [
+    "gulag"
+  ],
+  "author": "sutekina",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sutekina/osu-gulag-web.js/issues"
+  },
+  "homepage": "https://github.com/sutekina/osu-gulag-web.js#readme"
+}
