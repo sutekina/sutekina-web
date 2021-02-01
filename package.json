@@ -18,5 +18,9 @@
   "bugs": {
     "url": "https://github.com/sutekina/osu-gulag-web.js/issues"
   },
-  "homepage": "https://github.com/sutekina/osu-gulag-web.js#readme"
+  "homepage": "https://github.com/sutekina/osu-gulag-web.js#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mysql2": "^2.2.5"
+  }
 }

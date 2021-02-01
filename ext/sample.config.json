@@ -1,0 +1,30 @@
+{
+    "app_name": "Sutekina",
+    "debug": {
+        "error_logging": true,
+        "info_logging": true,
+        "mysql_logging": false,
+        "output_logging": true,
+        "request_logging": false,
+        "install_modules_on_boot": true
+    },
+    "mysql": {
+        "user": "user",
+        "host": "localhost",
+        "password": "password",
+        "port": "3306",
+        "database": "database"
+    },
+    "domains": {
+        "avatar": "a.sutekina.tk",
+        "base": "sutekina.tk",
+        "discord": "https://discord.com/invite/hsQ6NKUuak"
+    },
+    "color-scheme": {
+        "1": "#EDD3C4",
+        "2": "#C8ADC0",
+        "3": "#7765E3",
+        "4": "#3B60E4",
+        "5": "#080708"
+    }
+}
