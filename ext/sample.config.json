@@ -1,26 +1,41 @@
 {
     "app_name": "Sutekina",
+    "port": 8000,
     "debug": {
         "error_logging": true,
         "info_logging": true,
         "mysql_logging": false,
         "output_logging": true,
         "request_logging": false,
+        
+        "_comment": "for faster booting you can turn this off but if something doesnt work this could be because a module is outdated so its recommended to keep this on",
         "install_modules_on_boot": true
+    },
+    "protocol": {
+        "_comment": "this isnt necessarily needed since you can just use nginx & cloudflare for ssl but i still provided it optionally",
+        "https": false,
+        "cert": "",
+        "key": ""
     },
     "mysql": {
         "user": "user",
         "host": "localhost",
         "password": "password",
         "port": "3306",
-        "database": "database"
+        "database": "database",
+                
+        "_comment": "Z is zulu time e.g. UTC or GMT, you usually dont wanna change it buy if you do want to, go ahead",
+        "timezone": "Z",
+
+        "__comment": "if you get the error 'ER_NOT_SUPPORTED_AUTH_MODE' turn insecureAuth on, optionally you could modify your mysql setting or switch to ver5.1 but this is easier, for more info https://stackoverflow.com/questions/44946270/er-not-supported-auth-mode-mysql-server and https://github.com/fdl-stuff/nashi/issues/1",
+        "insecureAuth": false
     },
     "domains": {
         "avatar": "a.sutekina.tk",
         "base": "sutekina.tk",
         "discord": "https://discord.com/invite/hsQ6NKUuak"
     },
-    "color-scheme": {
+    "color_scheme": {
         "1": "#EDD3C4",
         "2": "#C8ADC0",
         "3": "#7765E3",
