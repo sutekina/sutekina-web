@@ -74,16 +74,18 @@ module.exports = new Promise(async(resolve, reject) => {
 
     handleDisconnect = () => {
         connection = modules.mysql2.createConnection(db_config);
-    
+        // console.log(modules.mysql2.connection)
         connection.connect(function(err) {
             if(err) {
                 log.error('MYSQL CONNECT ERR ' + err);
                 setTimeout(handleDisconnect, 2000);
+            } else {
+                log.info(`Successfully connected to MYSQL`)
             }
         });
     
         connection.on('error', function(err) {
-            console.log('MYSQL ERR ' + err);
+            log.error('MYSQL ERR ' + err);
             handleDisconnect();                         
         });
     }

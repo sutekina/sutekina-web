@@ -21,7 +21,6 @@
   "homepage": "https://github.com/sutekina/osu-gulag-web.js#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "mysql2": "^2.2.5",
-    "utility": "github:sutekina/utility#master"
+    "mysql2": "^2.2.5"
   }
 }
