@@ -73,9 +73,8 @@ module.exports = new Promise(async(resolve, reject) => {
     let connection;
 
     handleDisconnect = () => {
-        connection = modules.mysql2.createConnection(db_config);
-        // console.log(modules.mysql2.connection)
-        connection.connect(function(err) {
+        modules["mysql2"].connection = modules["mysql2"].createConnection(db_config);
+        modules["mysql2"].connection.connect(function(err) {
             if(err) {
                 log.error('MYSQL CONNECT ERR ' + err);
                 setTimeout(handleDisconnect, 2000);
@@ -84,13 +83,111 @@ module.exports = new Promise(async(resolve, reject) => {
             }
         });
     
-        connection.on('error', function(err) {
+        modules["mysql2"].connection.on('error', function(err) {
             log.error('MYSQL ERR ' + err);
             handleDisconnect();                         
         });
     }
     
     handleDisconnect();
+    /*
+    if you get the error ER_NOT_SUPPORTED_AUTH_MODE, execute this mysql query 
+
+    ALTER USER 'YOUR-USERNAME'@'YOUR-HOST' IDENTIFIED WITH mysql_native_password BY 'YOUR-PASSWORD';
+
+    flush privileges;
+    */
+    let MySQLStore = modules["express-mysql-session"](modules["express-session"]);
+
+    let session_config = Object.assign(db_config, {
+        clearExpired: true,
+        checkExpirationInterval: 900000,
+        expiration: 86400000,
+        createDatabaseTable: true,
+        connectionLimit: 2,
+        schema: {
+            tableName: 'user_sessions',
+            columnNames: {
+                session_id: 'session_id',
+                expires: 'expires',
+                data: 'data'
+            }
+        }
+    });
+    const sessionStore = new MySQLStore(session_config);
+
+    const app = modules["express"]();
+    app.listen(config.port, () => log.info(`${config.app_name} is running on the port ${config.port}`));
     
-    resolve([modules, config]);
+    app.use('/public', modules["express"].static('public'));
+    
+    if(config.debug.request_logging) app.use(modules["morgan"]('dev'));
+    
+    if(config.middleware.use_cors) {
+        let cors_origin; 
+        if(config.protocol.https) cors_origin = "https://";
+        else cors_origin = "http://";
+
+        cors_origin = cors_origin + config.domains.base
+        app.use(modules["cors"]({
+            origin: cors_origin,
+            optionsSuccessStatus: 200,
+            methods: 'GET,PUT,POST,DELETE',
+            allowedHeaders: 'Origin,X-Requested-With,Content-Type,Accept,Authorization'
+        }));
+    }
+    app.use(modules["express-session"]({
+        key: config.cookies.name,
+        domain: config.domains.base,
+        secret: config.cookies.secret,
+        store: sessionStore,
+        saveUninitialized: false,
+        resave: false,
+        cookie: {
+            httpOnly: true,
+            sameSite: true,
+            secure: config.protocol.https, //in production set https ig
+            maxAge: 315569259747
+        }
+    }));
+
+    app.use((req, res, next) => {
+        req.data = {
+            page: {
+                redir: req.query.redir || '/',
+                title: undefined,
+                url: req.path
+            },
+            user: {
+                id: null,
+                name: null
+            }
+        };
+        
+        if(req.session.name) {
+            q = `SELECT * FROM users WHERE safe_name = ?`;
+            modules["mysql"].connection.execute(q, [req.session.name], (error, result) => {
+                    log.mysql(q)
+                    if(error) return router.next(new modules["utility"].errorHandling.SutekinaError(error.message, 400));
+                    if(!result[0]) req.session.destroy((err) => {
+                        if(err) return next(new modules["utility"].errorHandling.SutekinaError(err.message, 500));
+                        return res.redirect(req.data.page.redir);
+                    });
+                    req.data.user.id = result[0].id;
+                    req.data.user.name = result[0].name;
+                    next();
+                }
+            );
+        } else {
+            next();
+        }
+    });
+
+    app.disable('case sensitive routing');
+    app.disable('strict routing');
+    app.disable('x-powered-by');
+    app.set('etag', 'weak');
+    app.set('view engine', 'ejs');
+    
+    resolve([modules, config, app]);
 });

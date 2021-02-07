@@ -1,0 +1,8 @@
+- [ ] avatar upload
+- [ ] login
+- [ ] register 
+- [ ] leaderboards
+- [ ] api
+- [ ] clans
+- [ ] profiles
+- [ ] animation web transition :)
