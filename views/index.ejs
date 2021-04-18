@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<head>
+    <%- include('./base/css/root') %>
+    <%- include('./base/html/head') %>
+</head>
+<body>
+    <div class="page-container">
+        <header>
+            <!-- header includes nav -->
+            <%- include('./base/css/header') %> 
+            <%- include('./base/html/header') %> 
+        </header>
+    
+        <div class="main-container">
+            <%- include('./base/css/main') %> 
+            <main>
+                <%- include('./partials/css/' + page.type) %>
+                <%- include('./partials/html/' + page.type) %>
+            </main>
+        </div>
+
+
+    </div>
+
+    <footer>
+        <%- include('./base/css/footer') %> 
+        <%- include('./base/html/footer') %>
+    </footer>
+</body>
+</html>

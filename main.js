@@ -3,10 +3,17 @@ const log = require("./utils/log");
 require("./init").then(([modules, config, app]) => {
     module.exports = {modules, config, app};
     try {
-        app.get("/avatar", (req, res, next) => {
-            req.data.type = "index";
-            req.data.page_title = "Startseite";
-            res.render('pages/index', req.data);
+        app.get("/", (req,res,next) => {
+            res.redirect("/home")
+        });
+        app.get("/home", (req, res, next) => {
+            req.data.page.title = "home"
+            res.render('index', req.data)
+        });
+        app.get("/home/account/edit", (req, res, next) => {
+            req.data.type = "home";
+            req.data.page.title = "settings";
+            res.render('index', req.data);
         });
     } catch (err) {
         app.use((req, res, next) => next(err));
@@ -26,6 +33,7 @@ require("./init").then(([modules, config, app]) => {
             page: {
                 redir: req.query.redir || '/',
                 title: `${body.code} ${res.statusMessage} `,
+                type: "error",
                 url: req.path
             },
             user: {

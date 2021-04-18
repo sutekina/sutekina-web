@@ -23,7 +23,7 @@
     },
     "cookies": {
         "name": "session",
-        "secret": ""
+        "secret": "secret"
     },
     "mysql": {
         "user": "user",
@@ -42,13 +42,6 @@
         "_comment": "dont put the protocol in the domains except for the discord :)",
         "avatar": "a.sutekina.tk",
         "base": "sutekina.tk",
-        "discord": "https://discord.com/invite/hsQ6NKUuak"
-    },
-    "color_scheme": {
-        "1": "#EDD3C4",
-        "2": "#C8ADC0",
-        "3": "#7765E3",
-        "4": "#3B60E4",
-        "5": "#080708"
+        "discord": "https://discord.com/invite/xRCMXJ7JPh"
     }
 }

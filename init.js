@@ -117,7 +117,13 @@ module.exports = new Promise(async(resolve, reject) => {
     const sessionStore = new MySQLStore(session_config);
 
     const app = modules["express"]();
-    app.listen(config.port, () => log.info(`${config.app_name} is running on the port ${config.port}`));
+    app.listen(config.port, () => log.info(`
+//     ▄▄▄▄▄   ▄     ▄▄▄▄▀ ▄███▄   █  █▀ ▄█    ▄   ██     ▄ ▄   ▄███▄   ███   
+//    █     ▀▄  █ ▀▀▀ █    █▀   ▀  █▄█   ██     █  █ █   █   █  █▀   ▀  █  █  
+//  ▄  ▀▀▀▀▄ █   █    █    ██▄▄    █▀▄   ██ ██   █ █▄▄█ █ ▄   █ ██▄▄    █ ▀ ▄ 
+//   ▀▄▄▄▄▀  █   █   █     █▄   ▄▀ █  █  ▐█ █ █  █ █  █ █  █  █ █▄   ▄▀ █  ▄▀ 
+//           █▄ ▄█  ▀      ▀███▀     █    ▐ █  █ █    █  █ █ █  ▀███▀   ███   
+//            ▀▀▀                   ▀       █   ██   █    ▀ ▀                 `));
     
     app.use('/public', modules["express"].static('public'));
     
@@ -153,10 +159,13 @@ module.exports = new Promise(async(resolve, reject) => {
 
     app.use((req, res, next) => {
         req.data = {
+            config: config,
             page: {
-                redir: req.query.redir || '/',
+                app_name: config.app_name,
+                redir: req.query.redir || '/home',
                 title: undefined,
-                url: req.path
+                type: "home",
+                url: req.path,
             },
             user: {
                 id: null,

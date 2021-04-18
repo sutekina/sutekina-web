@@ -1,0 +1,33 @@
+<style>
+    .page-container {
+        position: relative;
+        min-height: 100%;
+        margin-bottom: -8rem;
+        background: var(--primary-bg);
+    }
+    .main-container {
+        display: flex;
+        justify-content: center;
+        padding-bottom: 8rem;
+    }
+    main {
+        -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+        -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+        box-sizing: border-box;         /* Opera/IE 8+ */
+        color: var(--text);
+        padding: 1rem;
+    }
+    /* mobile */
+    @media(max-width: 999px) {
+        main {
+            max-width: 100%;
+            min-width: 100%;
+        }
+    }
+    @media(min-width: 1000px) {
+        main {
+            max-width: 980px;
+            min-width: 980px;
+        }
+    }
+</style>

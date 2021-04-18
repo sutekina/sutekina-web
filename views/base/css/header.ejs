@@ -1,0 +1,140 @@
+<style>
+    /* 
+    # HEADER CONTAINER
+    */
+    header {
+        height: 5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--primary);
+    }
+    .header-container {
+        min-width: 980px;
+        padding: 0.5rem 0;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+    /* 
+    # HEADER ICONS
+    */
+    .header-icon, .header-user-icon {
+        background-size: contain;
+        background-repeat: no-repeat;
+        height: 3.5rem;
+        width: 3.5rem;
+    }
+    .header-icon {
+        background-image: url("/public/media/images/icon.png");
+        transition: opacity 0.2s ease-in-out;
+    }
+    .header-icon:hover, .header-icon:focus {
+        outline: none;
+        opacity: 0.7;
+    }
+    /* 
+    # NAV BAR
+    */
+    nav {
+        display: flex;
+        align-items: center;
+    }
+    nav a {
+        font-weight: 600;
+        font-size: 1.1rem;
+        padding: 0rem 0.6rem;
+        color: var(--text);
+        transition: color 0.1s ease-in-out;
+    }
+    nav a:hover, nav a:focus {
+        outline: none;
+        color: var(--text-hover);
+        text-decoration: underline;
+    }
+    /* 
+    # HEADER SEARCH
+    */
+    
+    .header-search {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        width: 15rem;
+        margin: 1rem 1rem 1rem auto;
+    }
+    .header-search-input {
+        color: var(--primary);
+        font-family: 'Exo 2', sans-serif;
+        font-weight: 600;
+        font-size: 1.1rem;
+        height: 2rem;
+        width: 100%;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 1rem;
+
+        opacity: 0;
+        pointer-events: none;
+    }
+    .header-search-input::-webkit-search-cancel-button {
+        -webkit-appearance: none;
+    }
+    .header-search-input:focus {
+        outline: none;
+    }
+    .header-search-icon-container {
+        margin-left: 1rem;
+        box-shadow: 0px 0px 0px 0.2rem var(--primary-border);
+        border-radius: 1rem;
+        width: 4rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: box-shadow 0.3s ease-in-out, background-color 0.3s ease-in-out;
+    }
+    .header-search-icon-container:hover,
+    .header-search-icon-container:focus {
+        box-shadow: 0px 0px 0px 0.2rem var(--text);
+        cursor: pointer;
+        outline: none;
+        background-color: var(--text);
+    }
+    .header-search-icon {
+        margin: 0.1rem;
+        margin-right: 0.4rem;
+        background-image: url("/public/media/images/search.svg");
+        background-size: contain;
+        background-repeat: no-repeat;
+        height: 1.5rem;
+        width: 1.5rem;
+        transition: background-image 0.3s ease-in-out;
+    }
+    .header-search-icon-container:hover .header-search-icon,
+    .header-search-icon-container:focus .header-search-icon  {
+        background-image: url("/public/media/images/hover-search.svg");
+    }
+    .header-search-selected .header-search-input {
+        opacity: 1;
+        pointer-events: all;
+    }
+    .header-search-selected .header-search-icon-container {
+        display: none;
+    }
+    /* 
+    # HEADER USER
+    */
+    .header-user-icon:hover,
+    .header-user-icon:focus {
+        box-shadow: 0px 0px 0px 0.2rem var(--text);
+        cursor: pointer;
+        outline: none;
+        background-color: var(--text);
+    }
+    .header-user-icon {
+        transition: box-shadow 0.3s ease-in-out, background-color 0.3s ease-in-out;
+        box-shadow: 0px 0px 0px 0.2rem var(--primary-border);
+        border-radius: 100%;
+        background-image: url("https://a.sutekina.tk/1")
+    }
+</style>
