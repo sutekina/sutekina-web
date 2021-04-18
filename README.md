@@ -1,4 +1,4 @@
-# gulag-web.js
+# sutekina web
 nodejs frontend implementation for cmyui's gulag
 
 ## requirements
