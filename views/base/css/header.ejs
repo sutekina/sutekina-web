@@ -14,6 +14,11 @@
         padding: 0.5rem 0;
         display: flex;
         flex-direction: row;
+        justify-content: space-between;
+    }
+    .header-flexbox {
+        display: flex;
+        flex-direction: row;
         align-items: center;
     }
     /* 
@@ -26,6 +31,7 @@
         width: 3.5rem;
     }
     .header-icon {
+        margin: 0rem 1rem;
         background-image: url("/public/media/images/icon.png");
         transition: opacity 0.2s ease-in-out;
     }
@@ -55,13 +61,12 @@
     /* 
     # HEADER SEARCH
     */
-    
     .header-search {
         display: flex;
         flex-direction: row;
         align-items: center;
         width: 15rem;
-        margin: 1rem 1rem 1rem auto;
+        margin: 1rem 1rem 1rem 0rem;
     }
     .header-search-input {
         color: var(--primary);
@@ -125,10 +130,13 @@
     # HEADER USER
     */
     .header-user-icon:hover,
-    .header-user-icon:focus {
+    .header-user-icon:focus,
+    .header-dropdown:hover,
+    .header-dropdown:focus {
         box-shadow: 0px 0px 0px 0.2rem var(--text);
         cursor: pointer;
         outline: none;
+        color: var(--primary);
         background-color: var(--text);
     }
     .header-user-icon {
@@ -136,5 +144,46 @@
         box-shadow: 0px 0px 0px 0.2rem var(--primary-border);
         border-radius: 100%;
         background-image: url("https://a.sutekina.tk/1")
+    }
+    /* 
+    # HEADER DROPDOWN
+    */
+    .header-dropdown {
+        display: none;
+    }
+
+    /* 
+    # MOBILE
+    */
+    @media(max-width: 999px) {
+        .header-search {
+            width: auto;
+        }
+        .header-dropdown {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            box-shadow: 0px 0px 0px 0.2rem var(--primary-border);
+            border-radius: 100%;
+            color: var(--text);
+            font-size: 2rem;
+            min-height: 3.5rem;
+            min-width: 3.5rem;
+            transition: box-shadow 0.3s ease-in-out, color 0.3s ease-in-out;
+        }
+        .header-dropdown span {
+            position: relative;
+            top: -2px;
+        }
+        .header-user-icon {
+            display: none;
+        }
+        nav {
+            display: none;
+        }
+        .header-container {
+            min-width: 100%;
+        }
     }
 </style>

@@ -99,7 +99,7 @@ module.exports = new Promise(async(resolve, reject) => {
     */
     let MySQLStore = modules["express-mysql-session"](modules["express-session"]);
 
-    let session_config = Object.assign(db_config, {
+    let session_config = Object.assign({}, db_config, {
         clearExpired: true,
         checkExpirationInterval: 900000,
         expiration: 86400000,
@@ -114,6 +114,7 @@ module.exports = new Promise(async(resolve, reject) => {
             }
         }
     });
+    
     const sessionStore = new MySQLStore(session_config);
 
     const app = modules["express"]();
