@@ -1,12 +1,13 @@
 <div class="header-container">
     <div class="header-flexbox">
         <a href="/home" class="header-icon" tabindex="1"></a>
-    
         <nav>
-            <a href="/leaderboard" tabindex="1">leaderboard</a>
-            <a href="/beatmaps" tabindex="1">beatmaps</a>
-            <a href="/information" tabindex="1">information</a>
+            <a href="/home" name="home" tabindex="1">home</a>
+            <a href="/beatmaps" name="beatmaps" tabindex="1">beatmaps</a>
+            <a href="/rankings" name="rankings" tabindex="1">rankings</a>
+            <a href="/help" name="help" tabindex="1">help</a>
         </nav>
+        <%- include("../js/headerNavSelected") %>
     </div>
 
     <div class="header-flexbox">

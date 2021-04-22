@@ -162,7 +162,6 @@ module.exports = new Promise(async(resolve, reject) => {
         req.data = {
             config: config,
             page: {
-                app_name: config.app_name,
                 redir: req.query.redir || '/home',
                 title: undefined,
                 type: "home",

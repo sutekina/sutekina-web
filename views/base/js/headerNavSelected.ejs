@@ -1,0 +1,6 @@
+<script>
+    var getCurrentNav = document.querySelector('nav').children.namedItem(window.location.pathname.split('/')[1]);
+    if(getCurrentNav) {
+        getCurrentNav.classList.add("nav-selected")
+    }
+</script>

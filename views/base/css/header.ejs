@@ -10,6 +10,7 @@
         background: var(--primary);
     }
     .header-container {
+        height: 100%;
         min-width: 980px;
         padding: 0.5rem 0;
         display: flex;
@@ -31,7 +32,7 @@
         width: 3.5rem;
     }
     .header-icon {
-        margin: 0rem 1rem;
+        margin-left: 1rem;
         background-image: url("/public/media/images/icon.png");
         transition: opacity 0.2s ease-in-out;
     }
@@ -49,14 +50,19 @@
     nav a {
         font-weight: 600;
         font-size: 1.1rem;
-        padding: 0rem 0.6rem;
+        margin: 0rem 0.6rem;
         color: var(--text);
         transition: color 0.1s ease-in-out;
     }
-    nav a:hover, nav a:focus {
+    .nav-selected {
+        box-shadow: 0 0.1em var(--text);
+    }
+    .nav-selected:hover, .nav-selected:focus {
+        box-shadow: 0 0.1em var(--text-hover);
+    }
+    nav a:hover, nav a:focus  {
         outline: none;
         color: var(--text-hover);
-        text-decoration: underline;
     }
     /* 
     # HEADER SEARCH
@@ -66,7 +72,7 @@
         flex-direction: row;
         align-items: center;
         width: 15rem;
-        margin: 1rem 1rem 1rem 0rem;
+        margin: 1rem;
     }
     .header-search-input {
         color: var(--primary);
@@ -78,9 +84,9 @@
         padding: 0.5rem 1rem;
         border: none;
         border-radius: 1rem;
-
-        opacity: 0;
-        pointer-events: none;
+        display: none;
+        /* opacity: 0;
+        pointer-events: none; */
     }
     .header-search-input::-webkit-search-cancel-button {
         -webkit-appearance: none;
@@ -89,10 +95,10 @@
         outline: none;
     }
     .header-search-icon-container {
-        margin-left: 1rem;
+        margin-left: auto;
         box-shadow: 0px 0px 0px 0.2rem var(--primary-border);
         border-radius: 1rem;
-        width: 4rem;
+        width: 3rem;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -122,6 +128,7 @@
     .header-search-selected .header-search-input {
         opacity: 1;
         pointer-events: all;
+        display: block;
     }
     .header-search-selected .header-search-icon-container {
         display: none;
