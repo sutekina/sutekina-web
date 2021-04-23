@@ -1,7 +1,7 @@
 <div class="header-container">
     <div class="header-flexbox">
-        <a href="/home" class="header-icon" tabindex="1"></a>
-        <nav>
+        <a href="/home" class="header-icon" tabindex="1"><div></div></a>
+        <nav class="header-nav">
             <a href="/home" name="home" tabindex="1">home</a>
             <a href="/beatmaps" name="beatmaps" tabindex="1">beatmaps</a>
             <a href="/rankings" name="rankings" tabindex="1">rankings</a>
@@ -13,12 +13,13 @@
     <div class="header-flexbox">
         <form method="GET" action="/search" class="header-search">
             <input class="header-search-input" type="search" name="query" tabindex="1">
-            <div class="header-search-icon-container" tabindex="1">
+            <div class="header-search-icon-container js-enter" tabindex="1">
                 <div class="header-search-icon"></div>
             </div>
         </form>
         <%- include("../js/headerSearch") %> 
-        <div class="header-user-icon" tabindex="1"></div>
-        <div class="header-dropdown" tabindex="1"><span>☰</span></div>
+        <div class="header-user-icon js-enter" tabindex="1"></div>
+        <div class="header-dropdown js-enter" tabindex="1"><span>☰</span></div>
+        <%- include("../js/headerDropdown") %>
     </div>
 </div>

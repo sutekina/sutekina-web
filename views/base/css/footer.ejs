@@ -1,22 +1,51 @@
 <style>
     footer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         position: absolute;
         bottom: 0;
         width: 100%;
-        height: 8rem;  
+        height: var(--footer-height);  
         background: var(--dark);
+    }
+    .footer-container {
+        min-width: 980px;
+        height: 100%;
+        position: relative;
         display: flex;
         align-items: center;
-        justify-content: space-evenly;
+        justify-content: space-between;
     }
-
-    footer a {
-        position: relative;
+    footer a:hover, footer a:focus {
+        opacity: var(--hover-opacity);
+        outline: none;
+        text-decoration: underline;
+    }
+    footer a, footer span {
+        color: var(--text);
+        transition: opacity 0.3s ease;
+    }
+    .footer-info, .footer-socials {
+        display: flex;
+        flex-direction: column;
+        margin: 0rem 1rem;
+    }
+    .footer-info span {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.2rem;
+    }
+    .footer-info a {
+        margin: 0.01rem 0rem;
+    }
+    .footer-socials a {
+        margin: 0.5rem 0rem;
         display: block;
         background-size: contain;
         background-repeat: no-repeat;
-        height: 3.5rem;
-        width: 3.5rem;
+        height: 3rem;
+        width: 3rem;
     }
     .footer-discord {
         background-image: url(/public/media/images/discord.svg);
@@ -26,5 +55,10 @@
     }
     .footer-github {
         background-image: url(/public/media/images/github.svg);
+    }
+    @media(max-width: 999px) {
+        .footer-container {
+            min-width: 100%;
+        }
     }
 </style>
