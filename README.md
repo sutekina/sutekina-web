@@ -19,7 +19,9 @@ sudo git clone https://github.com/sutekina/sutekina-web.git
 
 # starting it:
 
-sudo node main
+node .
 
-# NOTE: you should configure the config!
+# NOTES:
+# - you should configure the config!
+# - if you aren't root then you might have to run it with sudo or give the directory full read write permissions with: sudo chmod a+rwx ./*
 ```
