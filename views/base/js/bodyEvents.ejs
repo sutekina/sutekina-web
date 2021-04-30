@@ -1,4 +1,5 @@
 <script>
+    var baseURL = document.getElementsByName("sutekina:url")[0].getAttribute('content');
     document.body.addEventListener('keyup', function(event) {
         if(event.target.matches(".js-enter")) {
             if (event.keyCode === 13) event.target.click();

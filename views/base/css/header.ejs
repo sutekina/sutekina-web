@@ -51,6 +51,7 @@
         align-items: center;
     }
     nav a {
+        position: relative;
         font-weight: 600;
         font-size: 1.1rem;
         margin: 0rem 0.6rem;
@@ -192,6 +193,21 @@
         }
         nav a {
             width: 100%;
+        }
+        nav a::before {
+            --pseudo-size: 0.4rem; 
+            --negative-pseudo-size: -0.4rem;
+            content: '';
+            position: absolute;
+            display: inline-block;
+            left: calc(var(--negative-pseudo-size) * 2.5);
+            top: 50%;
+            margin-top: calc(var(--negative-pseudo-size) / 2);
+            width: var(--pseudo-size);
+            height: var(--pseudo-size);
+            border-left: 3px solid;
+            border-bottom: 3px solid;
+            transform: rotate(225deg) scaleY(1);
         }
         .nav-selected, .nav-selected:hover, .nav-selected:focus, nav a:focus {
             box-shadow: none;
