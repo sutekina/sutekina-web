@@ -27,5 +27,5 @@ node .
 
 # NOTES:
 # - you should configure the config!
-# - if you aren't root then you might have to run it with sudo or give the directory full read write permissions with: sudo chmod a+rwx ./*
+# - for permission issues either run with sudo or use "sudo chmod a+rwx ./*", preferable do the latter
 ```
