@@ -17,6 +17,10 @@ installation is done in ubuntu 18.05 but you can make this work on windows or ub
 sudo apt-get install git-all nodejs-dev node-gyp libssl1.0-dev npm
 sudo git clone https://github.com/sutekina/sutekina-web.git
 
+cd sutekina-web
+
+npm install
+
 # starting it:
 
 node .
