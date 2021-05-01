@@ -1,4 +1,5 @@
-const log = require("./utils/log");
+const {logging, errorHandling, clock} = require("./utils/");
+const boot_start = clock();
 const fs = require("fs");
 const package = require("./package.json");
 
@@ -7,21 +8,22 @@ let config;
 try {
     config = require("./config.json");
 } catch(e) {
-    log.error("config.json doesn't exist or couldn't be read, creating config.json")
+    logging.winston.warn("config.json doesn't exist or couldn't be read, creating config.json")
     fs.readFile("./ext/sample.config.json", (err, data) => {
         if(err) {
-            log.error("Error when trying to read ./ext/sample.config.json, no permissions?");
-            log.error(err);
-            process.exit()
+            logging.winston.fatal("Error when trying to read ./ext/sample.config.json, no permissions?");
+            logging.winston.fatal(err);
+            process.exit();
         }
         fs.writeFile("./config.json", data, (err) => {
             if(err) {
-                log.error("Error when trying to write ./config.json, no permissions?");
-                log.error(err);
-                process.exit()
+                logging.winston.fatal("Error when trying to write ./config.json, no permissions?");
+                logging.winston.fatal(err);
+                process.exit();
             } else {
                 config = require("./config.json");
-                log.info("config.json was automatically created with the default values, please modify to your liking.");
+                logging.winston.fatal("config.json was automatically created with the default values, please modify before continuing.");
+                process.exit();
             }
         })
     });
@@ -32,17 +34,19 @@ module.exports = new Promise(async(resolve, reject) => {
     while(!config) await new Promise(resolve => setTimeout(resolve, 1000));
     let modules_ready = false;
     if(config.debug.install_modules_on_boot) {
-        log.info("Please wait shortly while we check for missing modules and install them.")
+        logging.winston.info("Please wait shortly while we check for missing modules and install them.");
         const util = require('util');
         const exec = util.promisify(require('child_process').exec);
         async function npm_install() {
             try {
+                const mi_start = clock();
                 const { stdout, stderr } = await exec('npm install');
-                if(stdout) log.output(stdout);
-                if(stderr) log.error(stderr);
+                if(stdout) logging.winston.debug(stdout);
+                if(stderr) logging.winston.fatal(stderr);
+                logging.winston.info(`Finished checking for missing modules and installing them, approximate time elapsed: ${clock(mi_start)}ms`)
                 modules_ready = true;
             } catch (err) {
-                log.error(err);
+                logging.winston.fatal(err);
             };
         };
         npm_install();
@@ -50,16 +54,15 @@ module.exports = new Promise(async(resolve, reject) => {
         modules_ready = true
     }
 
-    while(!modules_ready) await new Promise(resolve => setTimeout(resolve, 1000));
-
+    while(!modules_ready) await new Promise(resolve => setTimeout(resolve, 100));
+    
     let modules = {}
-    for(let i = 0; i < Object.keys(package.dependencies).length; i++) {
-        let key = Object.keys(package.dependencies)[i];
+    Object.keys(package.dependencies).map(key => {
         modules[key] = require(key);
-        log.info(`Successfully required "${key}"`)
-    }
+        logging.winston.debug(`Successfully required "${key}"`)
+    });
 
-    log.info(`Successfully required all modules, connecting to MYSQL now.`)
+    logging.winston.debug(`Successfully required all modules, connecting to MYSQL now.`)
 
     const db_config = {
         host : config.mysql.host,
@@ -70,33 +73,34 @@ module.exports = new Promise(async(resolve, reject) => {
         insecureAuth : config.mysql.insecureAuth
     }
  
-    let connection;
-
     handleDisconnect = () => {
         modules["mysql2"].connection = modules["mysql2"].createConnection(db_config);
         modules["mysql2"].connection.connect(function(err) {
             if(err) {
-                log.error('MYSQL CONNECT ERR ' + err);
+                logging.winston.error(err);
                 setTimeout(handleDisconnect, 2000);
             } else {
-                log.info(`Successfully connected to MYSQL`)
+                logging.winston.debug(`Successfully connected to MYSQL.`)
             }
         });
     
         modules["mysql2"].connection.on('error', function(err) {
-            log.error('MYSQL ERR ' + err);
+            logging.winston.error(err);
             handleDisconnect();                         
         });
-    }
+    }; handleDisconnect();
+
+    const app = modules["express"]();
+    app.listen(config.port, () => logging.winston.info(`SUTEKINA:${config.port} running, boot time elapsed: ${clock(boot_start)}ms.`));
+// `
+// //     ▄▄▄▄▄   ▄     ▄▄▄▄▀ ▄███▄   █  █▀ ▄█    ▄   ██     ▄ ▄   ▄███▄   ███   
+// //    █     ▀▄  █ ▀▀▀ █    █▀   ▀  █▄█   ██     █  █ █   █   █  █▀   ▀  █  █  
+// //  ▄  ▀▀▀▀▄ █   █    █    ██▄▄    █▀▄   ██ ██   █ █▄▄█ █ ▄   █ ██▄▄    █ ▀ ▄ 
+// //   ▀▄▄▄▄▀  █   █   █     █▄   ▄▀ █  █  ▐█ █ █  █ █  █ █  █  █ █▄   ▄▀ █  ▄▀ 
+// //           █▄ ▄█  ▀      ▀███▀     █    ▐ █  █ █    █  █ █ █  ▀███▀   ███   
+// //            ▀▀▀                   ▀       █   ██   █    ▀ ▀                 
+// `
     
-    handleDisconnect();
-    /*
-    if you get the error ER_NOT_SUPPORTED_AUTH_MODE, execute this mysql query 
-
-    ALTER USER 'YOUR-USERNAME'@'YOUR-HOST' IDENTIFIED WITH mysql_native_password BY 'YOUR-PASSWORD';
-
-    flush privileges;
-    */
     let MySQLStore = modules["express-mysql-session"](modules["express-session"]);
 
     let session_config = Object.assign({}, db_config, {
@@ -117,19 +121,21 @@ module.exports = new Promise(async(resolve, reject) => {
     
     const sessionStore = new MySQLStore(session_config);
 
-    const app = modules["express"]();
-    app.listen(config.port, () => log.info(`
-//     ▄▄▄▄▄   ▄     ▄▄▄▄▀ ▄███▄   █  █▀ ▄█    ▄   ██     ▄ ▄   ▄███▄   ███   
-//    █     ▀▄  █ ▀▀▀ █    █▀   ▀  █▄█   ██     █  █ █   █   █  █▀   ▀  █  █  
-//  ▄  ▀▀▀▀▄ █   █    █    ██▄▄    █▀▄   ██ ██   █ █▄▄█ █ ▄   █ ██▄▄    █ ▀ ▄ 
-//   ▀▄▄▄▄▀  █   █   █     █▄   ▄▀ █  █  ▐█ █ █  █ █  █ █  █  █ █▄   ▄▀ █  ▄▀ 
-//           █▄ ▄█  ▀      ▀███▀     █    ▐ █  █ █    █  █ █ █  ▀███▀   ███   
-//            ▀▀▀                   ▀       █   ██   █    ▀ ▀                 `));
-    
-    app.use('/public', modules["express"].static('public'));
-    
-    if(config.debug.request_logging) app.use(modules["morgan"]('dev'));
-    
+    app.use(modules["express-session"]({
+        key: config.cookies.name,
+        secret: config.cookies.secret,
+        store: sessionStore,
+        saveUninitialized: false,
+        resave: false,
+        cookie: {
+            domain: config.domains.base,
+            httpOnly: true,
+            sameSite: true,
+            secure: config.protocol.https,
+            maxAge: 315569259747
+        }
+    }));
+
     if(config.middleware.use_cors) {
         let cors_origin; 
         if(config.protocol.https) cors_origin = "https://";
@@ -142,55 +148,7 @@ module.exports = new Promise(async(resolve, reject) => {
             methods: 'GET,PUT,POST,DELETE',
             allowedHeaders: 'Origin,X-Requested-With,Content-Type,Accept,Authorization'
         }));
-    }
-    app.use(modules["express-session"]({
-        key: config.cookies.name,
-        domain: config.domains.base,
-        secret: config.cookies.secret,
-        store: sessionStore,
-        saveUninitialized: false,
-        resave: false,
-        cookie: {
-            httpOnly: true,
-            sameSite: true,
-            secure: config.protocol.https, //in production set https ig
-            maxAge: 315569259747
-        }
-    }));
-
-    app.use((req, res, next) => {
-        req.data = {
-            config: config,
-            page: {
-                redir: req.query.redir || '/home',
-                title: undefined,
-                type: "home",
-                url: req.path,
-            },
-            user: {
-                id: null,
-                name: null
-            }
-        };
-        
-        if(req.session.name) {
-            q = `SELECT * FROM users WHERE safe_name = ?`;
-            modules["mysql"].connection.execute(q, [req.session.name], (error, result) => {
-                    log.mysql(q)
-                    if(error) return router.next(new modules["utility"].errorHandling.SutekinaError(error.message, 400));
-                    if(!result[0]) req.session.destroy((err) => {
-                        if(err) return next(new modules["utility"].errorHandling.SutekinaError(err.message, 500));
-                        return res.redirect(req.data.page.redir);
-                    });
-                    req.data.user.id = result[0].id;
-                    req.data.user.name = result[0].name;
-                    next();
-                }
-            );
-        } else {
-            next();
-        }
-    });
+    };
 
     app.disable('case sensitive routing');
     app.disable('strict routing');

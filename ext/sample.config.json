@@ -1,22 +1,23 @@
 {
     "app_name": "Sutekina",
-    "port": 8000,
+    "port": 4000,
     "debug": {
-        "error_logging": true,
-        "info_logging": true,
-        "mysql_logging": false,
-        "output_logging": true,
-        "request_logging": false,
+        "logging": {
+            "_": "all log levels are on the git hub",
+            "terminal_level": "all",
+            "file_level": "all",
+            "timestamp_format": "DD-MM-YYYY HH:mm:ss.SSS"
+        },
         
-        "_comment": "for faster booting you can turn this off but if something doesnt work this could be because a module is outdated so its recommended to keep this on",
+        "__": "its recommended to keep this on in case a module is outdated / not installed, this doesn't affect production performance, just the boot time.",
         "install_modules_on_boot": true
     },
     "middleware": {
-        "_comment_cors": "you dont really need cors here, info: https://stackoverflow.com/questions/24611450/cors-do-i-need-it-here",
+        "_": "you dont really need cors here, info: https://stackoverflow.com/questions/24611450/cors-do-i-need-it-here",
         "use_cors": true
     },
     "protocol": {
-        "_comment": "this isnt necessarily needed since you can just use nginx & cloudflare for ssl but i still provided it optionally",
+        "_": "this isnt needed since you can just use nginx & cloudflare for ssl and is currently not used but i still provided it optionally for possible use in the future.",
         "https": false,
         "cert": "",
         "key": ""
@@ -32,16 +33,17 @@
         "port": "3306",
         "database": "database",
                 
-        "_comment": "Z is zulu time e.g. UTC or GMT, you usually dont wanna change it buy if you do want to, go ahead",
+        "_": "Z is zulu time e.g. UTC or GMT, you usually dont wanna change it buy if you do want to, go ahead",
         "timezone": "Z",
 
-        "__comment": "if you get the error 'ER_NOT_SUPPORTED_AUTH_MODE' turn insecureAuth on, you probably also have to modify your mysql setting or switch to mysql 5, for more info https://stackoverflow.com/questions/44946270/er-not-supported-auth-mode-mysql-server and https://github.com/fdl-stuff/nashi/issues/1",
+        "__": "if you get the error 'ER_NOT_SUPPORTED_AUTH_MODE' turn insecureAuth on, you probably also have to modify your mysql setting or switch to mysql 5, for more info https://stackoverflow.com/questions/44946270/er-not-supported-auth-mode-mysql-server and https://github.com/fdl-stuff/nashi/issues/1",
         "insecureAuth": false
     },
     "domains": {
-        "_comment": "dont put the protocol in the domains except for the discord :)",
+        "_": "dont put the protocol in the domains except for the discord & github :)",
         "avatar": "a.sutekina.tk",
         "base": "sutekina.tk",
-        "discord": "https://discord.com/invite/xRCMXJ7JPh"
+        "discord": "https://discord.com/invite/xRCMXJ7JPh",
+        "github:": "https://github.com/sutekina/"
     }
 }

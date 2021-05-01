@@ -1,0 +1,8 @@
+{
+    "fatal": "bold red",
+    "error": "red",
+    "warn": "yellow",
+    "info": "green",
+    "debug": "cyan",
+    "trace": "magenta"
+}

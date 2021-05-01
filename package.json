@@ -28,6 +28,6 @@
     "express-session": "^1.17.1",
     "morgan": "^1.10.0",
     "mysql2": "^2.2.5",
-    "utility": "github:freie-dorfschule-luebeck/utility#master"
+    "winston": "^3.3.3"
   }
 }
