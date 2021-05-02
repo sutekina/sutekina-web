@@ -7,7 +7,6 @@ require("./init").then(([modules, config, app]) => {
         // Executes all util middleware as middleware
         middleware.map(m => app.use(m));
 
-        app.use(modules["morgan"]('dev'));
         app.use('/public', modules["express"].static('public'));
 
         app.get("/", (req,res,next) => {
@@ -20,15 +19,13 @@ require("./init").then(([modules, config, app]) => {
         app.use((req, res, next) => next(err));
     }
     // No other request was successful, throwing 404.
-    app.use((req, res, next) => next(new errorHandling.SutekinaError({status:404})));
+    app.use((req, res, next) => next(new errorHandling.SutekinaError({status:404, level:"debug"})));
     // Handle all errors and requests with a next() parameter.
     app.use((err, req, res, next) => {
-        // set body to err to add stack trace
-        body = {
-            status: err.status || err.statusCode || 500,
-            message: err.message || err
-        };
-        logging.winston[err.level || "error"](body.message, {status: body.status});
+        if(!err.message) err = new errorHandling.SutekinaError({message: err});
+        if(!err.status) err.status = err.statusCode || err.code || 500;
+        body = err;
+        logging[err.level || "error"](body, {status: body.status});
         
         res.statusMessage = errorHandling.ErrorStatusCodes[body.status];
         // req.data has to be redefined because if the app crashes within the initialization then there would be even bigger issues.
@@ -46,6 +43,21 @@ require("./init").then(([modules, config, app]) => {
             },
             error: body
         };
-        res.render('index', req.data);
+        res.status(body.status).render('index', req.data);
+    });
+
+    process.on('SIGINT', () => {
+        logging.fatal("SIGINT caught, killing sutekina-web.");
+        logging.info('Closing express server.')
+        app.server.close();
+        app.server.once('close', () => {
+            logging.info('Successfully closed express server, shutting down MYSQL connection.');
+            console.log(modules["mysql2"].connection.state)
+            process.exit(0);
+            modules["mysql2"].connection.end((err) => {
+                (err) ? logging.error(err) : logging.info('Successfully ended MYSQL connection, exiting process.');
+                
+            });
+        });
     });
 }); 

@@ -27,5 +27,5 @@ node .
 
 # NOTES:
 # - you should configure the config!
-# - for permission issues either run with sudo or use "sudo chmod -R a+rwx ./*", preferable do the latter
+# - for permission issues either run with sudo or use "sudo chmod -R a+rwx ./*", preferably do the latter.
 ```

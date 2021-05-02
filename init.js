@@ -8,21 +8,21 @@ let config;
 try {
     config = require("./config.json");
 } catch(e) {
-    logging.winston.warn("config.json doesn't exist or couldn't be read, creating config.json")
+    logging.warn("config.json doesn't exist or couldn't be read, creating config.json")
     fs.readFile("./ext/sample.config.json", (err, data) => {
         if(err) {
-            logging.winston.fatal("Error when trying to read ./ext/sample.config.json, no permissions?");
-            logging.winston.fatal(err);
+            logging.fatal("Error when trying to read ./ext/sample.config.json, no permissions?");
+            logging.fatal(err);
             process.exit();
         }
         fs.writeFile("./config.json", data, (err) => {
             if(err) {
-                logging.winston.fatal("Error when trying to write ./config.json, no permissions?");
-                logging.winston.fatal(err);
+                logging.fatal("Error when trying to write ./config.json, no permissions?");
+                logging.fatal(err);
                 process.exit();
             } else {
                 config = require("./config.json");
-                logging.winston.fatal("config.json was automatically created with the default values, please modify before continuing.");
+                logging.fatal("config.json was automatically created with the default values, please modify before continuing.");
                 process.exit();
             }
         })
@@ -34,19 +34,19 @@ module.exports = new Promise(async(resolve, reject) => {
     while(!config) await new Promise(resolve => setTimeout(resolve, 1000));
     let modules_ready = false;
     if(config.debug.install_modules_on_boot) {
-        logging.winston.info("Please wait shortly while we check for missing modules and install them.");
+        logging.info("Please wait shortly while we check for missing modules and install them.");
         const util = require('util');
         const exec = util.promisify(require('child_process').exec);
         async function npm_install() {
             try {
                 const mi_start = clock();
                 const { stdout, stderr } = await exec('npm install');
-                if(stdout) logging.winston.debug(stdout);
-                if(stderr) logging.winston.fatal(stderr);
-                logging.winston.info(`Finished checking for missing modules and installing them, approximate time elapsed: ${clock(mi_start)}ms`)
+                if(stdout) logging.debug(stdout);
+                if(stderr) logging.fatal(stderr);
+                logging.info(`Finished checking for missing modules and installing them, approximate time elapsed: ${clock(mi_start)}ms`)
                 modules_ready = true;
             } catch (err) {
-                logging.winston.fatal(err);
+                logging.fatal(err);
             };
         };
         npm_install();
@@ -59,10 +59,10 @@ module.exports = new Promise(async(resolve, reject) => {
     let modules = {}
     Object.keys(package.dependencies).map(key => {
         modules[key] = require(key);
-        logging.winston.debug(`Successfully required "${key}"`)
+        logging.debug(`Successfully required "${key}"`)
     });
 
-    logging.winston.debug(`Successfully required all modules, connecting to MYSQL now.`)
+    logging.debug(`Successfully required all modules, connecting to MYSQL now.`)
 
     const db_config = {
         host : config.mysql.host,
@@ -77,21 +77,26 @@ module.exports = new Promise(async(resolve, reject) => {
         modules["mysql2"].connection = modules["mysql2"].createConnection(db_config);
         modules["mysql2"].connection.connect(function(err) {
             if(err) {
-                logging.winston.error(err);
+                logging.fatal(err.message, err);
                 setTimeout(handleDisconnect, 2000);
             } else {
-                logging.winston.debug(`Successfully connected to MYSQL.`)
+                logging.debug(`Successfully connected to MYSQL.`)
             }
         });
     
         modules["mysql2"].connection.on('error', function(err) {
-            logging.winston.error(err);
-            handleDisconnect();                         
+            logging.fatal(err.message, err);
+            if(err.code === "PROTOCOL_CONNECTION_LOST") return setTimeout(handleDisconnect, 2000);
+            err.level = "fatal";
+            throw err;
         });
-    }; handleDisconnect();
+    };
+    
+    handleDisconnect();
 
     const app = modules["express"]();
-    app.listen(config.port, () => logging.winston.info(`SUTEKINA:${config.port} running, boot time elapsed: ${clock(boot_start)}ms.`));
+    app.server = app.listen(config.port, () => logging.info(`sutekina-web:${config.port} running, boot time elapsed: ${clock(boot_start)}ms.`));
+// pretty sprite if thats what you like
 // `
 // //     ▄▄▄▄▄   ▄     ▄▄▄▄▀ ▄███▄   █  █▀ ▄█    ▄   ██     ▄ ▄   ▄███▄   ███   
 // //    █     ▀▄  █ ▀▀▀ █    █▀   ▀  █▄█   ██     █  █ █   █   █  █▀   ▀  █  █  
@@ -100,7 +105,7 @@ module.exports = new Promise(async(resolve, reject) => {
 // //           █▄ ▄█  ▀      ▀███▀     █    ▐ █  █ █    █  █ █ █  ▀███▀   ███   
 // //            ▀▀▀                   ▀       █   ██   █    ▀ ▀                 
 // `
-    
+
     let MySQLStore = modules["express-mysql-session"](modules["express-session"]);
 
     let session_config = Object.assign({}, db_config, {
