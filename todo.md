@@ -5,5 +5,3 @@
 - [ ] api
 - [ ] clans
 - [ ] profiles
-- [ ] animation web transition :)
-- [ ] async logging
