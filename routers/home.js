@@ -1,5 +1,5 @@
 const {modules, config, app} = require('../main');
-const {logging} = require('../utils');
+const {logging, errorHandling} = require('../utils');
 const Router = modules['express'].Router();
 
 Router.get("/", (req, res, next) => {

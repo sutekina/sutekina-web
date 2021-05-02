@@ -1,5 +1,5 @@
 let config;
-let winston;
+let winston;    
 try {
     config = require("../../config.json");
 } catch(err) {

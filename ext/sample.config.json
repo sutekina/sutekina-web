@@ -1,23 +1,19 @@
-{
+{   
+    "README": "Before configuring this you might wanna look into the config documentations unless you know what you are doing. https://github.com/sutekina/sutekina-web/blob/main/README.md#config-file",
     "app_name": "Sutekina",
     "port": 4000,
     "debug": {
         "logging": {
-            "_": "all log levels are on the git hub",
             "terminal_level": "all",
             "file_level": "all",
             "timestamp_format": "DD-MM-YYYY HH:mm:ss.SSS"
         },
-        
-        "__": "its recommended to keep this on in case a module is outdated / not installed, this doesn't affect production performance, just the boot time.",
         "install_modules_on_boot": true
     },
     "middleware": {
-        "_": "you dont really need cors here, info: https://stackoverflow.com/questions/24611450/cors-do-i-need-it-here",
-        "use_cors": true
+        "use_cors": false
     },
     "protocol": {
-        "_": "this isnt needed since you can just use nginx & cloudflare for ssl and is currently not used but i still provided it optionally for possible use in the future.",
         "https": false,
         "cert": "",
         "key": ""
@@ -32,15 +28,10 @@
         "password": "password",
         "port": "3306",
         "database": "database",
-                
-        "_": "Z is zulu time e.g. UTC or GMT, you usually dont wanna change it buy if you do want to, go ahead",
         "timezone": "Z",
-
-        "__": "if you get the error 'ER_NOT_SUPPORTED_AUTH_MODE' turn insecureAuth on, you probably also have to modify your mysql setting or switch to mysql 5, for more info https://stackoverflow.com/questions/44946270/er-not-supported-auth-mode-mysql-server and https://github.com/fdl-stuff/nashi/issues/1",
         "insecureAuth": false
     },
     "domains": {
-        "_": "dont put the protocol in the domains except for the discord & github :)",
         "avatar": "a.sutekina.tk",
         "base": "sutekina.tk",
         "discord": "https://discord.com/invite/xRCMXJ7JPh",

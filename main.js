@@ -6,16 +6,17 @@ require("./init").then(([modules, config, app]) => {
     try {
         // Executes all util middleware as middleware
         middleware.map(m => app.use(m));
-
+        // Opens /public as static directory.
         app.use('/public', modules["express"].static('public'));
-
+        // Redirects all requests coming to / to /home.
         app.get("/", (req,res,next) => {
             res.redirect(301, '/home');
         });
         // Maps the routers and then adds them as middleware with their url and export.
         routers.map(r => app.use(r.url, r.export));
-    // If an error occurs within the try block above it doesn't crash the app but rather catches it, I should most likely make a log for all errors that come from here.
+    // If an error occurs within the try block that would crash the app it doesn't crash the app but rather catches it.
     } catch (err) {
+        err.level = "fatal";
         app.use((req, res, next) => next(err));
     }
     // No other request was successful, throwing 404.
@@ -33,7 +34,7 @@ require("./init").then(([modules, config, app]) => {
             config: config,
             page: {
                 redir: req.data.page.redir || req.query.redir || '/',
-                title: `${body.status} ${res.statusMessage}`,
+                title: `${body.status}`,
                 type: "error",
                 url: req.data.page.url || req.path
             },
