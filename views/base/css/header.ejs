@@ -51,11 +51,27 @@
         align-items: center;
     }
     .nav-item {
+        cursor: pointer;
+        position: relative;
         font-weight: 600;
         font-size: 1.1rem;
         margin: 0rem 0.6rem;
         color: var(--text);
         transition: color 0.1s ease-in-out;
+    }
+    .nav-item-hover {
+        color: green;
+    }
+    .nav-item div {
+        border-top: #000;
+        border-top-width: 1rem;
+        border-top-style: solid;
+        min-width: 4rem;
+        padding: 0.5rem 1rem;
+        position: absolute;
+        z-index: -1;
+        transform: translateY(1rem);
+        background-color: var(--primary);
     }
     .nav-selected {
         box-shadow: 0 0.1em var(--text);
@@ -69,6 +85,13 @@
     }
     .nav-item:focus {
         box-shadow: 0 0.1em var(--text-hover);
+    }
+    .nav-item input[type=checkbox], .nav-item span, .nav-item div, .nav-user{
+        display: none;
+    }
+    .nav-item input[type=checkbox] {
+        position: absolute;
+        opacity: 0;
     }
     /* 
     # HEADER SEARCH
@@ -153,7 +176,7 @@
         color: var(--primary);
         background-color: var(--text);
     }
-    .header-user-icon {
+    .header-user-icon, .nav-user-icon {
         transition: box-shadow 0.3s ease-in-out, background-color 0.3s ease-in-out;
         box-shadow: 0px 0px 0px 0.2rem var(--primary-border);
         border-radius: 100%;
@@ -166,7 +189,14 @@
     .header-dropdown {
         display: none;
     }
-
+    /*
+    # NOT MOBILE
+    */
+    @media(min-width: 1000px) {
+        .nav-item-title:hover ~ div, .nav-item input[type=checkbox]:hover ~ div, .nav-item div:hover {
+            display: block;
+        }
+    }
     /* 
     # MOBILE
     */
@@ -181,7 +211,6 @@
             -webkit-box-sizing: border-box;
             -moz-box-sizing: border-box;
             box-sizing: border-box;
-            padding: 1rem;
             top: -5rem;
             background: var(--primary-bg);
             flex-direction: column;
@@ -190,11 +219,47 @@
             width: 100%;
             transition: top 0.2s ease-in-out;
         }
+        .nav-drop {
+            padding: 1rem;
+            padding-top: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .nav-user {
+            display: inline-flex;
+            align-items: center;
+            height: 3rem;
+            width: 100%;
+            background-color: #000;
+            padding-left: 0.5rem;
+        }
+        .nav-user-icon {
+            margin-right: 0.5rem;
+            height: 2rem;
+            width: 2rem;
+            background-size: cover;
+            box-shadow: none;
+        }
+        .nav-user span {
+            color: var(--text);
+        }
         .nav-item {
+            -webkit-user-select: none;       
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
             position: relative;
             width: 100%;
+            cursor: pointer;
         }
-        .nav-item::before {
+        .nav-item input[type=checkbox]:checked ~ div {
+            display: block;
+        }
+        .nav-item-title {
+            position: relative;
+        }
+        .nav-item-title::before {
             --pseudo-size: 0.4rem; 
             --negative-pseudo-size: -0.4rem;
             content: '';
@@ -209,18 +274,30 @@
             border-bottom: 3px solid;
             transform: rotate(225deg) scaleY(1);
         }
-        .item-has-sub {
+        .nav-item-anchor {
+            display: none;
+        }
+        .nav-item input[type=checkbox], .nav-item-title {
+            display: block !important;
+        }
+        .nav-item input[type=checkbox]:checked ~ span::before {
+            transform: translate(0, -3px) rotate(315deg) scaleY(1);
+        }
+        .nav-item {
             text-align: left;
             padding: 0px;
             background: var(--primary-bg);
             border: none;
         }
-        .item-has-sub div {
+        .nav-item div {
             display:none;
+            position: inherit;
+            padding: 0;
+            background-color: var(--primary-bg);
+            /* padding-bottom: 0.2rem; */
+            padding-left: 1rem;
         }
-        .item-has-sub:active div {
-            display: block;
-        }
+        
         .nav-selected, .nav-selected:hover, .nav-selected:focus, nav a:focus {
             box-shadow: none;
         }
@@ -273,8 +350,6 @@
         body {
             transition: background-color 0.2s ease-in-out;
         }
-
-
         .header-user-icon {
             display: none;
         }

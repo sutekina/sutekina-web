@@ -1,0 +1,13 @@
+<script>
+    document.getElementsByClassName("header-flexbox")[0].addEventListener("mouseover", function(e) {
+        let navItem = e.target.closest(".nav-item"); 
+        
+        if(navItem.classList.contains("nav-item-active")) return;
+        
+        let navItems = document.getElementsByClassName("nav-item");
+
+        for(let i = 0; i < navItems.length; i++) {
+            navItems[i].classList.remove("nav-item-active");
+        }
+    });
+</script>
