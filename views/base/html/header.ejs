@@ -2,10 +2,15 @@
     <div class="header-flexbox">
         <a href="/home" class="header-icon" tabindex="1"><div></div></a>
         <nav class="header-nav">
-            <a href="/home" name="home" tabindex="1">home</a>
-            <a href="/beatmaps" name="beatmaps" tabindex="1">beatmaps</a>
-            <a href="/rankings" name="rankings" tabindex="1">rankings</a>
-            <a href="/help" name="help" tabindex="1">help</a>
+            <button href="/home" name="home" class="nav-item item-has-sub" tabindex="1">
+                <span>home</span>
+                <div>
+                    <a href="/home/team">team</a>
+                </div>
+            </button>
+            <a href="/beatmaps" name="beatmaps" class="nav-item" tabindex="1">beatmaps</a>
+            <a href="/rankings" name="rankings" class="nav-item item-has-sub" tabindex="1">rankings</a>
+            <a href="/help" name="help" class="nav-item item-has-sub" tabindex="1">help</a>
         </nav>
         <%- include("../js/headerNavSelected") %>
     </div>

@@ -46,8 +46,4 @@ module.exports = winston.createLogger({
         })
     ]
 
-})
-
-getLoggingDate = () => {
-    return new Date().toLocaleString('en-GB', {dateStyle: 'short', timeStyle: 'long'});
-}
+});

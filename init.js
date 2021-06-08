@@ -66,6 +66,7 @@ module.exports = new Promise(async(resolve, reject) => {
 
     const db_config = {
         host : config.mysql.host,
+        port: config.mysql.port,
         user : config.mysql.user,
         password : config.mysql.password,
         database : config.mysql.database,
