@@ -3,7 +3,7 @@ const {logging, errorHandling} = require('../.');
 module.exports = (req, res, next) => {
     if(req.session.safe_name) {
         query = `SELECT * FROM users WHERE safe_name = ?`;
-        modules["mysql2"].connection.execute(query, [req.session.safe_name], (error, result) => {
+        modules["mysql2"].pool.execute(query, [req.session.safe_name], (error, result) => {
             logging.trace(query)
             if(error) return next(new errorHandling.SutekinaError({message:error.message, status:500, level:"error"}));
             if(!result[0]) req.session.destroy((err) => {

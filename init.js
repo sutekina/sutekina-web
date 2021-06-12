@@ -46,7 +46,7 @@ module.exports = new Promise(async(resolve, reject) => {
                 logging.info(`Finished checking for missing modules and installing them, approximate time elapsed: ${clock(mi_start)}ms`)
                 modules_ready = true;
             } catch (err) {
-                logging.fatal(err);
+                reject(err);
             };
         };
         npm_install();
@@ -64,57 +64,18 @@ module.exports = new Promise(async(resolve, reject) => {
 
     logging.debug(`Successfully required all modules, connecting to MYSQL now.`)
 
-    const db_config = {
-        host : config.mysql.host,
-        port: config.mysql.port,
-        user : config.mysql.user,
-        password : config.mysql.password,
-        database : config.mysql.database,
-        timezone: config.mysql.timezone,
-        insecureAuth : config.mysql.insecureAuth
-    }
- 
-    handleDisconnect = () => {
-        modules["mysql2"].connection = modules["mysql2"].createConnection(db_config);
-        modules["mysql2"].connection.connect(function(err) {
-            if(err) {
-                logging.fatal(err.message, err);
-                setTimeout(handleDisconnect, 2000);
-            } else {
-                logging.debug(`Successfully connected to MYSQL.`)
-            }
-        });
-    
-        modules["mysql2"].connection.on('error', function(err) {
-            logging.fatal(err.message, err);
-            if(err.code === "PROTOCOL_CONNECTION_LOST") return setTimeout(handleDisconnect, 2000);
-            err.level = "fatal";
-            throw err;
-        });
-    };
-    
-    handleDisconnect();
+    modules["mysql2"].pool = modules["mysql2"].createPool(config.mysql);
 
     const app = modules["express"]();
     app.server = app.listen(config.port, () => logging.info(`sutekina-web:${config.port} running, boot time elapsed: ${clock(boot_start)}ms.`));
-// pretty sprite if thats what you like
-// `
-// //     ▄▄▄▄▄   ▄     ▄▄▄▄▀ ▄███▄   █  █▀ ▄█    ▄   ██     ▄ ▄   ▄███▄   ███   
-// //    █     ▀▄  █ ▀▀▀ █    █▀   ▀  █▄█   ██     █  █ █   █   █  █▀   ▀  █  █  
-// //  ▄  ▀▀▀▀▄ █   █    █    ██▄▄    █▀▄   ██ ██   █ █▄▄█ █ ▄   █ ██▄▄    █ ▀ ▄ 
-// //   ▀▄▄▄▄▀  █   █   █     █▄   ▄▀ █  █  ▐█ █ █  █ █  █ █  █  █ █▄   ▄▀ █  ▄▀ 
-// //           █▄ ▄█  ▀      ▀███▀     █    ▐ █  █ █    █  █ █ █  ▀███▀   ███   
-// //            ▀▀▀                   ▀       █   ██   █    ▀ ▀                 
-// `
 
     let MySQLStore = modules["express-mysql-session"](modules["express-session"]);
 
-    let session_config = Object.assign({}, db_config, {
+    let session_config = Object.assign({}, config.mysql, {
         clearExpired: true,
         checkExpirationInterval: 900000,
         expiration: 86400000,
         createDatabaseTable: true,
-        connectionLimit: 2,
         schema: {
             tableName: 'user_sessions',
             columnNames: {

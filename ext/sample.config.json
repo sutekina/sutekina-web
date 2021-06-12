@@ -29,7 +29,10 @@
         "port": "3306",
         "database": "database",
         "timezone": "Z",
-        "insecureAuth": false
+        "insecureAuth": false,
+        "waitForConnections": true,
+        "connectionLimit": 10,
+        "queueLimit": 0
     },
     "domains": {
         "avatar": "a.sutekina.tk",
