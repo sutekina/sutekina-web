@@ -1,10 +1,11 @@
+const { addColors } = require("winston/lib/winston/config");
 const {logging, errorHandling} = require("./utils/");
 require("./init").then(([modules, config, app]) => {
     module.exports = {modules, config, app};
     const middleware = require("./utils/middleware");
     const routers = require("./routers");
     const {express, mysql2} = modules;
-    
+
     try {
         middleware.map(m => app.use(m));
         app.use('/public', express.static('public'));
@@ -41,7 +42,6 @@ require("./init").then(([modules, config, app]) => {
         };
         res.status(err.status).render('index', req.data);
     });
-
     process.on('SIGINT', () => {
         logging.fatal("SIGINT caught, killing sutekina-web.");
         logging.info('Closing express server.')

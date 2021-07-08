@@ -50,6 +50,13 @@
         display: flex;
         align-items: center;
     }
+    .nav-drop:hover .nav-item:not(.nav-item-active) {
+        opacity: 0.5;
+    }
+    .nav-drop:hover .nav-item-active {
+        opacity: 1;
+        color: var(--text);
+    }
     .nav-item {
         cursor: pointer;
         position: relative;
@@ -59,19 +66,17 @@
         color: var(--text);
         transition: color 0.1s ease-in-out;
     }
-    .nav-item-hover {
-        color: green;
-    }
     .nav-item div {
-        border-top: #000;
-        border-top-width: 1rem;
-        border-top-style: solid;
-        min-width: 4rem;
-        padding: 0.5rem 1rem;
         position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        min-width: 5rem;
+        padding: 0.5rem 0.6rem;
         z-index: -1;
-        transform: translateY(1rem);
-        background-color: var(--primary);
+        transform: translateY(1.5rem);
+        background-color: var(--dark);
+        opacity: 0;
+        transition: none;
     }
     .nav-selected {
         box-shadow: 0 0.1em var(--text);
@@ -86,7 +91,7 @@
     .nav-item:focus {
         box-shadow: 0 0.1em var(--text-hover);
     }
-    .nav-item input[type=checkbox], .nav-item span, .nav-item div, .nav-user{
+    .nav-item input[type=checkbox], .nav-item span, .nav-user{
         display: none;
     }
     .nav-item input[type=checkbox] {
@@ -193,8 +198,11 @@
     # NOT MOBILE
     */
     @media(min-width: 1000px) {
-        .nav-item-title:hover ~ div, .nav-item input[type=checkbox]:hover ~ div, .nav-item div:hover {
-            display: block;
+        .nav-item-active div {
+            opacity: 1;
+        }
+        nav {
+            height: 100%;
         }
     }
     /* 
