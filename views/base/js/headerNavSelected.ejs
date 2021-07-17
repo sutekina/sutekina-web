@@ -1,6 +1,5 @@
 <script>
     var getCurrentNav = document.querySelector('.nav-drop').children.namedItem(window.location.pathname.split('/')[1]);
-    console.log(getCurrentNav)
     if(getCurrentNav) {
         getCurrentNav.classList.add("nav-selected")
     }

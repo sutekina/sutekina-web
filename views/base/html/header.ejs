@@ -5,20 +5,13 @@
             <!-- change this depending if user is logged in TODO -->
             <a href="/account/login" class="nav-user">
                 <div class="nav-user-icon"></div>
-                <span class="nav-user-name">Guest</span>
+                <span class="nav-user-name">Sign in / Register</span>
             </a>
             <div class="nav-drop">
-                <label name="home" class="nav-item item-has-sub">
-                    <input type="checkbox" tabindex="1">
-                    <span href="/home" class="nav-item-title">home</span>
-                    <a href="/home" class="nav-item-anchor">home</a>
-                    <div>
-                        <a href="/home/team">team</a>
-                    </div>
-                </label>
-                <a href="/beatmaps" name="beatmaps" class="nav-item nav-item-title" tabindex="1">beatmaps</a>
-                <a href="/rankings" name="rankings" class="nav-item nav-item-title" tabindex="1">rankings</a>
-                <a href="/help" name="help" class="nav-item nav-item-title" tabindex="1">help</a>
+                <a href="/home" name="home" class="nav-item" tabindex="1">home</a>
+                <a href="/beatmaps" name="beatmaps" class="nav-item" tabindex="1">beatmaps</a>
+                <a href="/clans" name="clans" class="nav-item" tabindex="1">clans</a>
+                <a href="/leaderboard" name="leaderboard" class="nav-item" tabindex="1">leaderboard</a>
             </div>
         </nav>
         <%- include("../js/headerNavSelected") %>

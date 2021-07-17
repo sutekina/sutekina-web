@@ -9,7 +9,7 @@ router.get("/", (req, res, next) => {
 
 router.get("/account/edit", (req, res, next) => {
     // forward this from /home/account/edit to /account/edit TODO
-    req.data.type = "home";
+    req.data.page.type = "home";
     req.data.page.title = "settings";
     res.render('index', req.data);
 });
