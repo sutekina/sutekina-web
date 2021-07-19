@@ -17,7 +17,7 @@
     <div class="page"></div>
 </div>
 
-<script>
+<script type="module">
     let urlSearchParams = new URLSearchParams(window.location.search);
     let params = Object.fromEntries(urlSearchParams.entries());
     
@@ -40,7 +40,10 @@
 
             let countryCell = playerRow.insertCell();
             countryCell.classList.add("player-country");
-            countryCell.appendChild(document.createTextNode(user.country))
+            let countryImage = document.createElement("div");
+            countryImage.classList.add("player-country-image");
+            countryImage.style.backgroundImage = `url("https://osu.ppy.sh/images/flags/${user.country.toUpperCase()}.png")`;
+            countryCell.appendChild(countryImage);
 
             let nameCell = playerRow.insertCell();
             nameCell.classList.add("player-name");
@@ -60,11 +63,7 @@
             playcountCell.classList.add("player-playcount");
             playcountCell.appendChild(document.createTextNode(user.playcount));
 
-            playerRow.insertCell().appendChild(document.createTextNode(user.pp))
-            
-           
+            playerRow.insertCell().appendChild(document.createTextNode(user.pp + "pp"))
         });
     });
-    
-
 </script>

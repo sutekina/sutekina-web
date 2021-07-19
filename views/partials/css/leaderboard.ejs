@@ -11,6 +11,7 @@
     }
 
     .player-table td {
+        vertical-align: middle;
         text-align: center;
         width: 8%;
         font-size: 0.9rem;
@@ -20,8 +21,16 @@
     }
     .player-table td:first-child { border-top-left-radius: var(--table-border-radius); border-bottom-left-radius: var(--table-border-radius); padding-left: 0.3rem; }
     .player-table td:last-child { border-top-right-radius: var(--table-border-radius); border-bottom-right-radius: var(--table-border-radius); padding-right: 0.3rem; }
-
-    
+    .player-country {
+        padding: 0rem 0.3rem !important;
+        width: 2rem !important;
+    }
+    .player-country-image {
+        padding: 0.6rem 0.1rem;
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
+    }
     .player-table th {
         font-weight: normal;
         font-size: 0.7rem;
@@ -31,7 +40,6 @@
         position: relative;
         background-color: var(--thirdendary-bg);
     }
-    
     .player-rank {
         width: 1% !important;
     }
