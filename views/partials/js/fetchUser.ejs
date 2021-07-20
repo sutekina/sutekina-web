@@ -1,0 +1,36 @@
+<script async type="module">
+    let urlSearchParams = new URLSearchParams(window.location.search);
+    let params = Object.fromEntries(urlSearchParams.entries());
+    
+    let username = document.getElementById("user-identifier").dataset.user;
+
+    
+    var user = await fetch(new Request(`https://api.sutekina.tk/v2/users/${username}`)).then(res => {
+        return res.json();
+    });
+
+    var nextBestPage = 0;
+    var best = await getScores({name: "pp", asc: "false"}, nextBestPage);
+    nextBestPage++;
+    var nextRecentPage = 0;
+    var recent = await getScores({name:"playtime", asc: "false"}, nextRecentPage);
+    nextRecentPage++;
+
+    console.log(user);
+    console.log(recent);
+    console.log(best)
+
+    function getScores(order, nextPage) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                console.log(`https://api.sutekina.tk/v2/users/${username}/scores?limit=5&offset=${nextPage*5}&order=${order.name}&ascending=${order.asc}`)
+                let response = await fetch(new Request(`https://api.sutekina.tk/v2/users/${username}/scores?limit=5&offset=${nextPage*5}&order=${order.name}&ascending=${order.asc}`)).then(res => {
+                    return res.json();
+                });
+                resolve(response);
+            } catch(err) {
+                reject(err);
+            }
+        })
+    }
+</script>

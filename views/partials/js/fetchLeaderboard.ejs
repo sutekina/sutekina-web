@@ -1,0 +1,50 @@
+<script type="module">
+    let urlSearchParams = new URLSearchParams(window.location.search);
+    let params = Object.fromEntries(urlSearchParams.entries());
+    
+    let page = (params.page) ? params.page : 0;
+
+    let request = new Request(`https://api.sutekina.tk/v2/users?limit=50&offset=${page*50}`);
+    let playerTable = document.getElementsByClassName("player-table-body")[0];
+
+    fetch(request).then(res => {
+        return res.json();
+    }).then(res => {
+        // TODO improve
+        // if(!res[0]) return playerTable.insertRow().insertCell().appendChild(document.createTextNode("404"));
+        res.forEach(user => {
+            let playerRow = playerTable.insertRow();
+            playerRow.classList.add("player-row");
+            let rankCell = playerRow.insertCell();
+            rankCell.classList.add("player-rank");
+            rankCell.appendChild(document.createTextNode("#" + user.globalRank))
+
+            let countryCell = playerRow.insertCell();
+            countryCell.classList.add("player-country");
+            let countryImage = document.createElement("div");
+            countryImage.classList.add("player-country-image");
+            countryImage.style.backgroundImage = `url("https://osu.ppy.sh/images/flags/${user.country.toUpperCase()}.png")`;
+            countryCell.appendChild(countryImage);
+
+            let nameCell = playerRow.insertCell();
+            nameCell.classList.add("player-name");
+            nameCell.appendChild(document.createTextNode(user.name))
+
+            let anchorCell = playerRow.insertCell();
+            anchorCell.classList.add("player-anchor");
+            let anchor = document.createElement("a"); 
+            anchor.href = new URL(`users/${user.userId}`, window.location.origin);
+            anchorCell.appendChild(anchor)
+
+            let accuracyCell = playerRow.insertCell();
+            accuracyCell.classList.add("player-accuracy");
+            accuracyCell.appendChild(document.createTextNode((user.accuracy.toFixed(2)) + "%"));
+
+            let playcountCell = playerRow.insertCell();
+            playcountCell.classList.add("player-playcount");
+            playcountCell.appendChild(document.createTextNode(user.playcount));
+
+            playerRow.insertCell().appendChild(document.createTextNode(user.pp + "pp"))
+        });
+    });
+</script>
