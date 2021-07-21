@@ -9,7 +9,13 @@
         border-collapse: separate;
         border-spacing: 0rem 0.4rem;
     }
-
+    .player-row {
+        position: relative;
+        background-color: var(--thirdendary-bg);
+    }
+    .player-row:hover {
+        background-color: var(--primary-bg);
+    }
     .player-table td {
         vertical-align: middle;
         text-align: center;
@@ -36,23 +42,12 @@
         font-size: 0.7rem;
         padding: 0.3rem;
     }
-    .player-row {
-        position: relative;
-        background-color: var(--thirdendary-bg);
-    }
     .player-rank {
         width: 1% !important;
     }
     .player-name {
         width: auto !important;
         text-align: left !important;
-    }
-    .player-anchor a {
-        position: absolute;
-        height: 100%;
-        width: 100%;
-        left: 0;
-        top: 0;
     }
 
     @media(max-width: 600px) {

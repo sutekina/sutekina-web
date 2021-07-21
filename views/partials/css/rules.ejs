@@ -1,0 +1,67 @@
+<style>
+    .indiv-rules{
+
+        font-size: 2rem;
+        margin-bottom: 1rem;
+
+    }
+    .rules-title{
+
+        font-size: 3rem;
+        text-align: center;
+        padding-bottom: 1rem;
+
+    }
+    .rules-container{
+
+        display:flex;
+        flex-wrap: wrap;
+        justify-content: center;
+
+    }
+    .rule{
+
+        background-color: var(--secondary-bg);
+        flex:1 1 1px;
+        font-size: 1rem;
+        min-height: 37rem;
+        max-width: 17rem;
+        min-width: 17rem;
+        border-radius: 0.5rem;
+        margin: 0.5rem;
+        overflow-wrap: break-word;
+        padding: 0.7rem;
+        text-align: center;
+        position:relative;
+
+    }
+    .rule:hover .rules-content {
+        filter: blur(0px);
+        transition: all 0.2s ease;
+    }
+    .rules-content{
+
+        filter: blur(10px);
+        transition: all 0.2s ease;
+        text-align: center;
+        margin-top: 10rem;
+        margin-bottom: 10rem;
+    }
+.rule-info{
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+    
+}
+.rule:hover .rule-info {
+filter:opacity(0%);
+transition: all 0.1s ease;
+
+}
+</style>

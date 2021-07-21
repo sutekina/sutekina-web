@@ -17,10 +17,12 @@
             playerRow.classList.add("player-row");
             let rankCell = playerRow.insertCell();
             rankCell.classList.add("player-rank");
+            rankCell.title = "global rank";
             rankCell.appendChild(document.createTextNode("#" + user.globalRank))
 
             let countryCell = playerRow.insertCell();
             countryCell.classList.add("player-country");
+            countryCell.title = user.country.toUpperCase();
             let countryImage = document.createElement("div");
             countryImage.classList.add("player-country-image");
             countryImage.style.backgroundImage = `url("https://osu.ppy.sh/images/flags/${user.country.toUpperCase()}.png")`;
@@ -28,23 +30,25 @@
 
             let nameCell = playerRow.insertCell();
             nameCell.classList.add("player-name");
-            nameCell.appendChild(document.createTextNode(user.name))
-
-            let anchorCell = playerRow.insertCell();
-            anchorCell.classList.add("player-anchor");
+            nameCell.title = user.name;
             let anchor = document.createElement("a"); 
             anchor.href = new URL(`users/${user.userId}`, window.location.origin);
-            anchorCell.appendChild(anchor)
+            anchor.appendChild(document.createTextNode(user.name));
+            nameCell.appendChild(anchor);
 
             let accuracyCell = playerRow.insertCell();
             accuracyCell.classList.add("player-accuracy");
+            accuracyCell.title = "accuracy";
             accuracyCell.appendChild(document.createTextNode((user.accuracy.toFixed(2)) + "%"));
 
             let playcountCell = playerRow.insertCell();
             playcountCell.classList.add("player-playcount");
+            playcountCell.title = "playcount";
             playcountCell.appendChild(document.createTextNode(user.playcount));
 
-            playerRow.insertCell().appendChild(document.createTextNode(user.pp + "pp"))
+            let ppCell = playerRow.insertCell();
+            ppCell.title = "performance points";
+            ppCell.appendChild(document.createTextNode(user.pp + "pp"))
         });
     });
 </script>

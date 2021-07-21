@@ -18,5 +18,11 @@ module.exports = [
     {   
         "url": "/beatmaps",
         "export": require("./routers/beatmaps")
-    }
+    },
+    {
+
+        "url": "/rules",
+        "export": require("./routers/rules")
+
+    },
 ]
