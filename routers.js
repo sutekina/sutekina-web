@@ -25,4 +25,9 @@ module.exports = [
         "export": require("./routers/rules")
 
     },
+    {
+
+        "url": "/team",
+        "export": require("./routers/team")
+    },
 ]

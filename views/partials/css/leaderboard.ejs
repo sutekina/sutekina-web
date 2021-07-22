@@ -11,6 +11,7 @@
     }
     .player-row {
         position: relative;
+        transition: background-color 0.2s ease;
         background-color: var(--thirdendary-bg);
     }
     .player-row:hover {
@@ -48,6 +49,9 @@
     .player-name {
         width: auto !important;
         text-align: left !important;
+    }
+    .player-row a:hover {
+        text-decoration: underline;
     }
 
     @media(max-width: 600px) {

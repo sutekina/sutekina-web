@@ -13,18 +13,19 @@
     var best = await getScores({name: "pp", asc: "false"}, nextBestPage);
     nextBestPage++;
     var nextRecentPage = 0;
-    var recent = await getScores({name:"playtime", asc: "false"}, nextRecentPage);
+    var recent = await getScores({name:"playtime", asc: "false"}, nextRecentPage, "0", "-2");
     nextRecentPage++;
 
     console.log(user);
+    // {"userId":3,"name":"Felix","country":"de","privilege":31751,"creationTime":1611740740,"playtime":7560,"playcount":299,"pp":1030,"accuracy":81.22599792480469,"globalRank":24,"countryRank":1}
     console.log(recent);
     console.log(best)
 
-    function getScores(order, nextPage) {
+    function getScores(order, nextPage, scoreStatus = "1", beatmapStatus = "2") {
         return new Promise(async (resolve, reject) => {
             try {
-                console.log(`https://api.sutekina.tk/v2/users/${username}/scores?limit=5&offset=${nextPage*5}&order=${order.name}&ascending=${order.asc}`)
-                let response = await fetch(new Request(`https://api.sutekina.tk/v2/users/${username}/scores?limit=5&offset=${nextPage*5}&order=${order.name}&ascending=${order.asc}`)).then(res => {
+                console.log(`https://api.sutekina.tk/v2/users/${username}/scores?limit=5&offset=${nextPage*5}&order=${order.name}&ascending=${order.asc}&scoreStatus=${scoreStatus}&beatmapStatus=${beatmapStatus}`)
+                let response = await fetch(new Request(`https://api.sutekina.tk/v2/users/${username}/scores?limit=5&offset=${nextPage*5}&order=${order.name}&ascending=${order.asc}&scoreStatus=${scoreStatus}&beatmapStatus=${beatmapStatus}`)).then(res => {
                     return res.json();
                 });
                 resolve(response);
