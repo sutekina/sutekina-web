@@ -1,0 +1,73 @@
+<style>
+    .user {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem 0;
+    }
+    .user > * {
+        background-color: var(--secondary-bg);
+        border-radius: 0.5rem;
+        width: 100%;
+        padding: 0rem 0.8rem;
+        box-sizing: border-box;
+    }
+    .options {
+        margin: auto;
+        gap: 0 0.8rem;
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .options-flex {
+        margin: 1rem auto;
+        display: inline-flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+    }
+    .options-button {
+        background-color: var(--primary);
+        padding: 0.5rem;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        border-radius: 0.5rem;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .options-button:hover:not(.options-button-disabled) {
+        cursor: pointer;
+    }
+    .options-button-active, .options-button:hover:not(.options-button-disabled) {
+        background-color: var(--text);
+        color: var(--primary);
+    }
+    .options-button-disabled {
+        background-color: var(--thirdendary-bg);
+    }
+
+    .profile {
+        padding: 1rem;
+        min-height: 15rem;
+    }
+    .user-info {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    .user-icon {
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        border-radius: 50%;
+        width: 10rem;
+        height: 10rem;
+    }
+    .user-stats-entry {
+        display: flex;
+        min-width: 10rem;
+        max-width: 10rem;
+        justify-content: space-between;
+    }
+</style>

@@ -79,7 +79,7 @@
         background: var(--primary-bg);
     }
     ::-webkit-scrollbar {
-        width: 1vw;
+        width: 2vh;
     }
     ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner {
         background: var(--secondary-bg);
@@ -87,13 +87,19 @@
     ::-webkit-scrollbar-thumb {
         border-color: var(--secondary-bg);
         border-style: solid;
-        border-width: 0rem 0.2vw;
+        border-width: 0rem 0.4vh;
         background-color: var(--primary-bg);
     }
     a {
         color: var(--text);
         text-decoration-line: none;
     }
-
+    noscript h1 {
+        padding: 1rem;
+        color: white;
+        font-size: 2rem;
+        text-align: center;
+        background: red;
+    }
     
 </style>

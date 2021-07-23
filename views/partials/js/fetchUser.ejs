@@ -8,6 +8,8 @@
     var user = await fetch(new Request(`https://api.sutekina.tk/v2/users/${username}`)).then(res => {
         return res.json();
     });
+    
+    document.getElementsByClassName("user-icon")[0].style.backgroundImage = `url('https://a.sutekina.tk/${user.userId}')`;
 
     var nextBestPage = 0;
     var best = await getScores({name: "pp", asc: "false"}, nextBestPage);

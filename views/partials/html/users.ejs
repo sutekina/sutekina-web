@@ -1,7 +1,49 @@
 <div id="user-identifier" data-user="<%- user %>" style="display: none;"></div>
 
 <div class="user">
+    <div class="options">
+        <div class="options-flex">
+            <div class="options-button options-button-active">VN</div>
+            <div class="options-button">RX</div>
+            <div class="options-button">AP</div>
+        </div>
+        <div class="options-flex">
+            <div class="options-button options-button-active">STD</div>
+            <div class="options-button options-button-disabled">TAIKO</div>
+            <div class="options-button">MANIA</div>
+            <div class="options-button">CTB</div>
+        </div>
+    </div>
+    <div class="profile">
+        
+        <div class="user-info">
+            <div class="user-about">
+                <div class="user-icon"></div>
+                <div class="user-country"></div>
+            </div>
+            <div class="user-stats">
+                <dl class="user-stats-entry">
+                    <dt>balls</dt>
+                    <dd>FAT :D</dd>
+                </dl>
+                <dl class="user-stats-entry">
     
+                </dl>
+                <dl class="user-stats-entry">
+    
+                </dl>
+                <dl class="user-stats-entry">
+    
+                </dl>
+            </div>
+        </div>
+        <div class="recent">
+            <div class="recent-scores"></div>
+        </div>
+        <div class="best">
+            <div class="best-scores"></div>
+        </div>
+    </div>
 </div>
 
 <%- include('../js/fetchUser') %> 
