@@ -37,6 +37,7 @@
     "domains": {
         "avatar": "a.sutekina.tk",
         "base": "sutekina.tk",
+        "api": "api.sutekina.tk",
         "discord": "https://discord.com/invite/xRCMXJ7JPh",
         "github:": "https://github.com/sutekina/"
     }

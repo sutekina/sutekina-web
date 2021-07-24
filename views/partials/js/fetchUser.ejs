@@ -1,33 +1,119 @@
-<script async type="module">
+<script>
+    let apiURL = new URL("https://" + document.getElementsByName("sutekina:api")[0].getAttribute('content'));
+    let username = document.getElementById("user-identifier").dataset.user;
+    
     let urlSearchParams = new URLSearchParams(window.location.search);
     let params = Object.fromEntries(urlSearchParams.entries());
-    
-    let username = document.getElementById("user-identifier").dataset.user;
 
+    var globalMod = params.mod && params.mod.match(/^(vn|rx|ap)$/) ? params.mod : "vn";
+    var globalMode = params.mode && ((globalMod === "rx" && params.mode !== "mania") || (globalMod === "ap" && !params.mode.match(/^(mania|taiko|catch)$/))) ?  params.mode : "std";
     
-    var user = await fetch(new Request(`https://api.sutekina.tk/v2/users/${username}`)).then(res => {
-        return res.json();
+    window.addEventListener("load", (e) => {
+        setUser(globalMod, globalMode);
     });
+
+    window.addEventListener("click", (e) => {
+        if(!e.target.classList.contains("options-button") || e.target.classList.contains("options-button-disabled")) return;
+        
+        let target = e.target.innerText.toLowerCase();
+
+        let previous;
+        if(target.match(/^(vn|rx|ap)$/)) {
+            previous = globalMod;
+            globalMod = target;
+        } else {
+            previous = globalMode;
+            globalMode = target;
+        }
+
+        let buttons = document.getElementsByClassName("options-button");
+        for(let i = 0; i < buttons.length; i++) {
+            if(buttons[i].classList.length > 1) {
+                buttons[i].classList.remove("options-button-active");
+                buttons[i].classList.remove("options-button-disabled");
+            }
+        }
+        setUser(globalMod, globalMode);
+    });
+
+    async function setUser(mod, mode) {
+        document.getElementsByClassName(`options-${mod}`)[0].classList.add("options-button-active");
+        document.getElementsByClassName(`options-${mode}`)[0].classList.add("options-button-active");
+
+        let disabledModes = {
+            vn: [],
+            rx: ["mania"],
+            ap: ["mania", "taiko", "catch"]
+        }
+
+        for(let i = 0; i < disabledModes[mod].length; i++) {
+            document.getElementsByClassName(`options-${disabledModes[mod][i]}`)[0].classList.add(`options-button-disabled`);
+        }
+        
+        let disabledMods = {
+            std: [],
+            taiko: ["ap"],
+            mania: ["rx", "ap"],
+            catch: ["ap"]
+        }
+
+        for(let i = 0; i < disabledMods[mode].length; i++) {
+            document.getElementsByClassName(`options-${disabledMods[mode][i]}`)[0].classList.add(`options-button-disabled`);
+        }
+
+        let user = await fetch(new Request(`${apiURL}v2/users/${username}?mod=${mod}&mode=${mode}`)).then(res => {
+            return res.json();
+        });
+
+        let countryCodes = await fetch(new Request(`/public/media/json/countryCodes.json`)).then(res => {
+            return res.json();
+        });
+        
+        document.getElementsByClassName("user-about-country")[0].style.backgroundImage = `url("https://osu.ppy.sh/images/flags/${user.country.toUpperCase()}.png")`;
+        document.getElementsByClassName("user-about-country-name")[0].innerHTML = countryCodes[user.country.toUpperCase()];
+        document.getElementsByClassName("user-about-country")[0].title = countryCodes[user.country.toUpperCase()];
+        document.getElementsByClassName("user-about-country")[0].href = new URL(`leaderboard?mod=${mod}&mode=${mode}&country=${user.country}`, window.location.origin)
+        document.getElementsByClassName("user-about-country-name")[0].title = countryCodes[user.country.toUpperCase()];
+
+        document.getElementById("accuracy").innerText = user.accuracy.toFixed(2) + "%";
+        document.getElementById("play-count").innerText = numberWithCommas(user.playCount);
+        document.getElementById("total-score").innerText = numberWithCommas(user.totalScore);
+        document.getElementById("ranked-score").innerText = numberWithCommas(user.rankedScore);
+        document.getElementById("max-combo").innerText = numberWithCommas(user.maxCombo);
+        document.getElementById("global-rank").innerText = "#" + numberWithCommas(user.globalRank);
+        document.getElementById("country-rank").innerText = "#" + numberWithCommas(user.countryRank);
+
+        document.getElementById("created-at").innerText = createdAtAgo(new Date(user.creationTime * 1000).getTime());
+        document.getElementById("created-at").title = new Date(user.creationTime * 1000).toLocaleString()
+        document.getElementById("play-time").innerText = playTimeAgo(user.playTime);
+        document.getElementById("play-time").title = `approx. ${Math.round(user.playTime / (60*60))} hours`;
+
     
-    document.getElementsByClassName("user-icon")[0].style.backgroundImage = `url('https://a.sutekina.tk/${user.userId}')`;
+        document.getElementById("performance-points").innerText = user.pp + "pp";
 
-    var nextBestPage = 0;
-    var best = await getScores({name: "pp", asc: "false"}, nextBestPage);
-    nextBestPage++;
-    var nextRecentPage = 0;
-    var recent = await getScores({name:"playtime", asc: "false"}, nextRecentPage, "0", "-2");
-    nextRecentPage++;
 
-    console.log(user);
-    // {"userId":3,"name":"Felix","country":"de","privilege":31751,"creationTime":1611740740,"playtime":7560,"playcount":299,"pp":1030,"accuracy":81.22599792480469,"globalRank":24,"countryRank":1}
-    console.log(recent);
-    console.log(best)
+        let best = await getScores({name: "pp", asc: "false"}, 5, 0, "1", "2", mod, mode);
 
-    function getScores(order, nextPage, scoreStatus = "1", beatmapStatus = "2") {
+        let bestScores = document.getElementsByClassName("best-scores-list")[0]
+
+        bestScores.innerHTML = '';
+
+        addScoresToClass(best, bestScores);
+        
+        
+        let recent = await getScores({name:"playtime", asc: "false"}, 5, 0, "0", "-2", mod, mode);
+        
+        let recentScores = document.getElementsByClassName("recent-scores-list")[0]
+
+        recentScores.innerHTML = '';
+
+        addScoresToClass(recent, recentScores)
+    }
+
+    function getScores(order, limit, page, scoreStatus = "1", beatmapStatus = "2", mod, mode) {
         return new Promise(async (resolve, reject) => {
             try {
-                console.log(`https://api.sutekina.tk/v2/users/${username}/scores?limit=5&offset=${nextPage*5}&order=${order.name}&ascending=${order.asc}&scoreStatus=${scoreStatus}&beatmapStatus=${beatmapStatus}`)
-                let response = await fetch(new Request(`https://api.sutekina.tk/v2/users/${username}/scores?limit=5&offset=${nextPage*5}&order=${order.name}&ascending=${order.asc}&scoreStatus=${scoreStatus}&beatmapStatus=${beatmapStatus}`)).then(res => {
+                let response = await fetch(new Request(`${apiURL}v2/users/${username}/scores?limit=${limit}&offset=${page*5}&order=${order.name}&ascending=${order.asc}&scoreStatus=${scoreStatus}&beatmapStatus=${beatmapStatus}&mod=${mod}&mode=${mode}`)).then(res => {
                     return res.json();
                 });
                 resolve(response);
@@ -35,5 +121,93 @@
                 reject(err);
             }
         })
+    }
+
+    function addScoresToClass(scores, resClass) {
+        for(let i = 0; i < scores.length; i++) {
+            let scoreClass = document.createElement("div");
+            scoreClass.classList.add("score");
+
+            let scoreGrade = document.createElement("div");
+            scoreGrade.classList.add("score-grade");
+            scoreGrade.innerText = scores[i].grade;
+            scoreClass.appendChild(scoreGrade);
+            let scoreDetails = document.createElement("div");
+            scoreDetails.classList.add("score-details");
+            scoreClass.appendChild(scoreDetails);
+            let scoreMods = document.createElement("div");
+            scoreMods.classList.add("score-mods");
+            scoreMods.innerText = scores[i].mods;
+            scoreClass.appendChild(scoreMods);
+            let scoreAccuracy = document.createElement("div");
+            scoreAccuracy.classList.add("score-accuracy");
+            scoreAccuracy.innerText = scores[i].accuracy.toFixed(2) + "%";
+            scoreClass.appendChild(scoreAccuracy);
+            let scorePP = document.createElement("div");
+            scorePP.classList.add("score-pp");
+            scorePP.innerText = scores[i].pp.toFixed(2) + "pp";
+            scoreClass.appendChild(scorePP);
+            let scoreReplayDL = document.createElement("div");
+            scoreReplayDL.classList.add("score-replay-dl");
+            scoreReplayDL.innerText = "V";
+            scoreClass.appendChild(scoreReplayDL);
+
+            resClass.appendChild(scoreClass)
+        }
+    }
+
+    function numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    function playTimeAgo (time) {
+        let days = ~~(time / (24*60*60));
+    
+        let hrs = ~~((time % (24*60*60)) / 3600);
+        let mins = ~~((time % 3600) / 60);
+        
+        let res = `${(days > 0) ? days + "d " : ""}${(hrs > 0) ? hrs + "h " : ""}${(mins < 10 && hrs > 0) ? "0" : ""}${mins}m`;
+        return res;
+    }
+
+    function createdAtAgo (time) {
+        let time_formats = [
+          [60, 'seconds', 1], // 60
+          [120, '1 minute ago', '1 minute from now'], // 60*2
+          [3600, 'minutes', 60], // 60*60, 60
+          [7200, '1 hour ago', '1 hour from now'], // 60*60*2
+          [86400, 'hours', 3600], // 60*60*24, 60*60
+          [172800, 'Yesterday', 'Tomorrow'], // 60*60*24*2
+          [604800, 'days', 86400], // 60*60*24*7, 60*60*24
+          [1209600, 'Last week', 'Next week'], // 60*60*24*7*4*2
+          [2419200, 'weeks', 604800], // 60*60*24*7*4, 60*60*24*7
+          [4838400, 'Last month', 'Next month'], // 60*60*24*7*4*2
+          [29030400, 'months', 2419200], // 60*60*24*7*4*12, 60*60*24*7*4
+          [58060800, 'Last year', 'Next year'], // 60*60*24*7*4*12*2
+          [2903040000, 'years', 29030400], // 60*60*24*7*4*12*100, 60*60*24*7*4*12
+          [5806080000, 'Last century', 'Next century'], // 60*60*24*7*4*12*100*2
+          [58060800000, 'centuries', 2903040000] // 60*60*24*7*4*12*100*20, 60*60*24*7*4*12*100
+        ];
+        let seconds = (+new Date() - time) / 1000,
+          token = 'ago',
+          list_choice = 1;
+      
+        if (seconds == 0) {
+            return 'Just now'
+        }
+        if (seconds < 0) {
+            seconds = Math.abs(seconds);
+            token = 'from now';
+            list_choice = 2;
+        }
+        let i = 0, format;
+        while (format = time_formats[i++]) {
+            if (seconds < format[0]) {
+                if (typeof format[2] == 'string') return format[list_choice];
+                
+                return Math.floor(seconds / format[2]) + ' ' + format[1] + ' ' + token;
+            }
+        }
+        return time;
     }
 </script>

@@ -15,11 +15,8 @@
     }
     .rule{
         background-color: var(--secondary-bg);
-        flex:1 1 1px;
+        flex:1 1 14rem;
         font-size: 1rem;
-        min-height: 37rem;
-        max-width: 17rem;
-        min-width: 17rem;
         border-radius: 0.5rem;
         margin: 0.5rem;
         overflow-wrap: break-word;
@@ -52,5 +49,12 @@
         filter:opacity(0%);
         transition: all 0.1s ease;
     }
-
+    @media(max-width: 600px) {
+        .rules-content {
+            filter:blur(0px);
+        }
+        .rule-info {
+            display:none
+        }
+    }
 </style>

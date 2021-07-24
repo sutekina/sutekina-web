@@ -8,18 +8,20 @@
         background-color: var(--secondary-bg);
         border-radius: 0.5rem;
         width: 100%;
-        padding: 0rem 0.8rem;
+        padding: 0.8rem;
         box-sizing: border-box;
     }
     .options {
         margin: auto;
         gap: 0 0.8rem;
+        padding: 0rem 0.8rem;
         display: flex;
         flex-wrap: wrap;
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
     }
+
     .options-flex {
         margin: 1rem auto;
         display: inline-flex;
@@ -46,28 +48,223 @@
     .options-button-disabled {
         background-color: var(--thirdendary-bg);
     }
-
-    .profile {
-        padding: 1rem;
-        min-height: 15rem;
-    }
     .user-info {
         display: flex;
         flex-direction: row;
+        flex-wrap: wrap;
         justify-content: space-between;
+        gap: 1rem;
     }
-    .user-icon {
+    .user-about {
+        margin: 0rem 1rem;
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+    }
+    .user-about-icon {
         background-repeat: no-repeat;
         background-size: cover;
         background-position: center;
         border-radius: 50%;
-        width: 10rem;
-        height: 10rem;
+        min-width: 8rem;
+        min-height: 8rem;
+    }
+    .user-about-details {
+        margin: 0rem 1rem;
+        display: flex;
+        gap: 1rem;
+        flex-direction: column;
+    }
+    .user-about-name {
+        font-size: 2.4rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 17ch;
+    }
+    .user-about-country {
+        height: 2rem;
+        width: 3rem;
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
+    }
+    .user-about-country-name {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 20ch;
+        font-size: 1.2rem;
+        padding-left: 0.4rem;
+    }
+    .user-about-country-container {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+    }
+    .user-stats {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        min-width: 15rem;
+        margin: auto 0rem;
+        margin-right: 1rem;
     }
     .user-stats-entry {
         display: flex;
-        min-width: 10rem;
-        max-width: 10rem;
+        width: 100%;
         justify-content: space-between;
+    }
+
+    .user-page {
+        flex-wrap: wrap;
+        margin-top: 1rem;
+        display: flex;
+        justify-content: space-between;
+    }
+    .user-page-about {
+        flex-basis: 70%;
+    }
+    .user-page-title {
+        font-size: 1.2rem;
+        margin-bottom: 0.2rem;
+        padding-bottom: 0.1rem;
+        border-bottom-width: 0.15rem;
+        border-bottom-color: var(--primary);
+        border-bottom-style: solid;
+    }
+
+    .user-page-content {
+        height: 5.4rem;
+        line-height: normal;
+        overflow-y: scroll;
+        word-break: break-all;
+    }
+
+    .user-rank {
+        display: flex;
+        flex-direction: column;
+        margin-top: 1.34rem;
+    }
+
+    .user-rank-container h1 {
+        border-top-width: 0.15rem;
+        border-top-color: var(--primary);
+        border-top-style: solid;
+        text-align: center;
+    }
+    .country-rank {
+        margin-top: 0.5rem;
+    }
+    .country-rank h1 {
+        padding-bottom: 0.2rem;
+        font-size: 0.9rem;
+    }
+    .global-rank div {
+        font-size: 2rem;
+    }
+
+    .user-extra {
+        width: 100%;
+        margin-top: 0.3rem;
+        padding-top: 0.2rem;
+        border-top-width: 0.15rem;
+        border-top-color: var(--primary);
+        border-top-style: solid;
+        display: flex;
+        flex-direction: row;
+    }
+    .user-extra-item {
+        margin: auto;
+        flex-basis: 20%;
+    }
+    
+    .user-extra-item div {
+        padding-top: 0.3rem;   
+    }
+    .user-extra #performance-points {
+        flex-basis: 60%;
+        font-size: 2.5rem;
+        text-align: right;
+    }
+    .scores {
+        margin: 0.3rem 0rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+    .score {
+        display: flex;
+        flex-direction: row;
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+        gap: 1rem;
+        transition: background-color 0.2s ease;
+        background-color: var(--thirdendary-bg);
+    }
+    .score:hover {
+        background-color: var(--primary-bg);
+    }
+
+    @media(max-width: 900px) {
+        .user-info {
+            gap: 2rem;
+        }
+        .user-stats {
+            min-width: 100%;
+        }
+        .user-about {
+            width: 100%;
+            justify-content: center;
+        }
+        .user-about-name {
+            max-width: 14ch;
+        }
+        .user-extra > * {
+            flex-basis: 100%;
+            justify-content: space-between;
+        }
+    } 
+
+    @media(max-width: 600px) {
+        .user-about-details {
+            align-items: center;
+        }
+        .user-page-about {
+            flex-basis: 100%;
+        }
+        .user-about {
+            gap: 1rem;
+            flex-direction: column;
+        }
+        .user-about-name {
+            max-width: 20ch;
+            font-size: 1.5rem;
+        }
+        .user-rank {
+            width: 100%;
+            flex-direction: row;
+            align-items: flex-start;
+        }
+        .user-rank-container {
+            flex-basis: 50%;
+        }
+        .country-rank {
+            text-align: right;
+            margin: 0rem;
+        }
+        .user-rank-container div {
+            font-size: 1.5rem;
+        }
+        .user-rank-container h1 {
+            text-align: left;
+            font-size: 1rem;
+            padding: 0rem;
+            padding-top: 0.1rem;
+        }
+        .country-rank h1 {
+            text-align: right;
+        }
+        
     }
 </style>

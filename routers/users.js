@@ -8,7 +8,7 @@ router.get("/:user", async (req, res, next) => {
     user = user ? user : (await getUser(req.params.user.toLowerCase(), "safe_name"))[0]; 
     if(!user) return next(new errorHandling.SutekinaError({message: "Not Found", status: 404, level: "debug"}));
     req.data.page.title = user.name;
-    req.data.user = user.id;
+    req.data.user = {id: user.id, name: user.name};
     res.render('index', req.data);
 });
 
@@ -16,7 +16,7 @@ module.exports = router;
 
 let getUser = (id, filter = "safe_name" | "id")  => {
     return new Promise((resolve, reject) => {
-        let query = `SELECT id, name FROM users WHERE ${filter} = ?`;
+        let query = `SELECT id, name FROM users WHERE ${filter} = ? AND priv >= 3`;
         modules["mysql2"].pool.execute(query, [id], (error, result) => {
             logging.trace(query);
             if(error) return reject(new errorHandling.SutekinaError({message:error.message, status:500, level:"error"}));

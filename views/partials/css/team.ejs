@@ -1,78 +1,55 @@
 <style>
-
-.team-title {
-
+    .team-title {
         font-size: 3rem;
-        text-align: center;
         padding-bottom: 1rem;
-}
-
-.team-mem {
-
-    background-color: var(--secondary-bg);
-        flex:1 1 1px;
+        text-align: center;
+    }
+    .team-member {
+        background-color: var(--secondary-bg);
+        flex:1 1 20rem;
         display:flex;
         flex-wrap: wrap;
-        font-size: 1rem;
-        min-height: 14rem;
-        min-width: 25rem;
-        max-width: 25rem;
-        text-align: center;
-        position:relative;
         border-radius: 0.5rem;
         margin: 0.5rem;
         padding: 1rem;
-        overflow-wrap: normal;
         align-items: center;
         flex-direction: column;
-        align-content: center;
-        justify-content: space-evenly;
-
-
-}
-
-.team-container {
+        word-wrap: break-word;
+    }
+    .team-container {
         display:flex;
         flex-wrap: wrap;
         justify-content: center;
-}
-.owners {
-    color:khaki;
-    font-size: 2rem;
-    text-align:right;
-    margin: 0.5rem;
+    }
+    .team-name {
+        font-size: 2rem;
+        margin: 0.5rem;
+    }
+    .team-priv-owner {
+        color:khaki;
+    }
+    .team-priv-bn {
+        color:lightgreen;
+    }
+    .team-priv-designer {
+        color:mediumpurple;
+    }
+    .team-pfp {
+        width: 8rem;
+        height: 8rem;
+        border-radius: 50%;
+        margin:0.5rem;
+    }
 
-}
-.bns {
-
-font-size: 2rem;
-text-align:right;
-margin: 0.5rem;
-color:lightgreen;
-
-}
-.pfp {
-    width: 8rem;
-    height: 8rem;
-    border-radius: 50%;
-    margin:0.5rem;
-    display: block;
-}
-
-.designers {
-
-    font-size: 2rem;
-    text-align:right;
-    margin: 0.5rem;
-    color:mediumpurple;
-
-}
-
-.desc {
-
-    display: flex;
-    flex-wrap: nowrap;
-    flex-direction: column;
-    margin: 0.5rem;
-}
+    .team-desc {
+        max-width: 12rem;
+        display: flex;
+        flex-wrap: nowrap;
+        flex-direction: column;
+        margin: 0.5rem;
+        text-align: center;
+        list-style: disc;
+        list-style-position: inside;
+        gap: 0.2rem;
+    }
 </style>

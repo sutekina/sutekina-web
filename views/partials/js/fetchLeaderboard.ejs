@@ -1,24 +1,28 @@
 <script type="module">
     let urlSearchParams = new URLSearchParams(window.location.search);
+    let apiURL = new URL("https://" + document.getElementsByName("sutekina:api")[0].getAttribute('content'));
+
     let params = Object.fromEntries(urlSearchParams.entries());
     
-    let page = (params.page) ? params.page : 0;
+    let page = params.page ? params.page : 0;
+    let mod = params.mod ? params.mod : "vn";
+    let mode = params.mode ? params.mode : "std";
+    let country = params.country ? params.country : undefined;
 
-    let request = new Request(`https://api.sutekina.tk/v2/users?limit=50&offset=${page*50}`);
+    let request = new Request(`${apiURL}v2/users?limit=50&offset=${page*50}&mod=${mod}&mode=${mode}&country=${country}`);
     let playerTable = document.getElementsByClassName("player-table-body")[0];
 
     window.addEventListener("load", (e) => {
         fetch(request).then(res => {
             return res.json();
         }).then(async res => {
-            // TODO improve
-            // if(!res[0]) return playerTable.insertRow().insertCell().appendChild(document.createTextNode("404"));
             for(let i = 0; i < res.length; i++) {
-                addUser(res[i]);
+                if(res[i].playCount > 0) {
+                    addUser(res[i]);
 
-                while(await new Promise(r => setTimeout(r, 20)));
+                    while(await new Promise(r => setTimeout(r, 10)));
+                }
             }
-
         });
     });
 
@@ -27,24 +31,27 @@
         playerRow.classList.add("player-row");
         let rankCell = playerRow.insertCell();
         rankCell.classList.add("player-rank");
-        rankCell.title = "global rank";
-        rankCell.appendChild(document.createTextNode("#" + user.globalRank))
+        rankCell.title = "rank";
+        rankCell.appendChild(document.createTextNode("#" + (country ? user.countryRank : user.globalRank)))
 
         let countryCell = playerRow.insertCell();
         countryCell.classList.add("player-country");
         countryCell.title = user.country.toUpperCase();
+        let countryAnchor = document.createElement("a"); 
+        countryAnchor.href = new URL(`leaderboard?mod=${mod}&mode=${mode}&country=${user.country}`, window.location.origin);
         let countryImage = document.createElement("div");
         countryImage.classList.add("player-country-image");
         countryImage.style.backgroundImage = `url("https://osu.ppy.sh/images/flags/${user.country.toUpperCase()}.png")`;
-        countryCell.appendChild(countryImage);
+        countryAnchor.appendChild(countryImage);
+        countryCell.appendChild(countryAnchor);
 
         let nameCell = playerRow.insertCell();
         nameCell.classList.add("player-name");
         nameCell.title = user.name;
-        let anchor = document.createElement("a"); 
-        anchor.href = new URL(`users/${user.userId}`, window.location.origin);
-        anchor.appendChild(document.createTextNode(user.name));
-        nameCell.appendChild(anchor);
+        let nameAnchor = document.createElement("a"); 
+        nameAnchor.href = new URL(`users/${user.userId}?mod=${mod}&mode=${mode}`, window.location.origin);
+        nameAnchor.appendChild(document.createTextNode(user.name));
+        nameCell.appendChild(nameAnchor);
 
         let accuracyCell = playerRow.insertCell();
         accuracyCell.classList.add("player-accuracy");
@@ -53,8 +60,8 @@
 
         let playcountCell = playerRow.insertCell();
         playcountCell.classList.add("player-playcount");
-        playcountCell.title = "playcount";
-        playcountCell.appendChild(document.createTextNode(user.playcount));
+        playcountCell.title = "play count";
+        playcountCell.appendChild(document.createTextNode(user.playCount));
 
         let ppCell = playerRow.insertCell();
         ppCell.title = "performance points";

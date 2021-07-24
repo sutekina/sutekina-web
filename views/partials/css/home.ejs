@@ -1,0 +1,80 @@
+<style>
+	.title {
+		font-size: 2rem;
+		overflow-wrap: break-word;
+	}
+	.container {
+		box-sizing: border-box;
+		background-color: var(--secondary-bg);
+		text-align: center;
+		border-radius: 0.5rem;
+		margin: 1rem;
+		padding: 1rem;
+	}
+	.question-group {
+		margin-top: 2rem;
+		display: flex;
+		flex-wrap: wrap;
+	}
+	.question {
+		min-width: 13rem;
+		display:flex;
+		flex: 1 1;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		flex-direction: column;
+		margin: 1rem;
+	}
+	.question-title {
+		font-size: 1.5rem;
+		word-wrap: break-word;
+	}
+	.question-answer {
+		font-size: 1.1rem;
+		word-wrap: break-word;
+	}
+
+	.button {
+		display: inline-block;
+		border-radius: 0.5rem;
+		background-color: var(--primary);
+		border: none;
+		color: var(--primary-background);
+		text-align: center;
+		font-size: 1rem;
+		padding: 1rem;
+		width: 20rem;
+		transition: all 0.5s;
+		cursor: pointer;
+		margin: 1rem;
+	}
+	.button span {
+		cursor: pointer;
+		display: inline-block;
+		position: relative;
+		transition: 0.5s;
+		font-family: 'Exo 2';
+	}
+
+	.button span:after {
+		content: '\00bb';
+		position: absolute;
+		opacity: 0;
+		top: 0;
+		right: -20px;
+		transition: 0.5s;
+	}
+	.button:hover span {
+		padding-right: 25px;
+	}
+	.button:hover span:after {
+		opacity: 1;
+		right: 0;
+	}
+
+	@media(max-width: 600px) {
+		.button {
+			width: 13rem;
+		}
+	}
+</style>
