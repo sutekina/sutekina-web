@@ -76,11 +76,17 @@
         flex-direction: column;
     }
     .user-about-name {
-        font-size: 2.4rem;
+        font-size: 2rem;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        max-width: 17ch;
+        max-width: 18ch;
+    }
+    .user-about-clan {
+        color: var(--primary);
+    }
+    .user-about-clan:hover {
+        text-decoration: underline;
     }
     .user-about-country {
         height: 2rem;
@@ -218,7 +224,7 @@
             justify-content: center;
         }
         .user-about-name {
-            max-width: 14ch;
+            max-width: 16ch;
         }
         .user-extra > * {
             flex-basis: 100%;
