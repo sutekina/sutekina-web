@@ -10,6 +10,10 @@
     let countryCodes;
     let bitwiseMods;
     let countryEmojis;
+
+    let currentBestOffset = 5;
+    let currentRecentOffset = 5;
+
     window.addEventListener("load", async (e) => {
         countryCodes = await fetch(new Request(`/public/media/json/countryCodes.json`)).then(res => {
             return res.json();
@@ -34,10 +38,12 @@
         loopingAnimation.addEventListener("loopComplete", async (e) => {
             if(!openingLoaded) return;
             loopingAnimation.destroy();
+            loopingElement.style.display = "none";
             closingElement.style.display = "block";
             closingAnimation.play();
             closingAnimation.addEventListener("complete", () => {
                 closingAnimation.destroy();
+                closingElement.style.display = "none";
                 // document.getElementsByClassName("loading-container")[0].style.display = "none";
                 document.getElementsByClassName("best")[0].style.display = "block";
                 document.getElementsByClassName("recent")[0].style.display = "block";
@@ -47,28 +53,47 @@
         });
     });
 
-    window.addEventListener("click", (e) => {
-        if(!e.target.classList.contains("options-button") || e.target.classList.contains("options-button-disabled")) return;
-        
-        let target = e.target.innerText.toLowerCase();
+    window.addEventListener("click", async (e) => {
+        if(e.target.classList.contains("options-button") && !e.target.classList.contains("options-button-disabled")) {
+            let target = e.target.innerText.toLowerCase();
 
-        let previous;
-        if(target.match(/^(vn|rx|ap)$/)) {
-            previous = globalMod;
-            globalMod = target;
-        } else {
-            previous = globalMode;
-            globalMode = target;
+            let previous;
+            if(target.match(/^(vn|rx|ap)$/)) {
+                previous = globalMod;
+                globalMod = target;
+            } else {
+                previous = globalMode;
+                globalMode = target;
+            }
+
+            let buttons = document.getElementsByClassName("options-button");
+            for(let i = 0; i < buttons.length; i++) {
+                if(buttons[i].classList.length > 1) {
+                    buttons[i].classList.remove("options-button-active");
+                    buttons[i].classList.remove("options-button-disabled");
+                }
+            }
+
+            return setUser(globalMod, globalMode);
         }
-
-        let buttons = document.getElementsByClassName("options-button");
-        for(let i = 0; i < buttons.length; i++) {
-            if(buttons[i].classList.length > 1) {
-                buttons[i].classList.remove("options-button-active");
-                buttons[i].classList.remove("options-button-disabled");
+        
+        if(e.target.classList.contains("show-more")) {
+            let type = e.target.classList.contains("show-more-best") ? "best" : "recent";
+            let limit = 20;
+            if(type === "best") {
+                let best = await getScores({name: "pp", asc: "false"}, limit, currentBestOffset, "2", "2", globalMod, globalMode);
+                if(best.length < 20) document.getElementsByClassName("show-more-best")[0].style.display = "none";
+                currentBestOffset += limit;
+                let bestScores = document.getElementsByClassName("best-scores-list")[0];
+                addScoresToClass(best, bestScores);
+            } else {
+                let recent = await getScores({name:"playtime", asc: "false"}, limit, currentRecentOffset, "0", "-2", globalMod, globalMode);
+                if(recent.length < 20) document.getElementsByClassName("show-more-recent")[0].style.display = "none";
+                currentRecentOffset += limit;
+                let recentScores = document.getElementsByClassName("recent-scores-list")[0]
+                addScoresToClass(recent, recentScores);
             }
         }
-        setUser(globalMod, globalMode);
     });
 
     async function setUser(mod, mode) {
@@ -135,6 +160,7 @@
                 let privElement = document.createElement("div");
                 privElement.classList.add("user-badge", `badge-${privileges[privList[i]].key}`);
                 privElement.innerHTML = privileges[privList[i]].name;
+                privElement.title = privileges[privList[i]].key;
                 badgeList.append(privElement);
             }
         }
@@ -152,21 +178,31 @@
             }
         });
 
-        let best = await getScores({name: "pp", asc: "false"}, 5, 0, "2", "2", mod, mode);
+        let best = await getScores({name: "pp", asc: "false"}, 6, 0, "2", "2", mod, mode);
+        if(best.length < 6) document.getElementsByClassName("show-more-best")[0].style.display = "none";
+        else {
+            document.getElementsByClassName("show-more-best")[0].style.display = "inline-block";
+            best.splice(5, 1);
+        }
         let bestScores = document.getElementsByClassName("best-scores-list")[0]
         bestScores.innerHTML = '';
         addScoresToClass(best, bestScores);
 
-        let recent = await getScores({name:"playtime", asc: "false"}, 5, 0, "0", "-2", mod, mode);
+        let recent = await getScores({name:"playtime", asc: "false"}, 6, 0, "0", "-2", mod, mode);
+        if(recent.length < 6) document.getElementsByClassName("show-more-recent")[0].style.display = "none";
+        else {
+            document.getElementsByClassName("show-more-recent")[0].style.display = "inline-block";
+            recent.splice(5, 1);
+        }
         let recentScores = document.getElementsByClassName("recent-scores-list")[0]
         recentScores.innerHTML = '';
         addScoresToClass(recent, recentScores);
     }
 
-    function getScores(order, limit, page, scoreStatus = "1", beatmapStatus = "2", mod, mode) {
+    function getScores(order, limit, offset, scoreStatus = "1", beatmapStatus = "2", mod, mode) {
         return new Promise(async (resolve, reject) => {
             try {
-                let response = await fetch(new Request(`${apiURL}v2/users/${username}/scores?limit=${limit}&offset=${page*5}&order=${order.name}&ascending=${order.asc}&scoreStatus=${scoreStatus}&beatmapStatus=${beatmapStatus}&mod=${mod}&mode=${mode}`)).then(res => {
+                let response = await fetch(new Request(`${apiURL}v2/users/${username}/scores?limit=${limit}&offset=${offset}&order=${order.name}&ascending=${order.asc}&scoreStatus=${scoreStatus}&beatmapStatus=${beatmapStatus}&mod=${mod}&mode=${mode}`)).then(res => {
                     return res.json();
                 });
                 resolve(response);
@@ -184,6 +220,10 @@
             let beatmap = beatmaps[score.beatmapId];
             let scoreClass = document.createElement("div");
             scoreClass.classList.add("score");
+            let scoreCheckbox = document.createElement("input");
+            scoreCheckbox.classList.add("score-checkbox");
+            scoreCheckbox.type = "checkbox"
+            scoreClass.appendChild(scoreCheckbox);
             let scoreGrade = document.createElement("div");
             scoreGrade.classList.add("score-grade");
             scoreGrade.style.backgroundImage = `url(/public/media/images/grades/${score.grade}.svg)`;
@@ -214,7 +254,7 @@
                 mods -= mod; index++;
             }
             // bad GRAP  says  no  nomod!
-            // if(!modList[0]) modList.push(0);
+            if(!modList[0]) modList.push(0);
             let elementList = modList.map(m => {
                 let modElement = document.createElement("div");
                 modElement.classList.add("score-mods-item", `score-mods-${bitwiseMods[m]}`);
@@ -224,20 +264,22 @@
             });
             scoreMods.append(...elementList);
             scoreClass.appendChild(scoreMods);
+            let scoreNumbers = document.createElement("div");
+            scoreNumbers.classList.add("score-numbers");
             let scoreAccuracy = document.createElement("div");
             scoreAccuracy.classList.add("score-accuracy");
             scoreAccuracy.title = score.accuracy;
             scoreAccuracy.innerText = score.accuracy.toFixed(2) + "%";
-            scoreClass.appendChild(scoreAccuracy);
             let scorePP = document.createElement("div");
             scorePP.classList.add("score-pp");
             scorePP.title = score.pp
             scorePP.innerText = score.pp.toFixed(2) + "pp";
-            scoreClass.appendChild(scorePP);
-            let scoreLink = document.createElement("a");
-            scoreLink.classList.add("score-link");
-            scoreLink.href = `/beatmaps/${score.beatmapId}`;
-            scoreClass.appendChild(scoreLink);
+            scoreNumbers.append(scoreAccuracy, scorePP);
+            scoreClass.appendChild(scoreNumbers);
+            // let scoreLink = document.createElement("a");
+            // scoreLink.classList.add("score-link");
+            // scoreLink.href = `/beatmaps/${score.beatmapId}`;
+            // scoreClass.appendChild(scoreLink);
             // let scoreReplayDL = document.createElement("div");
             // scoreReplayDL.classList.add("score-replay-dl");
             // scoreReplayDL.innerText = "V";
@@ -332,37 +374,41 @@
     // <div class="user-badge badge-supporter">❤</div>
     // <div class="user-badge badge-verified">✓</div>
     var privileges = {
-        2: {
-            key: "verified",
-            name: "✓"
-        },
+        // 2: {
+        //     key: "verified",
+        //     name: "✓"
+        // },
         16: {
             key: "supporter",
             name: "❤"
         },
         32: {
             key: "premium",
-            name: "❤❤❤"
+            name: "❤"
         },
         128: {
             key: "alumni",
-            name: "ALU"
+            name: "A"
         },
         1024: {
             key: "tournament",
-            name: "TOU"
+            name: "T"
         },
         2048: {
             key: "nominator",
-            name: "NOM"
+            name: "N"
         },
         4096: {
             key: "moderator",
-            name: "MOD"
+            name: "M"
         },
         8192: {
             key: "admin",
-            name: "ADM"
+            name: "A"
+        },
+        16384: {
+            key: "owner",
+            name: "O"
         }
     }
 </script>

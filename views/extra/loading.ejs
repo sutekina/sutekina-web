@@ -39,14 +39,14 @@
     var closingElement = document.getElementsByClassName("closing-dots")[0];
     openingElement.style.display = "block";
 
-    var loadingAnimation = lottie.loadAnimation({
+    var openingAnimation = lottie.loadAnimation({
         container: openingElement, // the dom element that will contain the animation
         renderer: 'svg',
         loop: false,
         autoplay: true,
         path: '/public/media/json/openingDots.json' // the path to the animation json
     });
-    loadingAnimation.setSpeed(0.8)
+    openingAnimation.setSpeed(0.8)
     var loopingAnimation = lottie.loadAnimation({
         container: loopingElement, // the dom element that will contain the animation
         renderer: 'svg',
@@ -56,10 +56,11 @@
     });
     let loopingLoaded = false;
     loopingAnimation.addEventListener("DOMLoaded", (e) => loopingLoaded = true); 
-    loadingAnimation.addEventListener("complete", async (e) => {
+    openingAnimation.addEventListener("complete", async (e) => {
         loopingElement.style.display = "block";
         while(!loopingLoaded) await new Promise(resolve => setTimeout(resolve, 1000));
-        loadingAnimation.destroy();
+        openingAnimation.destroy();
+        openingElement.style.display = "none";
         loopingAnimation.play();
     });
 </script>

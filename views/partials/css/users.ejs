@@ -86,9 +86,11 @@
         max-width: 18ch;
     }
     .user-about-clan {
+        transition: color 0.3s ease;
         color: var(--primary);
     }
     .user-about-clan:hover {
+        color: var(--text);
         text-decoration: underline;
     }
     .user-about-country {
@@ -132,10 +134,7 @@
         justify-content: space-between;
     }
     .user-page-about {
-        flex-basis: 90%;
-    }
-    .user-page-badges {
-        flex-basis: 10%;
+        flex-basis: 100%;
     }
     .user-page-badges h1 {
         text-align: right;
@@ -145,7 +144,7 @@
         line-height: unset !important;
         word-break: keep-all !important;
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         
         gap: 0.2rem;
     }
@@ -154,14 +153,18 @@
         -moz-box-sizing: border-box;
         -webkit-box-sizing: border-box;
         background-color: var(--primary-bg);
-        margin-top: 0.1rem;
-        min-width: 4rem;
-        border-radius: 0.5rem;
-        padding: 0.5rem;
+        margin: 0.1rem 0rem;
+        min-width: 2rem;
+        border-radius: 1rem;
+        padding: 0.15rem;
+        font-size: 0.7rem;
         font-weight: 700;
         display: flex;
         align-items: center;
         justify-content: center;
+    }
+    .badge-owner {
+        color: crimson;
     }
     .badge-admin {
         color:crimson;
@@ -185,12 +188,18 @@
         color: greenyellow;
     }
     .user-page-title {
-        font-size: 1.2rem;
         margin-bottom: 0.2rem;
         padding-bottom: 0.1rem;
         border-bottom-width: 0.15rem;
         border-bottom-color: var(--primary);
         border-bottom-style: solid;
+        justify-content: space-between;
+        display: flex;
+        align-items: flex-end;
+        flex-direction: row;
+    }
+    .user-page-title h1 {
+        font-size: 1.2rem;
     }
 
     .user-page-content {
@@ -257,6 +266,14 @@
     .best, .recent {
         display: none;
     }
+    .scores-list {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+    }
+    .scores-list h1 {
+        margin-bottom: 0.3rem;
+    }
     .scores {
         margin: 0.3rem 0rem;
         display: flex;
@@ -264,6 +281,7 @@
         gap: 0.3rem;
     }
     .score {
+        position: relative;
         justify-content: space-between;
         display: flex;
         flex-direction: row;
@@ -300,16 +318,13 @@
         font-weight: 600;
     }
     .beatmapset-artist {
-        display: inline;
-        white-space: nowrap!important;
-        text-overflow: ellipsis!important;
-        overflow: hidden!important;
         font-size: 87%;
     }
-    .beatmapset-info:hover {
-        text-decoration: underline;
-    }
     .beatmap-info {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         display: flex;
         align-items: center;
         flex-direction: row;
@@ -321,6 +336,11 @@
     }
     .score-date {
         opacity: 0.6;
+        
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
     }
     .score-mods {
         display: flex;
@@ -337,18 +357,76 @@
         width: 2rem;
         height: 100%;
     }
+
+    .score-numbers {
+        display: flex;
+        flex-basis: 20%;
+        justify-content: space-evenly;
+        flex-direction: row;
+        gap: 0.5rem;
+    }
     .score-accuracy {
         text-align: center;
-        flex-basis: 10%;
     }
     .score-pp {
         text-align: right;
-        flex-basis: 10%;
     }
-    .score-link {
+    .score-checkbox {
         display: none;
     }
-
+    
+    .show-more {
+        position: relative;
+        margin-top: 0.3rem;
+        appearance: none;
+        background-color: var(--primary);
+        color: var(--text);
+        font-family: 'Exo 2';
+        padding: 0.5rem 2rem;
+        border: hidden;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .show-more:hover {
+        background-color: var(--text);
+        color: var(--primary);
+        cursor: pointer;
+    }
+    .show-more::after, .show-more::before {
+        --pseudo-size: 0.4rem;
+        --negative-pseudo-size: -0.4rem;
+        content: '';
+        position: absolute;
+        display: inline-block;
+        top: 50%;
+        margin-top: calc(var(--negative-pseudo-size) / 2);
+        width: var(--pseudo-size);
+        height: var(--pseudo-size);
+        border-left: 3px solid;
+        transition: transform 0.3s ease, color 0.3s ease;
+        border-bottom: 3px solid;
+    }
+    .show-more::before {
+        left: calc(var(--pseudo-size) * 2);
+        transform: rotate(225deg) scaleY(1);
+    }
+    .show-more::after {
+        right: calc(var(--pseudo-size) * 2);
+        transform: rotate(45deg) scaleY(1);
+    }
+    .show-more:hover::before {
+        color: var(--primary);
+        transform: rotate(315deg);
+    }
+    .show-more:hover::after {
+        color: var(--primary);
+        transform: rotate(-45deg);
+    }
     @media(max-width: 900px) {
         .user-info {
             gap: 2rem;
@@ -367,42 +445,6 @@
             flex-basis: 100%;
             justify-content: space-between;
         }
-        .score {
-            justify-content: flex-start;
-        }
-        .score:hover {
-            height: 3rem;
-            justify-content: space-between;
-        }
-        .score:hover .score-link {
-            display: block;
-        }
-        .score:hover .score-details {
-            display: none;
-        }
-        .score:hover .score-pp, .score:hover  .score-accuracy {
-            display: block;
-        }
-        .score:hover .score-mods {
-            height: 1.2rem;
-            display: flex;
-        }
-        .score-details {
-            flex-basis: unset;
-        }
-        .score-pp, .score-accuracy, .score-mods {
-            font-size: 0.8rem;
-            display: none;
-            flex-basis: unset;
-        }
-        .score-link {
-            min-width: 1rem;
-            height: 1rem;
-            background-image: url("/public/media/images/icon.png");
-            background-position: center;
-            background-size: contain;
-            background-repeat: no-repeat;
-        }
     } 
 
     @media(max-width: 600px) {
@@ -416,6 +458,56 @@
         .user-about-name {
             max-width: 20ch;
             font-size: 1.5rem;
+        }
+        .score {
+            width: 100%;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+        }
+        .score-details {
+            flex-basis: 80%;
+        }
+        .beatmapset-info {
+            position: relative;
+            z-index: 2;
+        }
+        .score-date {
+            position: relative;
+            z-index: 1;
+        }
+        .score-pp, .score-accuracy, .score-mods {
+            font-size: 0.8rem;
+            display: none;
+            flex-basis: unset;
+        }
+        .score-mods {
+            width: unset;
+            justify-content: flex-start;
+            flex-basis: 50%;
+        }
+        .score-checkbox {
+            display: block;
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            opacity: 0;
+            left: 0;
+            z-index: 2;
+            margin: 0rem;
+        }
+        .score-numbers {
+            min-width: 0;
+            flex-basis: unset;
+            margin-left: auto;
+            justify-content: flex-end;
+        }
+        .score-checkbox:checked ~ .score-numbers > * {
+            display: block;
+            text-align: right;
+            flex: 1;
+        }
+        .score-checkbox:checked ~ .score-mods {
+            display: flex;
         }
     }
 </style>

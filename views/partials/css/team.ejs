@@ -16,6 +16,9 @@
         flex-direction: column;
         word-wrap: break-word;
     }
+    .team-member:hover .team-pfp {
+        box-shadow: 0 0 0 0.5rem var(--text);
+    }
     .team-container {
         display:flex;
         flex-wrap: wrap;
@@ -35,6 +38,7 @@
         color:mediumpurple;
     }
     .team-pfp {
+        transition: box-shadow 0.3s ease;
         width: 8rem;
         height: 8rem;
         border-radius: 50%;
