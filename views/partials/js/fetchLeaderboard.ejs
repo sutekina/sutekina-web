@@ -8,10 +8,10 @@
     let mod = params.mod ? params.mod : "vn";
     let mode = params.mode ? params.mode : "std";
     let country = params.country ? params.country : undefined;
-
+    
     let request = new Request(`${apiURL}v2/users?limit=50&offset=${page*50}&mod=${mod}&mode=${mode}&country=${country}`);
     let playerTable = document.getElementsByClassName("player-table-body")[0];
-
+    
     window.addEventListener("load", (e) => {
         fetch(request).then(res => {
             return res.json();
@@ -41,7 +41,7 @@
         countryAnchor.href = new URL(`leaderboard?mod=${mod}&mode=${mode}&country=${user.country}`, window.location.origin);
         let countryImage = document.createElement("div");
         countryImage.classList.add("player-country-image");
-        countryImage.style.backgroundImage = `url("https://osu.ppy.sh/images/flags/${user.country.toUpperCase()}.png")`;
+        countryImage.style.backgroundImage = `url("https://new.sutekina.tk/public/media/images/flags/${user.country.toUpperCase()}.png")`;
         countryAnchor.appendChild(countryImage);
         countryCell.appendChild(countryAnchor);
 

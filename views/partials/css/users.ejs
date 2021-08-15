@@ -1,6 +1,9 @@
 <style>
     .user {
         display: flex;
+        visibility: hidden;
+        opacity: 0;
+        transition: display 0s, opacity 0.5s linear;
         flex-direction: column;
         gap: 0.5rem 0;
     }
@@ -91,6 +94,7 @@
     .user-about-country {
         height: 2rem;
         width: 3rem;
+        border-radius: 0.4rem;
         background-repeat: no-repeat;
         background-size: contain;
         background-position: center;
@@ -123,13 +127,62 @@
     }
 
     .user-page {
-        flex-wrap: wrap;
         margin-top: 1rem;
         display: flex;
         justify-content: space-between;
     }
     .user-page-about {
-        flex-basis: 70%;
+        flex-basis: 90%;
+    }
+    .user-page-badges {
+        flex-basis: 10%;
+    }
+    .user-page-badges h1 {
+        text-align: right;
+    }
+    .user-badges {
+        padding: 0rem 0.3rem;
+        line-height: unset !important;
+        word-break: keep-all !important;
+        display: flex;
+        flex-direction: column;
+        
+        gap: 0.2rem;
+    }
+    .user-badge {
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        background-color: var(--primary-bg);
+        margin-top: 0.1rem;
+        min-width: 4rem;
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .badge-admin {
+        color:crimson;
+    }
+    .badge-moderator {
+        color: lightcoral;
+    }
+    .badge-nominator {
+        color:olivedrab;
+    }
+    .badge-tournament {
+        color: skyblue;
+    }
+    .badge-alumni {
+        color: gold;
+    }
+    .badge-premium, .badge-supporter {
+        color: plum;
+    }
+    .badge-verified {
+        color: greenyellow;
     }
     .user-page-title {
         font-size: 1.2rem;
@@ -141,33 +194,41 @@
     }
 
     .user-page-content {
-        height: 5.4rem;
+        min-height: 4rem;
+        max-height: 5.4rem;
         line-height: normal;
         overflow-y: scroll;
         word-break: break-all;
     }
-
     .user-rank {
+        width: 100%;
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
+        align-items: flex-start;
         margin-top: 1.34rem;
-    }
-
-    .user-rank-container h1 {
         border-top-width: 0.15rem;
         border-top-color: var(--primary);
         border-top-style: solid;
-        text-align: center;
+        padding-top: 0.2rem;
+        padding-bottom: 0.2rem;
+    }
+    .user-rank-container {
+        flex-basis: 50%;
+    }
+    .user-rank-container h1 {
+        padding: 0rem;
+        font-size: 1rem;
+        padding-top: 0.1rem;
+        text-align: left;
+    }
+    .user-rank-container div {
+        font-size: 1.5rem;
     }
     .country-rank {
-        margin-top: 0.5rem;
+        text-align: right;
     }
     .country-rank h1 {
-        padding-bottom: 0.2rem;
-        font-size: 0.9rem;
-    }
-    .global-rank div {
-        font-size: 2rem;
+        text-align: right;
     }
 
     .user-extra {
@@ -193,6 +254,9 @@
         font-size: 2.5rem;
         text-align: right;
     }
+    .best, .recent {
+        display: none;
+    }
     .scores {
         margin: 0.3rem 0rem;
         display: flex;
@@ -200,16 +264,89 @@
         gap: 0.3rem;
     }
     .score {
+        justify-content: space-between;
         display: flex;
         flex-direction: row;
+        gap: 0.4rem;
+        align-items: center;
         border-radius: 0.5rem;
         padding: 0.5rem;
-        gap: 1rem;
         transition: background-color 0.2s ease;
         background-color: var(--thirdendary-bg);
     }
     .score:hover {
         background-color: var(--primary-bg);
+    }
+    .score-grade {
+        height: 1.5rem;
+        min-width: 2rem;
+        flex-basis: 5%;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: contain;
+    }
+    .score-details {
+        flex-basis: 65%;
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+    }
+    .beatmapset-info {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    .beatmapset-artist {
+        display: inline;
+        white-space: nowrap!important;
+        text-overflow: ellipsis!important;
+        overflow: hidden!important;
+        font-size: 87%;
+    }
+    .beatmapset-info:hover {
+        text-decoration: underline;
+    }
+    .beatmap-info {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        gap: 0.5rem;
+        font-size: 0.7rem;
+    }
+    .beatmap-version {
+        color: gold;
+    }
+    .score-date {
+        opacity: 0.6;
+    }
+    .score-mods {
+        display: flex;
+        justify-content: flex-end;
+        overflow: auto;
+        height: 2rem;
+        width: 100%;
+        flex-basis: 15%;
+    }
+    .score-mods-item {
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: contain;
+        width: 2rem;
+        height: 100%;
+    }
+    .score-accuracy {
+        text-align: center;
+        flex-basis: 10%;
+    }
+    .score-pp {
+        text-align: right;
+        flex-basis: 10%;
+    }
+    .score-link {
+        display: none;
     }
 
     @media(max-width: 900px) {
@@ -230,14 +367,47 @@
             flex-basis: 100%;
             justify-content: space-between;
         }
+        .score {
+            justify-content: flex-start;
+        }
+        .score:hover {
+            height: 3rem;
+            justify-content: space-between;
+        }
+        .score:hover .score-link {
+            display: block;
+        }
+        .score:hover .score-details {
+            display: none;
+        }
+        .score:hover .score-pp, .score:hover  .score-accuracy {
+            display: block;
+        }
+        .score:hover .score-mods {
+            height: 1.2rem;
+            display: flex;
+        }
+        .score-details {
+            flex-basis: unset;
+        }
+        .score-pp, .score-accuracy, .score-mods {
+            font-size: 0.8rem;
+            display: none;
+            flex-basis: unset;
+        }
+        .score-link {
+            min-width: 1rem;
+            height: 1rem;
+            background-image: url("/public/media/images/icon.png");
+            background-position: center;
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
     } 
 
     @media(max-width: 600px) {
         .user-about-details {
             align-items: center;
-        }
-        .user-page-about {
-            flex-basis: 100%;
         }
         .user-about {
             gap: 1rem;
@@ -247,30 +417,5 @@
             max-width: 20ch;
             font-size: 1.5rem;
         }
-        .user-rank {
-            width: 100%;
-            flex-direction: row;
-            align-items: flex-start;
-        }
-        .user-rank-container {
-            flex-basis: 50%;
-        }
-        .country-rank {
-            text-align: right;
-            margin: 0rem;
-        }
-        .user-rank-container div {
-            font-size: 1.5rem;
-        }
-        .user-rank-container h1 {
-            text-align: left;
-            font-size: 1rem;
-            padding: 0rem;
-            padding-top: 0.1rem;
-        }
-        .country-rank h1 {
-            text-align: right;
-        }
-        
     }
 </style>

@@ -1,5 +1,7 @@
 <div id="user-identifier" data-user="<%- user.id %>" style="display: none;"></div>
 
+<%- include('../../extra/loading') %>
+
 <div class="user">
     <div class="options">
         <div class="options-flex">
@@ -51,25 +53,31 @@
         </div>
         <div class="user-page">
             <div class="user-page-about">
-                <h1 class="user-page-title">about me!</h1>
+                <div>
+                    <h1 class="user-page-title">about me!</h1>
+                </div>
                 <p class="user-page-content">
                     This user is quite mysterious, 🙂🙂🙂.
                 </p>
             </div>
-            <div class="user-rank">
-                <div class="user-rank-container global-rank">
-                    <h1>global rank</h1>
-                    <div id="global-rank"></div>
-                </div>
-                <div class="user-rank-container country-rank">
-                    <h1>country rank</h1>
-                    <div id="country-rank"></div>
-                </div>
+            <div class="user-page-badges">
+                <h1 class="user-page-title">&nbsp;</h1>
+                <div class="user-badges user-page-content"></div>
+            </div>
+        </div>
+        <div class="user-rank">
+            <div class="user-rank-container global-rank">
+                <h1>global rank</h1>
+                <div id="global-rank"></div>
+            </div>
+            <div class="user-rank-container country-rank">
+                <h1>country rank</h1>
+                <div id="country-rank"></div>
             </div>
         </div>
         <div class="user-extra">
             <div class="user-extra-item">
-                <h1>created at:</h1>
+                <h1>created:</h1>
                 <div id="created-at"></div>
             </div>
             <div class="user-extra-item">
@@ -86,7 +94,13 @@
             <div class="best-scores-list scores">
                 <!-- <div class="score">
                     <div class="score-grade"></div>
-                    <div class="score-details"></div>
+                    <div class="score-details">
+                        <div class="beatmapset-info"></div>
+                        <div class="beatmap-info">
+                            <div class="beatmap-version"></div>
+                            <div class="score-date"></div>
+                        </div>
+                    </div>
                     <div class="score-mods"></div>
                     <div class="score-accuracy"></div>
                     <div class="score-pp"></div>
@@ -111,5 +125,5 @@
         </div>
     </div>
 </div>
-
+<%- include('../js/twemoji') %>
 <%- include('../js/fetchUser') %> 

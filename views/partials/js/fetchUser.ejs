@@ -7,9 +7,44 @@
 
     var globalMod = params.mod && params.mod.match(/^(vn|rx|ap)$/) ? params.mod : "vn";
     var globalMode = params.mode && ((globalMod === "rx" && params.mode !== "mania") || (globalMod === "ap" && !params.mode.match(/^(mania|taiko|catch)$/))) ?  params.mode : "std";
-    
-    window.addEventListener("load", (e) => {
-        setUser(globalMod, globalMode);
+    let countryCodes;
+    let bitwiseMods;
+    let countryEmojis;
+    window.addEventListener("load", async (e) => {
+        countryCodes = await fetch(new Request(`/public/media/json/countryCodes.json`)).then(res => {
+            return res.json();
+        });
+        bitwiseMods = await fetch(new Request(`/public/media/json/bitwiseMods.json`)).then(res => {
+            return res.json();
+        });
+        countryEmojis = await fetch(new Request(`/public/media/json/countryEmojis.json`)).then(res => {
+            return res.json();
+        });
+
+        await setUser(globalMod, globalMode);
+        var closingAnimation = lottie.loadAnimation({
+            container: closingElement, // the dom element that will contain the animation
+            renderer: 'svg',
+            loop: false,
+            autoplay: false,
+            path: '/public/media/json/closingDots.json' // the path to the animation json
+        });
+        var openingLoaded = false;
+        closingAnimation.addEventListener("DOMLoaded", (e) => openingLoaded = true);
+        loopingAnimation.addEventListener("loopComplete", async (e) => {
+            if(!openingLoaded) return;
+            loopingAnimation.destroy();
+            closingElement.style.display = "block";
+            closingAnimation.play();
+            closingAnimation.addEventListener("complete", () => {
+                closingAnimation.destroy();
+                // document.getElementsByClassName("loading-container")[0].style.display = "none";
+                document.getElementsByClassName("best")[0].style.display = "block";
+                document.getElementsByClassName("recent")[0].style.display = "block";
+                document.getElementsByClassName("user")[0].style.opacity = "1";
+                document.getElementsByClassName("user")[0].style.visibility = "visible";
+            });            
+        });
     });
 
     window.addEventListener("click", (e) => {
@@ -64,12 +99,8 @@
         let user = await fetch(new Request(`${apiURL}v2/users/${username}?mod=${mod}&mode=${mode}`)).then(res => {
             return res.json();
         });
-
-        let countryCodes = await fetch(new Request(`/public/media/json/countryCodes.json`)).then(res => {
-            return res.json();
-        });
         
-        document.getElementsByClassName("user-about-country")[0].style.backgroundImage = `url("https://osu.ppy.sh/images/flags/${user.country.toUpperCase()}.png")`;
+        document.getElementsByClassName("user-about-country")[0].style.backgroundImage = `url("https://new.sutekina.tk/public/media/images/flags/${user.country.toUpperCase()}.png")`;
         document.getElementsByClassName("user-about-country-name")[0].innerHTML = countryCodes[user.country.toUpperCase()];
         document.getElementsByClassName("user-about-country")[0].title = countryCodes[user.country.toUpperCase()];
         document.getElementsByClassName("user-about-country")[0].href = new URL(`leaderboard?mod=${mod}&mode=${mode}&country=${user.country}`, window.location.origin)
@@ -89,35 +120,47 @@
         document.getElementById("play-time").title = `approx. ${Math.round(user.playTime / (60*60))} hours`;
     
         document.getElementById("performance-points").innerText = user.pp + "pp";
+        
+        let badgeList = document.getElementsByClassName("user-badges")[0]
+        if(!badgeList.hasChildNodes()) {
+            let i = 1; let privList = []; let privs = user.privilege;
+            while(privs != 0 && i < 50) {
+                let priv = 1 << 31 - Math.clz32(privs);
+                privList.push(priv);
+                privs -= priv; i++;
+            }
 
-        let clan = await fetch(new Request(`${apiURL}v2/clans/${user.clanId}`)).then(res => {
-            return res.json();
-        });
-        if(clan.clanId) {
-            let clanAnchor = document.createElement("a");
-            clanAnchor.classList.add("user-about-clan");
-            clanAnchor.href = `/clans/${clan.clanId}`
-            clanAnchor.innerText = `[${clan.tag}] `;
-            document.getElementsByClassName("user-about-name")[0].prepend(clanAnchor)
+            for(let i = 0; i < privList.length; i++) {
+                if(!privileges[privList[i]]) continue;
+                let privElement = document.createElement("div");
+                privElement.classList.add("user-badge", `badge-${privileges[privList[i]].key}`);
+                privElement.innerHTML = privileges[privList[i]].name;
+                badgeList.append(privElement);
+            }
         }
 
+        fetch(new Request(`${apiURL}v2/clans/${user.clanId}`)).then(res => {
+            return res.json();
+        }).then(clan => {
+            if(clan.clanId) {
+                if(document.getElementsByClassName("user-about-clan")[0]) document.getElementsByClassName("user-about-clan")[0].remove();
+                let clanAnchor = document.createElement("a");
+                clanAnchor.classList.add("user-about-clan");
+                clanAnchor.href = `/clans/${clan.clanId}`
+                clanAnchor.innerText = `[${clan.tag}] `;
+                document.getElementsByClassName("user-about-name")[0].prepend(clanAnchor)
+            }
+        });
 
-        let best = await getScores({name: "pp", asc: "false"}, 5, 0, "1", "2", mod, mode);
-
+        let best = await getScores({name: "pp", asc: "false"}, 5, 0, "2", "2", mod, mode);
         let bestScores = document.getElementsByClassName("best-scores-list")[0]
-
         bestScores.innerHTML = '';
-
         addScoresToClass(best, bestScores);
-        
-        
+
         let recent = await getScores({name:"playtime", asc: "false"}, 5, 0, "0", "-2", mod, mode);
-        
         let recentScores = document.getElementsByClassName("recent-scores-list")[0]
-
         recentScores.innerHTML = '';
-
-        addScoresToClass(recent, recentScores)
+        addScoresToClass(recent, recentScores);
     }
 
     function getScores(order, limit, page, scoreStatus = "1", beatmapStatus = "2", mod, mode) {
@@ -133,38 +176,96 @@
         })
     }
 
-    function addScoresToClass(scores, resClass) {
-        for(let i = 0; i < scores.length; i++) {
-            let scoreClass = document.createElement("a");
-            scoreClass.href = `/beatmaps/${scores[i].beatmapId}`;
-            scoreClass.classList.add("score");
+    async function addScoresToClass(scores, resClass) {
+        let beatmaps = await getBeatmaps(scores);
 
+        for(const i in scores) {
+            let score = scores[i];
+            let beatmap = beatmaps[score.beatmapId];
+            let scoreClass = document.createElement("div");
+            scoreClass.classList.add("score");
             let scoreGrade = document.createElement("div");
             scoreGrade.classList.add("score-grade");
-            scoreGrade.innerText = scores[i].grade;
+            scoreGrade.style.backgroundImage = `url(/public/media/images/grades/${score.grade}.svg)`;
             scoreClass.appendChild(scoreGrade);
             let scoreDetails = document.createElement("div");
             scoreDetails.classList.add("score-details");
+            
+            let beatmapSetInfo = document.createElement("a");
+            beatmapSetInfo.classList.add("beatmapset-info")
+            beatmapSetInfo.href = `/beatmaps/${score.beatmapId}`;
+            beatmapSetInfo.innerText = beatmap.title;
+            let beatmapSetArtist = document.createElement("span");
+            beatmapSetArtist.classList.add("beatmapset-artist");
+            beatmapSetArtist.innerText = ` by ${beatmap.artist}`;
+            beatmapSetInfo.append(beatmapSetArtist);
+            let beatmapInfo = document.createElement("div"); beatmapInfo.classList.add("beatmap-info");
+            let beatmapVersion = document.createElement("div"); beatmapVersion.classList.add("beatmap-version"); beatmapVersion.innerText = `${beatmap.version}`;
+            let scoreDate = document.createElement("div"); scoreDate.classList.add("score-date"); scoreDate.title = new Date(score.playtime); scoreDate.innerText = dateAgo(new Date(score.playtime));
+            beatmapInfo.append(beatmapVersion, scoreDate);
+            scoreDetails.append(beatmapSetInfo, beatmapInfo);
             scoreClass.appendChild(scoreDetails);
             let scoreMods = document.createElement("div");
             scoreMods.classList.add("score-mods");
-            scoreMods.innerText = scores[i].mods;
+            let index = 1; let modList = []; let mods = score.mods;
+            while(mods != 0 && index < 50) {
+                let mod = 1 << 31 - Math.clz32(mods);
+                modList.push(mod);
+                mods -= mod; index++;
+            }
+            // bad GRAP  says  no  nomod!
+            // if(!modList[0]) modList.push(0);
+            let elementList = modList.map(m => {
+                let modElement = document.createElement("div");
+                modElement.classList.add("score-mods-item", `score-mods-${bitwiseMods[m]}`);
+                modElement.style.backgroundImage = `url("/public/media/images/mods/mod_${bitwiseMods[m]}.png")`;
+                modElement.title = bitwiseMods[m];
+                return modElement;
+            });
+            scoreMods.append(...elementList);
             scoreClass.appendChild(scoreMods);
             let scoreAccuracy = document.createElement("div");
             scoreAccuracy.classList.add("score-accuracy");
-            scoreAccuracy.innerText = scores[i].accuracy.toFixed(2) + "%";
+            scoreAccuracy.title = score.accuracy;
+            scoreAccuracy.innerText = score.accuracy.toFixed(2) + "%";
             scoreClass.appendChild(scoreAccuracy);
             let scorePP = document.createElement("div");
             scorePP.classList.add("score-pp");
-            scorePP.innerText = scores[i].pp.toFixed(2) + "pp";
+            scorePP.title = score.pp
+            scorePP.innerText = score.pp.toFixed(2) + "pp";
             scoreClass.appendChild(scorePP);
-            let scoreReplayDL = document.createElement("div");
-            scoreReplayDL.classList.add("score-replay-dl");
-            scoreReplayDL.innerText = "V";
-            scoreClass.appendChild(scoreReplayDL);
+            let scoreLink = document.createElement("a");
+            scoreLink.classList.add("score-link");
+            scoreLink.href = `/beatmaps/${score.beatmapId}`;
+            scoreClass.appendChild(scoreLink);
+            // let scoreReplayDL = document.createElement("div");
+            // scoreReplayDL.classList.add("score-replay-dl");
+            // scoreReplayDL.innerText = "V";
+            // scoreClass.appendChild(scoreReplayDL);
 
             resClass.appendChild(scoreClass)
         }
+
+        // console.log(scores)
+        // for (const i in scores) {
+        
+        // }
+    }
+
+    function getBeatmaps(scores) {
+        return new Promise((resolve, reject) => {
+            let beatmaps = {};
+            let items = 0;
+            scores.forEach(async (score) => {
+                beatmaps[score.beatmapId] = await fetch(new Request(`${apiURL}v2/beatmaps/${score.beatmapId}`)).then(res => {
+                    return res.json();
+                });
+                items++;
+                if(items === scores.length) {
+                    resolve(beatmaps);
+                }
+            });
+        });
     }
 
     function numberWithCommas(x) {
@@ -220,5 +321,48 @@
             }
         }
         return time;
+    }
+
+    // <div class="user-badge badge-admin">ADM</div>
+    // <div class="user-badge badge-moderator">MOD</div>
+    // <div class="user-badge badge-nominator">NOM</div>
+    // <div class="user-badge badge-tournament">TOU</div>
+    // <div class="user-badge badge-alumni">ALU</div>
+    // <div class="user-badge badge-premium">❤❤❤</div>
+    // <div class="user-badge badge-supporter">❤</div>
+    // <div class="user-badge badge-verified">✓</div>
+    var privileges = {
+        2: {
+            key: "verified",
+            name: "✓"
+        },
+        16: {
+            key: "supporter",
+            name: "❤"
+        },
+        32: {
+            key: "premium",
+            name: "❤❤❤"
+        },
+        128: {
+            key: "alumni",
+            name: "ALU"
+        },
+        1024: {
+            key: "tournament",
+            name: "TOU"
+        },
+        2048: {
+            key: "nominator",
+            name: "NOM"
+        },
+        4096: {
+            key: "moderator",
+            name: "MOD"
+        },
+        8192: {
+            key: "admin",
+            name: "ADM"
+        }
     }
 </script>

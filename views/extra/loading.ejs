@@ -1,0 +1,65 @@
+<script src="/public/js/lottie.js" type="text/javascript"></script>
+
+<style>
+    main {
+        min-height: 70vh;
+    }
+    .loading-container {
+        display: flex;
+        position: absolute;
+        margin: auto;
+        top: 50%; left: 50%;
+        -webkit-transform: translate(-50%,-50%);
+            -ms-transform: translate(-50%,-50%);
+                transform: translate(-50%,-50%);
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+    .loading-dots {
+        width: 10rem;
+        height: 10rem;
+        display: none;
+    }
+</style>
+
+<div class="loading-container">
+    <div style="width: 10rem; height: 10rem;" class="loading-dots opening-dots"></div>
+</div>
+<div class="loading-container">
+    <div style="width: 10rem; height: 10rem;" class="loading-dots looping-dots"></div>
+</div>
+<div class="loading-container">
+    <div style="width: 10rem; height: 10rem;" class="loading-dots closing-dots"></div>
+</div>
+
+<script>
+    var openingElement = document.getElementsByClassName("opening-dots")[0];
+    var loopingElement = document.getElementsByClassName("looping-dots")[0];
+    var closingElement = document.getElementsByClassName("closing-dots")[0];
+    openingElement.style.display = "block";
+
+    var loadingAnimation = lottie.loadAnimation({
+        container: openingElement, // the dom element that will contain the animation
+        renderer: 'svg',
+        loop: false,
+        autoplay: true,
+        path: '/public/media/json/openingDots.json' // the path to the animation json
+    });
+    loadingAnimation.setSpeed(0.8)
+    var loopingAnimation = lottie.loadAnimation({
+        container: loopingElement, // the dom element that will contain the animation
+        renderer: 'svg',
+        loop: true,
+        autoplay: false,
+        path: '/public/media/json/loopingDots.json' // the path to the animation json
+    });
+    let loopingLoaded = false;
+    loopingAnimation.addEventListener("DOMLoaded", (e) => loopingLoaded = true); 
+    loadingAnimation.addEventListener("complete", async (e) => {
+        loopingElement.style.display = "block";
+        while(!loopingLoaded) await new Promise(resolve => setTimeout(resolve, 1000));
+        loadingAnimation.destroy();
+        loopingAnimation.play();
+    });
+</script>
