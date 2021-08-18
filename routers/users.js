@@ -8,7 +8,7 @@ router.get("/:user", async (req, res, next) => {
     user = user ? user : (await getUser(req.params.user.toLowerCase(), "safe_name"))[0]; 
     if(!user) return next(new errorHandling.SutekinaError({message: "Not Found", status: 404, level: "debug"}));
     req.data.page.title = user.name;
-    req.data.user = {id: user.id, name: user.name};
+    req.data.page.user = {id: user.id, name: user.name};
     res.render('index', req.data);
 });
 

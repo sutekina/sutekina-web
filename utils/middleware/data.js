@@ -7,6 +7,10 @@ module.exports = (req, res, next) => {
             title: undefined,
             type: "home",
             url: req.path,
+            user: {
+                id: null,
+                name: null
+            }
         },
         user: {
             id: null,

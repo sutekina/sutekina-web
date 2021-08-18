@@ -66,8 +66,27 @@ module.exports = new Promise(async(resolve, reject) => {
 
     modules["mysql2"].pool = modules["mysql2"].createPool(config.mysql);
 
+    let mysql_ready = false;
+    let mysql_boot_time = clock();
+    logging.info("Running mysql boot scripts.");
+    fs.readFile("./ext/db.sql", (err, data) => {
+        if(err) throw err;
+        logging.debug(`Successfully read script, querying now, time elapsed so far: ${clock(mysql_boot_time)}ms.`);
+        modules["mysql2"].pool.execute(data.toString(), (err, res) => {
+            logging.trace(data.toString());
+            if(err) throw err;
+            logging.info(`Successfully ran mysql boot scripts, time elapsed: ${clock(mysql_boot_time)}.`)
+
+            mysql_ready = true;
+        });
+    });
+
+    while(!mysql_ready) await new Promise(resolve => setTimeout(resolve, 100));
+
     const app = modules["express"]();
     app.server = app.listen(config.port, () => logging.info(`sutekina-web:${config.port} running, boot time elapsed: ${clock(boot_start)}ms.`));
+
+    app.use(modules["body-parser"].urlencoded({ extended: true }));
 
     let MySQLStore = modules["express-mysql-session"](modules["express-session"]);
 

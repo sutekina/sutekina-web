@@ -1,4 +1,4 @@
-<div id="user-identifier" data-user="<%- user.id %>" style="display: none;"></div>
+<div id="user-identifier" data-user="<%- page.user.id %>" style="display: none;"></div>
 
 <%- include('../../extra/loading') %>
 
@@ -12,16 +12,16 @@
         <div class="options-flex">
             <div class="options-button options-std">STD</div>
             <div class="options-button options-taiko">TAIKO</div>
-            <div class="options-button options-mania">MANIA</div>
             <div class="options-button options-catch">CATCH</div>
+            <div class="options-button options-mania">MANIA</div>
         </div>
     </div>
     <div class="profile">
         <div class="user-info">
             <div class="user-about">
-                <div class="user-about-icon" title="<%- user.name %>" style="background-image: url('https://<%- config.domains.avatar %>/<%- user.id %>')"></div>
+                <div class="user-about-icon" data-sutekina-title="<%- page.user.name %>" style="background-image: url('https://<%- config.domains.avatar %>/<%- page.user.id %>')"></div>
                 <div class="user-about-details">
-                    <div class="user-about-name" title="<%- user.name %>"><%- user.name %></div>
+                    <div class="user-about-name" data-sutekina-title="<%- page.user.name %>"><%- page.user.name %></div>
                     <div class="user-about-country-container">
                         <a class="user-about-country"></a>
                         <p class="user-about-country-name"></p>

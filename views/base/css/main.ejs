@@ -17,7 +17,17 @@
         color: var(--text);
         padding: 1rem;
         position: relative;
-        /* min-height: 100vh; */
+        /* transition: visibility 0.2s ease, opacity 0.2s ease; */
+        animation-name: fadein;
+        animation-duration: 1s;
+    }
+    @keyframes fadein {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
     }
     /* mobile */
     @media(max-width: 999px) {

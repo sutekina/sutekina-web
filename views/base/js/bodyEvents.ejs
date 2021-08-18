@@ -5,4 +5,12 @@
             if (event.keyCode === 13) event.target.click();
         }
     });
+    window.addEventListener('click', function(event) {
+        if(event.target.id === "showpassword") document.getElementById("password").type = event.target.checked ? "text" : "password";
+    });
+    document.body.addEventListener('error', function(event) {
+        if(event.target.matches("img")) {
+            event.target.src = '/public/media/images/unknown.png';
+        }
+    }, true);
 </script>

@@ -1,0 +1,38 @@
+<div class="login-container">
+    <div class="switch-container">
+        <a href="/account/register" class="switch" style="background-image: url('https://<%- config.domains.avatar %>/0');"></a>
+    </div>
+    <form class="login-form" method="POST">
+        <label for="username" class="login-label">
+            username
+            <input type="text" class="login-input" id="username" name="username" placeholder="your username">
+        </label>
+        <label for="password" class="login-label">
+            password
+            <input type="password" class="login-input" id="password" name="password" placeholder="your password">
+        </label>
+        <div class="login-checkbox-container">
+            <label for="keeplogin" class="login-checkbox-label">
+                <input type="checkbox" class="login-checkbox" id="keeplogin" name="keeplogin">
+                stay logged in
+            </label>
+            <label for="showpassword" class="login-checkbox-label">
+                <input type="checkbox" class="login-checkbox" id="showpassword" autocomplete="current-password"></input>
+                show password
+            </label>
+        </div>
+        <input type="hidden" name="geoInfo" id="geo-info">
+        <button type="submit" class="login-button">LOGIN</button>
+        <script>
+            document.getElementsByClassName("login-form")[0].addEventListener("submit", async e => {
+                e.preventDefault()
+                document.getElementsByClassName("login-button")[0].classList.add("login-button-disabled");
+                const result = await fetch("https://json.geoiplookup.io/").then(res => res.json())
+                result.date = new Date().getTime();
+                document.getElementById("geo-info").value = JSON.stringify(result);
+                e.target.submit();
+            });
+        </script>
+        <span class="login-anchor-container">or <a class="login-anchor" href="/account/register">create a new account.</a></span>
+    </form>
+</div>

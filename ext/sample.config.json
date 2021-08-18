@@ -32,7 +32,8 @@
         "insecureAuth": false,
         "waitForConnections": true,
         "connectionLimit": 10,
-        "queueLimit": 0
+        "queueLimit": 0,
+        "multipleStatements": true
     },
     "domains": {
         "avatar": "a.sutekina.tk",
@@ -40,5 +41,18 @@
         "api": "api.sutekina.tk",
         "discord": "https://discord.com/invite/xRCMXJ7JPh",
         "github:": "https://github.com/sutekina/"
+    },
+    "settings": {
+        "username": {
+            "minimum": 2,
+            "maximum": 15,
+            "forbidden_names": ["#Guacamole2"],
+            "allowed_characters": ["\\w", "\\-", " ", "\\[\\]"]
+        },
+        "password": {
+            "minimum": 8,
+            "maximum": 32,
+            "forbidden_characters": []
+        }
     }
 }

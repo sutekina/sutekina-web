@@ -12,6 +12,7 @@ module.exports = (req, res, next) => {
             });
             req.data.user.id = result[0].id;
             req.data.user.name = result[0].name;
+            req.data.user.priv = result[0].priv;
             next();
         });
     } else {

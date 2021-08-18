@@ -1,5 +1,6 @@
 <script>
     let apiURL = new URL("https://" + document.getElementsByName("sutekina:api")[0].getAttribute('content'));
+    let baseUrl = new URL("https://" + document.getElementsByName("sutekina:url")[0].getAttribute('content'));
     let username = document.getElementById("user-identifier").dataset.user;
     
     let urlSearchParams = new URLSearchParams(window.location.search);
@@ -125,7 +126,7 @@
             return res.json();
         });
         
-        document.getElementsByClassName("user-about-country")[0].style.backgroundImage = `url("https://new.sutekina.tk/public/media/images/flags/${user.country.toUpperCase()}.png")`;
+        document.getElementsByClassName("user-about-country")[0].style.backgroundImage = `url("${baseUrl}public/media/images/flags/${user.country.toUpperCase()}.png")`;
         document.getElementsByClassName("user-about-country-name")[0].innerHTML = countryCodes[user.country.toUpperCase()];
         document.getElementsByClassName("user-about-country")[0].title = countryCodes[user.country.toUpperCase()];
         document.getElementsByClassName("user-about-country")[0].href = new URL(`leaderboard?mod=${mod}&mode=${mode}&country=${user.country}`, window.location.origin)
@@ -253,7 +254,6 @@
                 modList.push(mod);
                 mods -= mod; index++;
             }
-            // bad GRAP  says  no  nomod!
             if(!modList[0]) modList.push(0);
             let elementList = modList.map(m => {
                 let modElement = document.createElement("div");
@@ -388,27 +388,27 @@
         },
         128: {
             key: "alumni",
-            name: "A"
+            name: "ALM"
         },
         1024: {
             key: "tournament",
-            name: "T"
+            name: "TOU"
         },
         2048: {
             key: "nominator",
-            name: "N"
+            name: "NOM"
         },
         4096: {
             key: "moderator",
-            name: "M"
+            name: "MOD"
         },
         8192: {
             key: "admin",
-            name: "A"
+            name: "ADM"
         },
         16384: {
-            key: "owner",
-            name: "O"
+            key: "developer",
+            name: "DEV"
         }
     }
 </script>

@@ -20,14 +20,16 @@ module.exports = [
         "export": require("./routers/beatmaps")
     },
     {
-
         "url": "/rules",
         "export": require("./routers/rules")
 
     },
     {
-
         "url": "/team",
         "export": require("./routers/team")
+    },
+    {
+        "url": "/account",
+        "export": require("./routers/account")
     },
 ]
