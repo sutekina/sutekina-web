@@ -1,8 +1,7 @@
 CREATE TABLE IF NOT EXISTS `osu`.`user_logins` (
   `user_logins_id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NOT NULL,
-  `ip_address` VARCHAR(45) NOT NULL,
-  `first_time` TINYINT NOT NULL,
+  `ip_address` VARBINARY(16) NOT NULL,
   `register` TINYINT NOT NULL,
   `geo_info` JSON NOT NULL,
   PRIMARY KEY (`user_logins_id`),

@@ -12,13 +12,13 @@ try {
     fs.readFile("./ext/sample.config.json", (err, data) => {
         if(err) {
             logging.fatal("Error when trying to read ./ext/sample.config.json, no permissions?");
-            logging.fatal(err);
+            logging.fatal(err.message, err);
             process.exit();
         }
         fs.writeFile("./config.json", data, (err) => {
             if(err) {
                 logging.fatal("Error when trying to write ./config.json, no permissions?");
-                logging.fatal(err);
+                logging.fatal(err.message, err);
                 process.exit();
             } else {
                 config = require("./config.json");
@@ -42,7 +42,7 @@ module.exports = new Promise(async(resolve, reject) => {
                 const mi_start = clock();
                 const { stdout, stderr } = await exec('npm install');
                 if(stdout) logging.debug(stdout);
-                if(stderr) logging.fatal(stderr);
+                if(stderr) logging.fatal(stderr.message || stderr, stderr);
                 logging.info(`Finished checking for missing modules and installing them, approximate time elapsed: ${clock(mi_start)}ms`)
                 modules_ready = true;
             } catch (err) {
@@ -80,16 +80,15 @@ module.exports = new Promise(async(resolve, reject) => {
             mysql_ready = true;
         });
     });
-
     while(!mysql_ready) await new Promise(resolve => setTimeout(resolve, 100));
-
+    
     const app = modules["express"]();
     app.server = app.listen(config.port, () => logging.info(`sutekina-web:${config.port} running, boot time elapsed: ${clock(boot_start)}ms.`));
-
+    
     app.use(modules["body-parser"].urlencoded({ extended: true }));
-
+    
     let MySQLStore = modules["express-mysql-session"](modules["express-session"]);
-
+    
     let session_config = Object.assign({}, config.mysql, {
         clearExpired: true,
         checkExpirationInterval: 900000,
@@ -106,7 +105,7 @@ module.exports = new Promise(async(resolve, reject) => {
     });
     
     const sessionStore = new MySQLStore(session_config);
-
+    
     app.use(modules["express-session"]({
         key: config.cookies.name,
         secret: config.cookies.secret,
@@ -121,10 +120,10 @@ module.exports = new Promise(async(resolve, reject) => {
             maxAge: 315569259747
         }
     }));
-
+    
     if(config.middleware.use_cors) {
         let cors_origin = (config.protocol.https ? "https://" : "http://") + config.domains.base;
-
+        
         app.use(modules["cors"]({
             origin: cors_origin,
             optionsSuccessStatus: 200,
@@ -132,12 +131,11 @@ module.exports = new Promise(async(resolve, reject) => {
             allowedHeaders: 'Origin,X-Requested-With,Content-Type,Accept,Authorization'
         }));
     };
-
+    
     app.disable('case sensitive routing');
     app.disable('strict routing');
     app.disable('x-powered-by');
     app.set('etag', 'weak');
     app.set('view engine', 'ejs');
-    
     resolve([modules, config, app]);
 });
