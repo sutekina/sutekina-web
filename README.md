@@ -1,5 +1,6 @@
 # sutekina web
-nodejs frontend implementation for cmyui's gulag
+nodejs frontend implementation for cmyui's gulag.
+the code isn't good, i tried to make it easy to work with but that came at the cost of the code, for prettier code look at sutekina-api. xx
 
 ## requirements
 `NODE JS LTS`
