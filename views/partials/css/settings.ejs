@@ -14,7 +14,32 @@
     }
     .settings-tabs-container {
         display: flex;
+        flex-wrap: wrap;
+        border-radius: 0.5rem;
+        padding: 0rem !important;
         justify-content: space-evenly;
+        overflow: auto;
+    }
+    .settings-tabs {
+        background-color: var(--primary);
+        padding: 1rem 0.5rem;
+        text-align: center;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        flex-grow: 1;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .settings-tabs:hover:not(.settings-tabs-disabled) {
+        cursor: pointer;
+    }
+    .settings-tabs-active, .settings-tabs:hover:not(.settings-tabs-disabled) {
+        background-color: var(--text);
+        color: var(--primary);
+    }
+    .settings-tabs-disabled {
+        background-color: var(--thirdendary-bg);
     }
     .settings-active {
         height: 10rem;

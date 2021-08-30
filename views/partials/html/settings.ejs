@@ -1,7 +1,7 @@
 <div class="settings-container">
     <div class="settings-tabs-container">
         <!-- todo make these like the buttons on user page -->
-        <div class="settings-tabs">general</div>
+        <div class="settings-tabs settings-tabs-active">general</div>
         <div class="settings-tabs">about</div>
         <div class="settings-tabs">password</div>
         <div class="settings-tabs">avatar</div>
@@ -15,9 +15,11 @@
 
 <script>
     window.addEventListener("click", function(event) {
-        if(event.target.classList.contains("settings-tabs")) {
+        if(event.target.classList.contains("settings-tabs") && !event.target.classList.contains("settings-tabs-disabled")) {
             console.log(`settings-${event.target.innerText}`)
             document.getElementsByClassName(`settings-active`)[0].classList.remove("settings-active");
+            document.getElementsByClassName(`settings-tabs-active`)[0].classList.remove("settings-tabs-active");
+            event.target.classList.add("settings-tabs-active")
             document.getElementsByClassName(`settings-${event.target.innerText}`)[0].classList.add("settings-active");
         };
     });

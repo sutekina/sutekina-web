@@ -1,14 +1,13 @@
 <style>
     main {
         display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: center;
     }
     .login-container {
         background-color: var(--secondary-bg);
         border-radius: 0.5rem;
-        min-width: 60%;
+        width: 80%;
         box-sizing: border-box;
         display: flex;
         flex-direction: row;
@@ -69,6 +68,17 @@
         display: flex;
         gap: 0.2rem;
         flex-direction: column;
+    }
+    .login-label span {
+        font-size: 0.8rem;
+        color: var(--error);
+    }
+    #general-error {
+        background-color: var(--error);
+        display: none;
+        padding: 0.5rem;
+        color: var(--text);
+        border-radius: 0.5rem;
     }
     .login-checkbox-label {
         margin: 0.5rem 0rem;

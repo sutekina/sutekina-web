@@ -83,29 +83,6 @@
                     place: "password"
                 }
             };
-            // general:
-            //     login_failed
-            //     login_invalid
-            //     login_timeout
-            //     account_banned
-
-            // username:
-            //     no_username
-            //     username_too_short
-            //     username_too_long
-            //     username_forbidden
-            //     username_invalid
-
-            // password:
-            //     no_password
-            //     password_too_short
-            //     password_too_long
-            //     password_invalid
-
-            // email:
-            //     no_email
-            //     email_too_long
-            //     email_invalid
 
             const error = ERRORS[new URLSearchParams(window.location.search).get("error")];
 

@@ -1,4 +1,3 @@
-<div style="min-width: 60%;background-color: red; border-radius: 0.5rem; padding:1rem;">register disabled atm, please use ingame registration.</div>
 <div class="login-container">
     <div class="switch-container">
         <a href="/account/login" class="switch" style="background-image: url('https://<%- config.domains.avatar %>/0');"></a>
@@ -7,31 +6,113 @@
         <label for="username" class="login-label">
             username
             <input type="text" class="login-input" id="username" name="username" autocomplete="username" placeholder="your username">
+            <span id="username-error"></span>
         </label>
         <label for="email" class="login-label">
             email
             <input type="text" class="login-input" id="email" name="email" autocomplete="email" placeholder="your email">
+            <span id="email-error"></span>
         </label>
         <label for="password" class="login-label">
             password
             <input type="password" class="login-input" id="password" name="password" autocomplete="current-password" placeholder="your password">
+            <span id="password-error"></span>
         </label>
+        <div id="general-error"></div>
         <div class="login-checkbox-container">
             <label for="showpassword" class="login-checkbox-label">
                 <input type="checkbox" class="login-checkbox" id="showpassword"></input>
                 show password
             </label>
-            <button type="submit" class="login-button-disabled login-button">REGISTER</button>
+            <button type="submit" class="login-button">REGISTER</button>
         </div>
         <input type="hidden" name="geoInfo" id="geo-info">
         <script>
+            const ERRORS = {
+                REGISTER_FAILED: {
+                    message: "Your register attempt has failed.",
+                    place: "general"
+                },
+                REGISTER_TIMEOUT: {
+                    message: "Your register attempt has timed out.",
+                    place: "general"
+                },
+
+                NO_USERNAME: {
+                    message: "Please enter a username.",
+                    place: "username"
+                },
+                USERNAME_TOO_SHORT: {
+                    message: "The entered username is too short.",
+                    place: "username"
+                },
+                USERNAME_TOO_LONG: {
+                    message: "The entered username is too long.",
+                    place: "username"
+                },
+                USERNAME_FORBIDDEN: {
+                    message: "Your username is forbidden.",
+                    place: "username"
+                },
+                USERNAME_INVALID: {
+                    message: "The entered username is invalid.",
+                    place: "username"
+                },
+                USERNAME_TAKEN: {
+                    message: "The entered username is already taken.",
+                    place: "username"
+                },
+
+                NO_PASSWORD: {
+                    message: "Please enter a password.",
+                    place: "password"
+                },
+                PASSWORD_TOO_SHORT: {
+                    message: "The entered password is too short.",
+                    place: "password"
+                },
+                PASSWORD_TOO_LONG: {
+                    message: "The entered password is too long.",
+                    place: "password"
+                },
+                PASSWORD_INVALID: {
+                    message: "The entered password is invalid.",
+                    place: "password"
+                },
+
+                NO_EMAIL: {
+                    message: "Please enter an email.",
+                    place: "email"
+                },
+                EMAIL_TOO_LONG: {
+                    message: "The entered email is too long.",
+                    place: "email"
+                },
+                EMAIL_INVALID: {
+                    message: "The entered email is invalid.",
+                    place: "email"
+                },
+                EMAIL_TAKEN: {
+                    message: "The entered email is already taken.",
+                    place: "email"
+                }
+            };
+
+            const error = ERRORS[new URLSearchParams(window.location.search).get("error")];
+
+            if(error) {
+                let element = document.getElementById(`${error.place}-error`);
+                element.innerText = error.message;
+                element.style.display = "block";
+            };
+
             document.getElementsByClassName("login-form")[0].addEventListener("submit", async e => {
                 e.preventDefault()
-                // document.getElementsByClassName("login-button")[0].classList.add("login-button-disabled");
-                // const result = await fetch("https://json.geoiplookup.io/").then(res => res.json())
-                // result.date = new Date().getTime();
-                // document.getElementById("geo-info").value = JSON.stringify(result);
-                // e.target.submit();
+                document.getElementsByClassName("login-button")[0].classList.add("login-button-disabled");
+                const result = await fetch("https://json.geoiplookup.io/").then(res => res.json())
+                result.date = new Date().getTime();
+                document.getElementById("geo-info").value = JSON.stringify(result);
+                e.target.submit();
             });
         </script>
         <span class="login-anchor-container">or <a class="login-anchor" href="/account/login">log into your account.</a></span>

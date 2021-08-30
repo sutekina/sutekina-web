@@ -27,7 +27,6 @@ router.post("/login", async (req, res, next) => {
     // doesn't do what i want it to do, times out bad internet or people that live far from the server.
     // if((new Date().getTime() - geoInfo.date) > 1000) return res.redirect(`/account/login?error=LOGIN_TIMEOUT&redir=${req.data.page.redir}`);
     
-    
     let test = {
         username: testUsername(req.body.username),
         password: testPassword(req.body.password),
@@ -47,7 +46,7 @@ router.post("/login", async (req, res, next) => {
         if(!result[0]) return res.redirect(`/account/login?error=LOGIN_INVALID&redir=${req.data.page.redir}`);
         let user = result[0];
         let passwordMd5 = new Buffer.from(crypto.createHash("md5").update(new Buffer.from(req.body.password, "utf-8")).digest("hex"), "utf-8");
-        
+
         // ~325ms avg, i could cache but i don't want to.
         result = await modules["bcrypt"].compare(passwordMd5, user.pw_bcrypt);
         if(!result) return res.redirect(`/account/login?error=LOGIN_INVALID&redir=${req.data.page.redir}`);
@@ -93,7 +92,7 @@ router.post("/register", async (req, res, next) => {
     let reqTimer = clock();
     if(req.data.user.id) return res.redirect(req.data.page.redir);
     if(!req.body) return res.redirect(`/account/register?error=REGISTER_FAILED&redir=${req.data.page.redir}`);
-    let geoInfo = JSON.parse(req.body.geoInfo) ? JSON.parse(req.body.geoInfo) : false;
+    let geoInfo = req.body.geoInfo && JSON.parse(req.body.geoInfo) ? JSON.parse(req.body.geoInfo) : false;
     if(!geoInfo || !geoInfo.date) return res.redirect(`/account/register?error=REGISTER_FAILED&redir=${req.data.page.redir}`);
     if((new Date().getTime() - geoInfo.date) > 1000) return res.redirect(`/account/register?error=REGISTER_TIMEOUT&redir=${req.data.page.redir}`);
     
@@ -115,23 +114,25 @@ router.post("/register", async (req, res, next) => {
         
         logging.debug(`Register request for "${req.body.username}@${req.body.email}" from ${geoInfo.ip}, time elapsed: ${clock(reqTimer)}ms`);
         
-        console.log(req.body.password)
         let passwordMd5 = new Buffer.from(crypto.createHash("md5").update(new Buffer.from(req.body.password, "utf-8")).digest("hex"), "utf-8");
-        console.log(passwordMd5)
         let password = await modules["bcrypt"].hash(passwordMd5, await modules["bcrypt"].genSalt(12));
-        console.log(password)
     
         // best case use cloudflare ipcountry otherwise use geoInfo country code, geoInfo isn't the best way because people could in theory intercept what geoInfo sends easily since it's done client-side.
         let country = req.get(req.get("cf-ipcountry").toLowerCase()) || geoInfo.country_code.toLowerCase() || "xx";
 
-        query = `INSERT INTO users (name, safe_name, email, pw_bcrypt, country, creation_time, latest_activity) VALUES(?, ?, ?, ?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP())`;
+        query = `INSERT INTO users (name, safe_name, email, pw_bcrypt, country, creation_time, latest_activity) VALUES(?, ?, ?, ?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP());`;
         result = (await mysql(pool, query, [req.body.username, safe_name, req.body.email, password, country])).result;
-        console.log(result)
+        let userId = result.insertId;
+        for(let mode = 0; mode < 8; mode++) {
+            console.log(mode)
+            query = `INSERT INTO stats (id, mode) VALUES(?, ?);`;
+            result = (await mysql(pool, query, [userId, mode])).result;
+        }
         query = `INSERT INTO user_logins (user_id, ip_address, register, geo_info, user_login_flags) VALUES(?, INET6_ATON(?), ?, ?, ?);`;
-        let {} = await mysql(pool, query, [result.insertId, geoInfo.ip, true, geoInfo, 0])
+        let {} = await mysql(pool, query, [userId, geoInfo.ip, true, geoInfo, 0])
         logging.trace(query);
         logging.debug(`Login took ${clock(reqTimer)}ms`);
-        res.redirect("/connect");
+        res.redirect("/");
     } catch(error) {
         next(new errorHandling.SutekinaError({message:error.message, status:500, level:"error"}));
     }
@@ -173,7 +174,7 @@ function testUsername(username) {
 function testEmail(email) {
     if (!email) return "NO_EMAIL";
     if(email.length>254) return "EMAIL_TOO_LONG";
-    const emailRegex = new RegExp(/^[-!#$%&'*+\/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/);
+    const emailRegex = new RegExp(/^[^@\s]{1,200}@[^@\s\.]{1,30}(?:\.[^@\.\s]{2,24})+$/);
     if(!emailRegex.test(email)) return "EMAIL_INVALID";
     const parts = email.split("@");
     if(parts[0].length>64) return "EMAIL_INVALID";

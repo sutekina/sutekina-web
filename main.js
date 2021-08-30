@@ -1,5 +1,5 @@
 const { addColors } = require("winston/lib/winston/config");
-const {logging, errorHandling} = require("./utils/");
+const {logging, errorHandling, mysql} = require("./utils/");
 require("./init").then(([modules, config, app]) => {
     module.exports = {modules, config, app};
     const middleware = require("./utils/middleware");
