@@ -1,3 +1,4 @@
+<div style="min-width: 60%;background-color: red; border-radius: 0.5rem; padding:1rem;">register disabled atm, please use ingame registration.</div>
 <div class="login-container">
     <div class="switch-container">
         <a href="/account/login" class="switch" style="background-image: url('https://<%- config.domains.avatar %>/0');"></a>
@@ -5,32 +6,32 @@
     <form class="login-form" method="POST">
         <label for="username" class="login-label">
             username
-            <input type="text" class="login-input" id="username" name="username" placeholder="your username">
+            <input type="text" class="login-input" id="username" name="username" autocomplete="username" placeholder="your username">
         </label>
         <label for="email" class="login-label">
             email
-            <input type="text" class="login-input" id="email" name="email" placeholder="your email">
+            <input type="text" class="login-input" id="email" name="email" autocomplete="email" placeholder="your email">
         </label>
         <label for="password" class="login-label">
             password
-            <input type="password" class="login-input" id="password" name="password" placeholder="your password">
+            <input type="password" class="login-input" id="password" name="password" autocomplete="current-password" placeholder="your password">
         </label>
         <div class="login-checkbox-container">
             <label for="showpassword" class="login-checkbox-label">
                 <input type="checkbox" class="login-checkbox" id="showpassword"></input>
                 show password
             </label>
-            <button type="submit" class="login-button">REGISTER</button>
+            <button type="submit" class="login-button-disabled login-button">REGISTER</button>
         </div>
         <input type="hidden" name="geoInfo" id="geo-info">
         <script>
             document.getElementsByClassName("login-form")[0].addEventListener("submit", async e => {
                 e.preventDefault()
-                document.getElementsByClassName("login-button")[0].classList.add("login-button-disabled");
-                const result = await fetch("https://json.geoiplookup.io/").then(res => res.json())
-                result.date = new Date().getTime();
-                document.getElementById("geo-info").value = JSON.stringify(result);
-                e.target.submit();
+                // document.getElementsByClassName("login-button")[0].classList.add("login-button-disabled");
+                // const result = await fetch("https://json.geoiplookup.io/").then(res => res.json())
+                // result.date = new Date().getTime();
+                // document.getElementById("geo-info").value = JSON.stringify(result);
+                // e.target.submit();
             });
         </script>
         <span class="login-anchor-container">or <a class="login-anchor" href="/account/login">log into your account.</a></span>

@@ -23,7 +23,9 @@ router.post("/login", async (req, res, next) => {
     if(!req.body) return res.redirect(`/account/login?error=LOGIN_FAILED&redir=${req.data.page.redir}`);
     let geoInfo = JSON.parse(req.body.geoInfo) ? JSON.parse(req.body.geoInfo) : false;
     if(!geoInfo || !geoInfo.date) return res.redirect(`/account/login?error=LOGIN_FAILED&redir=${req.data.page.redir}`);
-    if((new Date().getTime() - geoInfo.date) > 1000) return res.redirect(`/account/login?error=LOGIN_TIMEOUT&redir=${req.data.page.redir}`);
+    
+    // doesn't do what i want it to do, times out bad internet or people that live far from the server.
+    // if((new Date().getTime() - geoInfo.date) > 1000) return res.redirect(`/account/login?error=LOGIN_TIMEOUT&redir=${req.data.page.redir}`);
     
     
     let test = {
@@ -34,7 +36,6 @@ router.post("/login", async (req, res, next) => {
     
     try {
         if(test.username !== true) return res.redirect(`/account/login?error=${test.username}&redir=${req.data.page.redir}`);
-        let safe_name = req.body.username.toLowerCase().replace(" ", "_");
         if(test.password !== true) return res.redirect(`/account/login?error=${test.password}&redir=${req.data.page.redir}`);
         if(!test.ip) return res.redirect(`/account/login?error=LOGIN_FAILED`);
         
@@ -43,13 +44,13 @@ router.post("/login", async (req, res, next) => {
         query = `SELECT id, safe_name, pw_bcrypt, priv, country FROM users WHERE safe_name = ?`;
         let {result} = await mysql(pool, query, [req.body.username.toLowerCase().trim().replace(" ", "_")]);
         logging.trace(query);
-        if(!result[0]) return res.redirect(`/account/login?error=LOGIN_FAILED&redir=${req.data.page.redir}`);
+        if(!result[0]) return res.redirect(`/account/login?error=LOGIN_INVALID&redir=${req.data.page.redir}`);
         let user = result[0];
         let passwordMd5 = new Buffer.from(crypto.createHash("md5").update(new Buffer.from(req.body.password, "utf-8")).digest("hex"), "utf-8");
         
         // ~325ms avg, i could cache but i don't want to.
         result = await modules["bcrypt"].compare(passwordMd5, user.pw_bcrypt);
-        if(!result) return res.redirect(`/account/login?error=LOGIN_FAILED&redir=${req.data.page.redir}`);
+        if(!result) return res.redirect(`/account/login?error=LOGIN_INVALID&redir=${req.data.page.redir}`);
 
         // code to do something if user from other country than the country they created their acc with
         // if(user.country != req.get("cf-ipcountry").toLowerCase()) 
@@ -88,6 +89,7 @@ router.get("/register", (req, res, next) => {
 });
 
 router.post("/register", async (req, res, next) => {
+    // TODO FIX REGISTER
     let reqTimer = clock();
     if(req.data.user.id) return res.redirect(req.data.page.redir);
     if(!req.body) return res.redirect(`/account/register?error=REGISTER_FAILED&redir=${req.data.page.redir}`);
@@ -112,9 +114,12 @@ router.post("/register", async (req, res, next) => {
         if(!test.ip) return res.redirect(`/account/register?error=REGISTER_FAILED`);
         
         logging.debug(`Register request for "${req.body.username}@${req.body.email}" from ${geoInfo.ip}, time elapsed: ${clock(reqTimer)}ms`);
-    
+        
+        console.log(req.body.password)
         let passwordMd5 = new Buffer.from(crypto.createHash("md5").update(new Buffer.from(req.body.password, "utf-8")).digest("hex"), "utf-8");
-        let password = await modules["bcrypt"].hash(passwordMd5, await modules["bcrypt"].genSalt());
+        console.log(passwordMd5)
+        let password = await modules["bcrypt"].hash(passwordMd5, await modules["bcrypt"].genSalt(12));
+        console.log(password)
     
         // best case use cloudflare ipcountry otherwise use geoInfo country code, geoInfo isn't the best way because people could in theory intercept what geoInfo sends easily since it's done client-side.
         let country = req.get(req.get("cf-ipcountry").toLowerCase()) || geoInfo.country_code.toLowerCase() || "xx";
@@ -134,7 +139,8 @@ router.post("/register", async (req, res, next) => {
 
 
 router.get("/settings", (req, res, next) => {
-    req.data.page.type = "home";
+    if(!req.data.user.id) return res.redirect(req.data.page.redir);
+    req.data.page.type = "settings";
     req.data.page.title = "settings";
     res.render('index', req.data);
 });

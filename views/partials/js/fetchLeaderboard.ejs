@@ -21,7 +21,7 @@
                 if(res[i].playCount > 0) {
                     addUser(res[i]);
 
-                    while(await new Promise(r => setTimeout(r, 30)));
+                    while(await new Promise(r => setTimeout(r, 10)));
                 }
             }
         });

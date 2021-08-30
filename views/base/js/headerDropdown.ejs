@@ -10,5 +10,15 @@
                 document.body.classList.remove("header-dropdown-selected");
             }
         }
+        if(!event.target.closest(".header-user-dropdown")) {
+            if(event.target.closest(".header-user-icon")) {
+                // this just unfocuses the dropdown so that there is no focused dropdown when you close it.
+                document.getElementsByClassName("header-user-icon")[0].blur();
+
+                document.body.classList.toggle("header-user-dropdown-selected");
+            } else {
+                document.body.classList.remove("header-user-dropdown-selected");
+            }
+        }
     });
 </script>

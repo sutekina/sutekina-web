@@ -7,7 +7,7 @@
     .login-container {
         background-color: var(--secondary-bg);
         border-radius: 0.5rem;
-        min-width: 60%;
+        width: 80%;
         box-sizing: border-box;
         display: flex;
         flex-direction: row;
@@ -68,6 +68,17 @@
         display: flex;
         gap: 0.2rem;
         flex-direction: column;
+    }
+    #general-error {
+        background-color: var(--error);
+        display: none;
+        padding: 0.5rem;
+        color: var(--text);
+        border-radius: 0.5rem;
+    }
+    #password-error, #username-error {
+        font-size: 0.8rem;
+        color: var(--error);
     }
     .login-checkbox-label {
         margin: 0.5rem 0rem;
@@ -162,7 +173,7 @@
     .login-anchor:hover {
         color: var(--text-hover);
     }
-    @media(max-width: 900px) {
+    @media(max-width: 500px) {
         .login-container {
             flex-direction: column;
         }

@@ -1,0 +1,25 @@
+<style>
+    .settings-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .settings-container > *:not(.settings:not(.settings-active)) {
+        background-color: var(--secondary-bg);
+        border-radius: 0.5rem;
+        padding: 0.8rem;
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+    }
+    .settings-tabs-container {
+        display: flex;
+        justify-content: space-evenly;
+    }
+    .settings-active {
+        height: 10rem;
+    }
+    .settings:not(.settings-active) {
+        display: none;
+    }
+</style>

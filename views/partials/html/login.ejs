@@ -5,25 +5,116 @@
     <form class="login-form" method="POST">
         <label for="username" class="login-label">
             username
-            <input type="text" class="login-input" id="username" name="username" placeholder="your username">
+            <input type="text" class="login-input" id="username" name="username" autocomplete="username" placeholder="your username">
+            <span id="username-error"></span>
         </label>
         <label for="password" class="login-label">
             password
-            <input type="password" class="login-input" id="password" name="password" placeholder="your password">
+            <input type="password" class="login-input" id="password" name="password" autocomplete="current-password" placeholder="your password">
+            <span id="password-error"></span>
         </label>
+        <div id="general-error"></div>
         <div class="login-checkbox-container">
             <label for="keeplogin" class="login-checkbox-label">
                 <input type="checkbox" class="login-checkbox" id="keeplogin" name="keeplogin">
                 stay logged in
             </label>
             <label for="showpassword" class="login-checkbox-label">
-                <input type="checkbox" class="login-checkbox" id="showpassword" autocomplete="current-password"></input>
+                <input type="checkbox" class="login-checkbox" id="showpassword"></input>
                 show password
             </label>
         </div>
         <input type="hidden" name="geoInfo" id="geo-info">
         <button type="submit" class="login-button">LOGIN</button>
         <script>
+            const ERRORS = {
+                LOGIN_FAILED: {
+                    message: "Your login attempt has failed.",
+                    place: "general"
+                },
+                LOGIN_INVALID: {
+                    message: "Please check your username or password.",
+                    place: "general"
+                },
+                LOGIN_TIMEOUT: {
+                    message: "Your login attempt has timed out.",
+                    place: "general"
+                },
+                ACCOUNT_BANNED: {
+                    message: "Your account has been banned, if you want to appeal please contact a staff member.",
+                    place: "general"
+                },
+
+                NO_USERNAME: {
+                    message: "Please enter a username.",
+                    place: "username"
+                },
+                USERNAME_TOO_SHORT: {
+                    message: "The entered username is too short.",
+                    place: "username"
+                },
+                USERNAME_TOO_LONG: {
+                    message: "The entered username is too long.",
+                    place: "username"
+                },
+                USERNAME_FORBIDDEN: {
+                    message: "Your username is forbidden.",
+                    place: "username"
+                },
+                USERNAME_INVALID: {
+                    message: "The entered username is invalid.",
+                    place: "username"
+                },
+
+                NO_PASSWORD: {
+                    message: "Please enter a password.",
+                    place: "password"
+                },
+                PASSWORD_TOO_SHORT: {
+                    message: "The entered password is too short.",
+                    place: "password"
+                },
+                PASSWORD_TOO_LONG: {
+                    message: "The entered password is too long.",
+                    place: "password"
+                },
+                PASSWORD_INVALID: {
+                    message: "The entered password is invalid.",
+                    place: "password"
+                }
+            };
+            // general:
+            //     login_failed
+            //     login_invalid
+            //     login_timeout
+            //     account_banned
+
+            // username:
+            //     no_username
+            //     username_too_short
+            //     username_too_long
+            //     username_forbidden
+            //     username_invalid
+
+            // password:
+            //     no_password
+            //     password_too_short
+            //     password_too_long
+            //     password_invalid
+
+            // email:
+            //     no_email
+            //     email_too_long
+            //     email_invalid
+
+            const error = ERRORS[new URLSearchParams(window.location.search).get("error")];
+
+            if(error) {
+                let element = document.getElementById(`${error.place}-error`);
+                element.innerText = error.message;
+                element.style.display = "block";
+            };
+
             document.getElementsByClassName("login-form")[0].addEventListener("submit", async e => {
                 e.preventDefault()
                 document.getElementsByClassName("login-button")[0].classList.add("login-button-disabled");

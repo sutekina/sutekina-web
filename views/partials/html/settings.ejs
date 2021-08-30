@@ -1,0 +1,24 @@
+<div class="settings-container">
+    <div class="settings-tabs-container">
+        <!-- todo make these like the buttons on user page -->
+        <div class="settings-tabs">general</div>
+        <div class="settings-tabs">about</div>
+        <div class="settings-tabs">password</div>
+        <div class="settings-tabs">avatar</div>
+    </div>
+    
+    <div class="settings-general settings settings-active"></div>
+    <div class="settings-about settings"></div>
+    <div class="settings-password settings"></div>
+    <div class="settings-avatar settings"></div>
+</div>
+
+<script>
+    window.addEventListener("click", function(event) {
+        if(event.target.classList.contains("settings-tabs")) {
+            console.log(`settings-${event.target.innerText}`)
+            document.getElementsByClassName(`settings-active`)[0].classList.remove("settings-active");
+            document.getElementsByClassName(`settings-${event.target.innerText}`)[0].classList.add("settings-active");
+        };
+    });
+</script>

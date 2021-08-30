@@ -45,9 +45,17 @@
             </div>
         </a>
         <% if (user.id) { %>
-            <a href="/account">
-                <div class="header-user-icon js-enter" style="background-image: url('https://<%= config.domains.avatar %>/<%= user.id %>');" tabindex="1"></div>
-            </a>
+            <div class="header-user">
+                <div class="header-user-icon" style="background-image: url('https://<%= config.domains.avatar %>/<%= user.id %>');" tabindex="1"></div>
+                <div class="header-user-dropdown">
+                    <a class="header-user-account" href="/account">
+                        <img class="header-user-account-icon" src="/public/media/images/account.svg" alt>
+                        <span class="header-user-account-name"><%= user.name %></span>
+                    </a>
+                    <a href="/account/settings">settings</a>
+                    <a href="/account/logout">logout</a>
+                </div>
+            </div>
         <% } else { %>
             <a href="/account/login">
                 <div class="header-user-icon guest-icon js-enter" tabindex="1"></div>

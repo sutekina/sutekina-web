@@ -5,9 +5,9 @@
     
     let urlSearchParams = new URLSearchParams(window.location.search);
     let params = Object.fromEntries(urlSearchParams.entries());
-
-    var globalMod = params.mod && params.mod.match(/^(vn|rx|ap)$/) ? params.mod : "vn";
-    var globalMode = params.mode && ((globalMod === "rx" && params.mode !== "mania") || (globalMod === "ap" && !params.mode.match(/^(mania|taiko|catch)$/))) ?  params.mode : "std";
+    // dw about how they work, they just do.
+    var globalMod = params.mod&&params.mod.match(/^(vn|rx|ap)$/)?params.mod:"vn";
+    var globalMode = params.mode&&((globalMod === "rx"&&params.mode !== "mania")||(globalMod === "ap"&&!params.mode.match(/^(mania|taiko|catch)$/))||(globalMod === "vn")) ? params.mode : "std";
     let countryCodes;
     let bitwiseMods;
     let countryEmojis;
@@ -83,13 +83,13 @@
             let limit = 20;
             if(type === "best") {
                 let best = await getScores({name: "pp", asc: "false"}, limit, currentBestOffset, "2", "2", globalMod, globalMode);
-                if(best.length < 20) document.getElementsByClassName("show-more-best")[0].style.display = "none";
+                if(best.length < limit) document.getElementsByClassName("show-more-best")[0].style.display = "none";
                 currentBestOffset += limit;
                 let bestScores = document.getElementsByClassName("best-scores-list")[0];
                 addScoresToClass(best, bestScores);
             } else {
                 let recent = await getScores({name:"playtime", asc: "false"}, limit, currentRecentOffset, "0", "-2", globalMod, globalMode);
-                if(recent.length < 20) document.getElementsByClassName("show-more-recent")[0].style.display = "none";
+                if(recent.length < limit) document.getElementsByClassName("show-more-recent")[0].style.display = "none";
                 currentRecentOffset += limit;
                 let recentScores = document.getElementsByClassName("recent-scores-list")[0]
                 addScoresToClass(recent, recentScores);
@@ -255,7 +255,11 @@
                 mods -= mod; index++;
             }
             if(!modList[0]) modList.push(0);
-            let elementList = modList.map(m => {
+            let elementList = modList.filter((m, i) => {
+                if(m === 1 << 6 && modList.includes(1 << 9)) return false;
+                if(m === 1 << 5 && modList.includes(1 << 14)) return false;
+                return true;
+            }).map((m, i) => {
                 let modElement = document.createElement("div");
                 modElement.classList.add("score-mods-item", `score-mods-${bitwiseMods[m]}`);
                 modElement.style.backgroundImage = `url("/public/media/images/mods/mod_${bitwiseMods[m]}.png")`;

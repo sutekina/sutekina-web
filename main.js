@@ -9,8 +9,19 @@ require("./init").then(([modules, config, app]) => {
     try {
         middleware.map(m => app.use(m));
         app.use('/public', express.static('public'));
+        // 301 : permanent redirect, the urls don't change or at least shouldn't and therefore the browser can cache.
+        // 307 : temporary redirects, the urls are bound to change therefore the browser should request the old url first.
         app.get("/", (req,res,next) => {
             res.redirect(301, '/home');
+        });
+        app.get("/u/*", (req,res,next) => {
+            res.redirect(301, req.originalUrl.replace('u', 'users'));
+        });
+        app.get("/connect", (req,res,next) => {
+            res.redirect(307, "https://cdn.discordapp.com/attachments/805816465961517086/805816579794403328/SutekinaSwitcher.exe");
+        });
+        app.get("/discord", (req,res,next) => {
+            res.redirect(307, config.domains.discord);
         });
         routers.map(r => app.use(r.url, r.export));
     } catch (err) {
@@ -46,7 +57,7 @@ require("./init").then(([modules, config, app]) => {
     let connections = [];
     // every one minute, this should be good cause it should just log connections that could be stuck.
     setInterval(() => app.server.getConnections(
-        (err, connections) => logging.debug(`${connections} connections currently open.`)
+        (err, connections) => (connections > 0) ? logging.debug(`${connections} connections currently open.`) : ""
     ), 60000);
 
     app.server.on('connection', connection => {

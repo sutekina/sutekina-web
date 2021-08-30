@@ -68,14 +68,14 @@ module.exports = new Promise(async(resolve, reject) => {
 
     let mysql_ready = false;
     let mysql_boot_time = clock();
-    logging.info("Running mysql boot scripts.");
+    logging.info("Running mysql boot queries.");
     fs.readFile("./ext/db.sql", (err, data) => {
         if(err) throw err;
-        logging.debug(`Successfully read script, querying now, time elapsed so far: ${clock(mysql_boot_time)}ms.`);
+        logging.debug(`Successfully read /ext/db.sql, querying now, time elapsed so far: ${clock(mysql_boot_time)}ms.`);
         modules["mysql2"].pool.execute(data.toString(), (err, res) => {
             logging.trace(data.toString());
             if(err) throw err;
-            logging.info(`Successfully ran mysql boot scripts, time elapsed: ${clock(mysql_boot_time)}.`)
+            logging.info(`Successfully ran mysql boot queries, time elapsed: ${clock(mysql_boot_time)}ms.`)
 
             mysql_ready = true;
         });

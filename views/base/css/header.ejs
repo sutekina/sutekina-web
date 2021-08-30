@@ -143,13 +143,67 @@
     /* 
     # HEADER DROPDOWN
     */
-    .header-dropdown {
+    .header-dropdown, .header-user-dropdown {
         display: none;
     }
     /*
     # NOT MOBILE
     */
     @media(min-width: 1000px) {
+        .header-user {
+            position: relative;
+        } 
+        .header-user-dropdown {
+            right: 0;
+            z-index: -1;
+            border-radius: 0.5rem;
+            box-shadow: 0rem 0rem 0.2rem rgba(0, 0, 0, 0.4);
+            top: -4rem;
+            transform: translateY(-1.2rem);
+            background-color: var(--primary-bg);
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            transition: top 0.2s ease-in-out;
+            position: absolute;
+            padding: 1rem;
+        }
+        .header-user-dropdown-selected .header-user-dropdown {
+            top: calc(var(--header-height));
+
+        }
+        .header-user-dropdown > a {
+            text-decoration: underline;
+            text-decoration-color: transparent;
+            -webkit-text-decoration-color: transparent;
+            -moz-text-decoration-color: transparent;
+            transition: text-decoration 0.3s ease, color 0.3s ease;
+        }
+        .header-user-dropdown > a:hover {
+            color: var(--text-hover);
+            text-decoration-color: var(--text);
+            -webkit-text-decoration-color: var(--text);
+            -moz-text-decoration-color: var(--text);
+        }
+        .header-user-account {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.2rem;
+        }
+        .header-user-account-icon {
+            display: block;
+            height: 2rem;
+            object-fit: contain;
+        }
+        .header-user-account-name {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            max-width: 3rem;
+            font-size: 0.6rem;
+        }
         .nav-item-active div {
             opacity: 1;
         }
