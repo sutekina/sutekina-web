@@ -59,7 +59,7 @@ router.post("/login", async (req, res, next) => {
         // is user verified?
         if((user.priv & 1 << 1) === 0) return res.redirect(`/connect`);
 
-        query = `INSERT INTO user_logins (user_id, ip_address, register, geo_info, user_login_flags) VALUES(?, INET6_ATON(?), ?, ?, ?);`;;
+        query = `INSERT INTO user_logins (user_id, ip_address, register, geo_info, user_login_flags, datetime) VALUES(?, INET6_ATON(?), ?, ?, ?, UTC_TIMESTAMP());`;;
         result = await mysql(pool, query, [user.id, geoInfo.ip, false, geoInfo, 0])
         logging.trace(query);
         req.session.safe_name = user.safe_name;
@@ -128,7 +128,7 @@ router.post("/register", async (req, res, next) => {
             query = `INSERT INTO stats (id, mode) VALUES(?, ?);`;
             result = (await mysql(pool, query, [userId, mode])).result;
         }
-        query = `INSERT INTO user_logins (user_id, ip_address, register, geo_info, user_login_flags) VALUES(?, INET6_ATON(?), ?, ?, ?);`;
+        query = `INSERT INTO user_logins (user_id, ip_address, register, geo_info, user_login_flags, datetime) VALUES(?, INET6_ATON(?), ?, ?, ?, UTC_TIMESTAMP());`;
         let {} = await mysql(pool, query, [userId, geoInfo.ip, true, geoInfo, 0])
         logging.trace(query);
         logging.debug(`Login took ${clock(reqTimer)}ms`);

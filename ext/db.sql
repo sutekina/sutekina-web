@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS `osu`.`user_logins` (
   `register` TINYINT NOT NULL,
   `geo_info` JSON NOT NULL,
   `user_login_flags` INT NOT NULL,
+  `datetime` DATETIME NOT NULL COMMENT 'These are saved with UTC_TIMESTAMP().',
   PRIMARY KEY (`user_login_id`),
   UNIQUE INDEX `user_login_id_UNIQUE` (`user_login_id` ASC))
 ENGINE = InnoDB
