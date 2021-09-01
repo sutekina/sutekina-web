@@ -42,7 +42,6 @@ router.post("/login", async (req, res, next) => {
 
         query = `SELECT id, safe_name, pw_bcrypt, priv, country FROM users WHERE safe_name = ?`;
         let {result} = await mysql(pool, query, [req.body.username.toLowerCase().trim().replace(" ", "_")]);
-        logging.trace(query);
         if(!result[0]) return res.redirect(`/account/login?error=LOGIN_INVALID&redir=${req.data.page.redir}`);
         let user = result[0];
         let passwordMd5 = new Buffer.from(crypto.createHash("md5").update(new Buffer.from(req.body.password, "utf-8")).digest("hex"), "utf-8");
@@ -61,8 +60,7 @@ router.post("/login", async (req, res, next) => {
 
         query = `INSERT INTO user_logins (user_id, ip_address, register, geo_info, user_login_flags, datetime) VALUES(?, INET6_ATON(?), ?, ?, ?, UTC_TIMESTAMP());`;;
         result = await mysql(pool, query, [user.id, geoInfo.ip, false, geoInfo, 0])
-        logging.trace(query);
-        req.session.safe_name = user.safe_name;
+        req.session.user_id = user.id;
         if(!req.body.keeplogin) req.session.cookie.expires = false;
         logging.debug(`Login took ${clock(reqTimer)}ms`);
         res.redirect(req.data.page.redir);
@@ -130,7 +128,6 @@ router.post("/register", async (req, res, next) => {
         }
         query = `INSERT INTO user_logins (user_id, ip_address, register, geo_info, user_login_flags, datetime) VALUES(?, INET6_ATON(?), ?, ?, ?, UTC_TIMESTAMP());`;
         let {} = await mysql(pool, query, [userId, geoInfo.ip, true, geoInfo, 0])
-        logging.trace(query);
         logging.debug(`Login took ${clock(reqTimer)}ms`);
         res.redirect("/");
     } catch(error) {
@@ -144,6 +141,47 @@ router.get("/settings", (req, res, next) => {
     req.data.page.type = "settings";
     req.data.page.title = "settings";
     res.render('index', req.data);
+});
+
+let countryCodes = require("../public/media/json/countryCodes.json");
+
+router.post("/settings", (req, res, next) => {
+    if(!req.data.user.id) return res.redirect(req.data.page.redir);
+    if(!req.body || !req.body.value || !req.body.key || !req.body.type) return res.status(400).send({message:"Please provide a body with a key, a type and a value entry.", status:400});
+
+    switch(req.body.type) {
+        case "users":
+            req.body.key = req.body.key.match(/^(name|email|country)$/) ? req.body.key : false;
+            break;
+        default:
+            req.body.key = false;
+            break;
+    }
+
+    if(!req.body.key) res.status(400).send({message:"Invalid key.", status: 400});
+
+    if(req.body.key === "name") {
+        query = `UPDATE users SET name = ?, safe_name = ? WHERE (id = ?);`;
+        return mysql(pool, query, [req.body.value, req.body.value.toLowerCase().trim().replace(" ", "_"), req.data.user.id])
+            .then(() => res.status(200).send({message:"Successfully updated setting.", status:200}))
+            .catch((err) => {
+                if(err.code === "ER_DUP_ENTRY") return res.status(400).send({message: "Username already taken.", status:400, place:"name"});
+                logging.error(err);
+                res.status(500).send({message:JSON.stringify(err), status:500})
+            });
+    }
+
+    if(req.body.key === "country" && !countryCodes[req.body.value.toUpperCase()]) return res.status(400).send({message:"Invalid country.", status:400});
+    if(req.body.key === "email" && testEmail(req.body.value) !== true) return res.status(400).send({message:"Invalid email.", status:400});
+    
+    query = `UPDATE users SET ${req.body.key} = ? WHERE (id = ?);`;
+    mysql(pool, query, [req.body.value, req.data.user.id])
+        .then(() => res.status(200).send({message:"Successfully updated setting.", status:200}))
+        .catch((err) => {
+            if(err.code === "ER_DUP_ENTRY") return res.status(400).send({message: "Email already taken.", status:400, place:"email"});
+            logging.error(err);
+            res.status(500).send({message:JSON.stringify(err), status:500})
+        });
 });
 
 module.exports = router;

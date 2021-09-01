@@ -53,8 +53,7 @@
             });            
         });
     });
-
-    window.addEventListener("click", async (e) => {
+    window.addEventListener(touchEvent, async (e) => {
         if(e.target.classList.contains("options-button") && !e.target.classList.contains("options-button-disabled")) {
             let target = e.target.innerText.toLowerCase();
 

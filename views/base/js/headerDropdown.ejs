@@ -1,5 +1,5 @@
 <script>
-    window.addEventListener("click", function(event) {
+    window.addEventListener(touchEvent, function(event) {
         if(!event.target.closest(".header-nav")) {
             if(event.target.closest(".header-dropdown")) {
                 // this just unfocuses the dropdown so that there is no focused dropdown when you close it.

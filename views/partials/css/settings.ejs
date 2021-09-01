@@ -4,16 +4,24 @@
         flex-direction: column;
         gap: 0.5rem;
     }
+    
     .settings-container > *:not(.settings:not(.settings-active)) {
         background-color: var(--secondary-bg);
         border-radius: 0.5rem;
         padding: 0.8rem;
         width: 100%;
+    }
+    .settings-container > *:not(.settings:not(.settings-active)):not(.settings-error) {
         display: flex;
-        flex-direction: row;
+    } 
+    .settings-error {
+        background-color: var(--error) !important;
+        display: none;
+        color: var(--text);
+        border-radius: 0.5rem;
     }
     .settings-tabs-container {
-        display: flex;
+        flex-direction: row;
         flex-wrap: wrap;
         border-radius: 0.5rem;
         padding: 0rem !important;
@@ -41,10 +49,131 @@
     .settings-tabs-disabled {
         background-color: var(--thirdendary-bg);
     }
-    .settings-active {
-        height: 10rem;
-    }
     .settings:not(.settings-active) {
         display: none;
+    }
+
+    .settings-active {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .settings-section {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .settings-section-title {
+        font-size: 1.2rem;
+        border-bottom-width: 0.15rem;
+        border-bottom-color: var(--primary);
+        border-bottom-style: solid;
+    }
+    .settings-configurations-container {
+        display: flex;
+        gap: 0.5rem;
+        flex-direction: column;
+    }
+
+    .settings-label {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+    .settings-label span {
+        flex-shrink: 0;
+        font-size: 1rem;
+        width: 8rem;
+        text-align: right;
+    }
+    .settings-select-container {
+        flex-basis: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+    }
+    .settings-input, .settings-select, .settings-input:-webkit-autofill::first-line {
+        width: 100%;
+        padding: 0.4rem;
+        font-size: 1rem;
+        appearance: none;
+        background-color: white;
+        -webkit-appearance:none;
+        font-family: 'Exo 2';
+        display: inline-block;
+        -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+        -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+        box-sizing: border-box;         /* Opera/IE 8+ */
+        border-radius: 0.2rem;
+        border: 0.2rem solid var(--text);
+    }
+    .settings-input:focus, .settings-select:focus {
+        outline: none !important;
+        -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+        -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+        box-sizing: border-box;         /* Opera/IE 8+ */
+        border-radius: 0.2rem;
+        border: 0.2rem solid var(--primary);
+    }
+
+    .settings-status {
+        flex-shrink: 0;
+        width: 1.2rem;
+        height: 1.2rem;
+        margin-right: 6.8rem;
+        border-radius: 50%;
+        display: block;
+        stroke-width: 2;
+        stroke: #fff;
+        transform: none;
+        stroke-miterlimit: 10;
+        box-shadow: inset 0px 0px 0px var(--primary);
+    }
+    .settings-status-active {
+        animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+    }
+    .settings-status-active .settings-status-check {
+        animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+    }
+    .settings-status-check {
+        transform-origin: 50% 50%;
+        stroke-dasharray: 48;
+        stroke-dashoffset: 48;
+    }
+
+    @keyframes stroke {
+        100% {
+            stroke-dashoffset: 0;
+        }
+    }
+    @keyframes scale {
+        0%, 100% {
+            transform: none;
+        }
+        50% {
+            transform: scale3d(1.1, 1.1, 1);
+        }
+    }
+    @keyframes fill {
+        100% {
+            box-shadow: inset 0px 0px 0px 30px var(--primary);
+        }
+    }
+    @media(max-width: 700px) {
+        .settings-label {
+            flex-direction: column;
+            align-items: unset;
+            gap: 0.2rem;
+            padding-left: 1.2rem;
+        }
+        .settings-label span {
+            text-align: left;
+        }
+        .settings-select-container {
+            gap: 0.5rem;
+        }
+        .settings-status {
+            margin: unset;
+        }
     }
 </style>

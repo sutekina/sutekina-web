@@ -86,6 +86,7 @@ module.exports = new Promise(async(resolve, reject) => {
     app.server = app.listen(config.port, () => logging.info(`sutekina-web:${config.port} running, boot time elapsed: ${clock(boot_start)}ms.`));
     
     app.use(modules["body-parser"].urlencoded({ extended: true }));
+    app.use(modules["body-parser"].json());
     
     let MySQLStore = modules["express-mysql-session"](modules["express-session"]);
     
