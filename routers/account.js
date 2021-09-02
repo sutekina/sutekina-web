@@ -122,10 +122,11 @@ router.post("/register", async (req, res, next) => {
         result = (await mysql(pool, query, [req.body.username, safe_name, req.body.email, password, country])).result;
         let userId = result.insertId;
         for(let mode = 0; mode < 8; mode++) {
-            console.log(mode)
             query = `INSERT INTO stats (id, mode) VALUES(?, ?);`;
-            result = (await mysql(pool, query, [userId, mode])).result;
+            let {} = await mysql(pool, query, [userId, mode]);
         }
+        query = `INSERT INTO user_details (user_id) VALUES(?);`;
+        let {} = await mysql(pool, query, [userId]);
         query = `INSERT INTO user_logins (user_id, ip_address, register, geo_info, user_login_flags, datetime) VALUES(?, INET6_ATON(?), ?, ?, ?, UTC_TIMESTAMP());`;
         let {} = await mysql(pool, query, [userId, geoInfo.ip, true, geoInfo, 0])
         logging.debug(`Login took ${clock(reqTimer)}ms`);

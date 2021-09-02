@@ -41,8 +41,8 @@ module.exports = new Promise(async(resolve, reject) => {
             try {
                 const mi_start = clock();
                 const { stdout, stderr } = await exec('npm install');
-                if(stdout) logging.debug(stdout);
-                if(stderr) logging.fatal(stderr.message || stderr, stderr);
+                if(stdout) logging.debug(stdout.trim());
+                if(stderr) logging.fatal(stderr.message ? stderr.message.trim() : stderr.trim(), stderr);
                 logging.info(`Finished checking for missing modules and installing them, approximate time elapsed: ${clock(mi_start)}ms`)
                 modules_ready = true;
             } catch (err) {
@@ -68,18 +68,21 @@ module.exports = new Promise(async(resolve, reject) => {
 
     let mysql_ready = false;
     let mysql_boot_time = clock();
-    logging.info("Running mysql boot queries.");
-    fs.readFile("./ext/db.sql", (err, data) => {
-        if(err) throw err;
-        logging.debug(`Successfully read /ext/db.sql, querying now, time elapsed so far: ${clock(mysql_boot_time)}ms.`);
-        modules["mysql2"].pool.execute(data.toString(), (err, res) => {
-            logging.trace(data.toString());
-            if(err) throw err;
+    const util = require('util');
+    const exec = util.promisify(require('child_process').exec);
+    async function mysql_boot() {
+        try {
+            logging.info("Running mysql boot queries.");
+            const { stderr } = await exec(`mysql --user=${config.mysql.user} --password="${config.mysql.password}" --port=${config.mysql.port} --host=${config.mysql.host} ${config.mysql.database} < ./ext/db.sql`);
+            if(stderr) logging[stderr.includes("Warning") ? "warn" : "fatal"](stderr.message ? stderr.message.trim() : stderr.trim(), stderr);
             logging.info(`Successfully ran mysql boot queries, time elapsed: ${clock(mysql_boot_time)}ms.`)
-
             mysql_ready = true;
-        });
-    });
+        } catch (err) {
+            reject(err);
+        };
+    };
+    mysql_boot();
+
     while(!mysql_ready) await new Promise(resolve => setTimeout(resolve, 100));
     
     const app = modules["express"]();
