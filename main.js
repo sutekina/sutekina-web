@@ -45,9 +45,9 @@ require("./init").then(([modules, config, app]) => {
                 type: "error",
                 url: req.data.page.url || req.path
             },
-            user: {
-                id: req.data.user.id || null,
-                name: req.data.user.name || null
+            user: req.data.user && req.data.user.id ? req.data.user : {
+                id: null,
+                name: null
             },
             error: err
         };

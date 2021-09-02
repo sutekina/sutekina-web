@@ -161,6 +161,7 @@ router.post("/settings", (req, res, next) => {
     if(!req.body.key) res.status(400).send({message:"Invalid key.", status: 400});
 
     if(req.body.key === "name") {
+        if(testUsername(req.body.value) !== true) return res.status(400).send({message:"Invalid username.", status:400});
         query = `UPDATE users SET name = ?, safe_name = ? WHERE (id = ?);`;
         return mysql(pool, query, [req.body.value, req.body.value.toLowerCase().trim().replace(" ", "_"), req.data.user.id])
             .then(() => res.status(200).send({message:"Successfully updated setting.", status:200}))

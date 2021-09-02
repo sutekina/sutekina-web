@@ -2,13 +2,12 @@
     <div class="settings-error"></div>
 
     <div class="settings-tabs-container">
-        <!-- todo make these like the buttons on user page -->
-        <div class="settings-tabs settings-tabs-active">general</div>
-        <div class="settings-tabs">password</div>
-        <div class="settings-tabs">avatar</div>
+        <div class="settings-tabs-general settings-tabs">general</div>
+        <div class="settings-tabs-password settings-tabs">password</div>
+        <div class="settings-tabs-userpage settings-tabs">userpage</div>
     </div>
     
-    <div class="settings-general settings settings-active">
+    <div class="settings-general settings">
         <div class="settings-section settings-me">
             <h1 class="settings-section-title">me!</h1>
             <div class="settings-configurations-container">
@@ -289,6 +288,28 @@
                 </label>
             </div>
         </div>
+        <div class="settings-section settings-socials">
+            <h1 class="settings-section-title">socials!</h1>
+            <div class="settings-configurations-container">
+                
+            </div>
+        </div>
+    </div>
+    <div class="settings-password settings">
+        <div class="settings-section settings-password">
+            <h1 class="settings-section-title">password!</h1>
+            <div class="settings-configurations-container">
+                
+            </div>
+        </div>
+    </div>
+    <div class="settings-userpage settings">
+        <div class="settings-section settings-avatar">
+            <h1 class="settings-section-title">avatar!</h1>
+            <div class="settings-configurations-container">
+                
+            </div>
+        </div>
         <div class="settings-section settings-about">
             <h1 class="settings-section-title">about!</h1>
             <div class="settings-configurations-container">
@@ -296,8 +317,6 @@
             </div>
         </div>
     </div>
-    <div class="settings-password settings"></div>
-    <div class="settings-avatar settings"></div>
 </div>
 
 <script>
@@ -305,6 +324,13 @@
 
     document.getElementById(`country-${country}`).selected = true;
 
+    if(location.hash) {
+        document.getElementsByClassName('settings-userpage')[0].classList.add('settings-active')
+        document.getElementsByClassName('settings-tabs-userpage')[0].classList.add('settings-tabs-active')
+    } else {
+        document.getElementsByClassName('settings-general')[0].classList.add('settings-active'); 
+        document.getElementsByClassName('settings-tabs-general')[0].classList.add('settings-tabs-active')
+    }
     window.addEventListener("change", async function(event) {
         if(event.target.classList.contains("settings-input") || event.target.classList.contains("settings-select")) {
             let statusElement = event.target.nextElementSibling;
