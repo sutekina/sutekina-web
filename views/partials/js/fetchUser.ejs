@@ -42,6 +42,7 @@
             loopingElement.style.display = "none";
             closingElement.style.display = "block";
             closingAnimation.play();
+            // closingAnimation.setSpeed(2);
             closingAnimation.addEventListener("complete", () => {
                 closingAnimation.destroy();
                 closingElement.style.display = "none";
@@ -55,7 +56,7 @@
     });
     window.addEventListener(touchEvent, async (e) => {
         if(e.target.classList.contains("options-button") && !e.target.classList.contains("options-button-disabled")) {
-            let target = e.target.innerText.toLowerCase();
+            let target = e.target.dataset.name;
 
             let previous;
             if(target.match(/^(vn|rx|ap)$/)) {

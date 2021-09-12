@@ -1,4 +1,6 @@
 const crypto = require("crypto");
+const path = require("path");
+const fs = require("fs");
 const {modules, config, app} = require('../main');
 const {logging, errorHandling, clock, mysql} = require('../utils');
 const router = modules['express'].Router();
@@ -56,7 +58,7 @@ router.post("/login", async (req, res, next) => {
         // is user unbanned?
         if((user.priv & 1 << 0) === 0) return res.redirect(`/account/login?error=ACCOUNT_BANNED&redir=${req.data.page.redir}`);
         // is user verified?
-        if((user.priv & 1 << 1) === 0) return res.redirect(`/connect`);
+        if((user.priv & 1 << 1) === 0) return res.redirect(`/account/login?error=VERIFY_ACCOUNT&redir=${req.data.page.redir}`);
 
         query = `INSERT INTO user_logins (user_id, ip_address, register, geo_info, user_login_flags, datetime) VALUES(?, INET6_ATON(?), ?, ?, ?, UTC_TIMESTAMP());`;;
         result = await mysql(pool, query, [user.id, geoInfo.ip, false, geoInfo, 0])
@@ -92,7 +94,7 @@ router.post("/register", async (req, res, next) => {
     if(!req.body) return res.redirect(`/account/register?error=REGISTER_FAILED&redir=${req.data.page.redir}`);
     let geoInfo = req.body.geoInfo && JSON.parse(req.body.geoInfo) ? JSON.parse(req.body.geoInfo) : false;
     if(!geoInfo || !geoInfo.date) return res.redirect(`/account/register?error=REGISTER_FAILED&redir=${req.data.page.redir}`);
-    if((new Date().getTime() - geoInfo.date) > 1000) return res.redirect(`/account/register?error=REGISTER_TIMEOUT&redir=${req.data.page.redir}`);
+    // if((new Date().getTime() - geoInfo.date) > 1000) return res.redirect(`/account/register?error=REGISTER_TIMEOUT&redir=${req.data.page.redir}`);
     
     let test = {
         username: testUsername(req.body.username),
@@ -129,8 +131,8 @@ router.post("/register", async (req, res, next) => {
         let {} = await mysql(pool, query, [userId]);
         query = `INSERT INTO user_logins (user_id, ip_address, register, geo_info, user_login_flags, datetime) VALUES(?, INET6_ATON(?), ?, ?, ?, UTC_TIMESTAMP());`;
         let {} = await mysql(pool, query, [userId, geoInfo.ip, true, geoInfo, 0])
-        logging.debug(`Login took ${clock(reqTimer)}ms`);
-        res.redirect("/");
+        logging.debug(`Register took ${clock(reqTimer)}ms`);
+        res.redirect(`/account/register?error=VERIFY_ACCOUNT&redir=${req.data.page.redir}`);
     } catch(error) {
         next(new errorHandling.SutekinaError({message:error.message, status:500, level:"error"}));
     }
@@ -184,6 +186,27 @@ router.post("/settings", (req, res, next) => {
             logging.error(err);
             res.status(500).send({message:JSON.stringify(err), status:500})
         });
+});
+
+router.post("/avatar", (req, res, next) => {
+    if(!req.data.user.id) return res.redirect(req.data.page.redir);
+    // croppie the way we have it configured will always provide a png image, if someone would directly send a base64 then we want to reject that.
+    if(!req.body || !req.body.file || !req.body.file.includes("base64") || req.body.file.toString().split(";")[0].split(":")[1] !== "image/png") return next(new errorHandling.SutekinaError({message: "You need to provide a PNG image.", status: 415, level:"debug"}));
+    let AVATARS_PATH = path.join(config.gulag_path,  `.data/avatars/`);
+    let ALLOWED_EXTENSIONS = ['.jpeg', '.jpg', '.png'];
+
+    for(const extension of ALLOWED_EXTENSIONS) {
+        let filePath = path.join(AVATARS_PATH, `${req.data.user.id}${extension}`);
+        if(fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    }
+
+    fs.writeFile(path.join(AVATARS_PATH, `${req.data.user.id}.png`), req.body.file.replace(/^data:image\/png;base64,/, ""), 'base64', (err) => {
+        // no permission?
+        if(err) {
+            return next(new errorHandling.SutekinaError({message: err.message, status: 500, level:"error"}));
+        }
+        res.redirect(`/account/settings`);
+    });
 });
 
 module.exports = router;

@@ -2,6 +2,7 @@
     "README": "Before configuring this you might wanna look into the config documentations unless you know what you are doing. https://github.com/sutekina/sutekina-web/blob/main/README.md#config-file",
     "app_name": "Sutekina",
     "port": 4000,
+    "gulag_path": "/home/osu/gulag",
     "debug": {
         "logging": {
             "terminal_level": "all",

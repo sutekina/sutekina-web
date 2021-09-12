@@ -3,8 +3,10 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        gap: 0.5rem;
+        flex-direction: column;
     }
-    .login-container {
+    .login-container, .verify-container {
         background-color: var(--secondary-bg);
         border-radius: 0.5rem;
         width: 80%;
@@ -172,6 +174,25 @@
     }
     .login-anchor:hover {
         color: var(--text-hover);
+    }
+    .verify-container {
+        display: none;
+        flex-direction: column;
+    }
+    .verify-container .switch-container {
+        border-radius: 0.5rem 0.5rem 0rem 0rem ;
+    }
+    .verify-message {
+        width: 100%;
+        text-align: center;
+        padding: 2rem;
+    }
+    .verify-message a {
+        color: var(--primary);
+        text-decoration: underline;
+    }
+    .verify-message a:hover {
+        opacity: var(--hover-opacity);
     }
     @media(max-width: 600px) {
         .login-container {

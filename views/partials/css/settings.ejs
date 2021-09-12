@@ -79,6 +79,9 @@
         gap: 1rem;
         align-items: center;
     }
+    .settings-textarea-label {
+        padding: 0rem !important;
+    }
     .settings-label span {
         flex-shrink: 0;
         font-size: 1rem;
@@ -92,12 +95,11 @@
         align-items: center;
         gap: 1rem;
     }
-    .settings-input, .settings-select, .settings-input:-webkit-autofill::first-line {
+    .settings-input, .settings-select, .settings-textarea-preview, .settings-input:-webkit-autofill::first-line {
         width: 100%;
         padding: 0.4rem;
         font-size: 1rem;
         appearance: none;
-        background-color: white;
         -webkit-appearance:none;
         font-family: 'Exo 2';
         display: inline-block;
@@ -105,7 +107,9 @@
         -moz-box-sizing: border-box;    /* Firefox, other Gecko */
         box-sizing: border-box;         /* Opera/IE 8+ */
         border-radius: 0.2rem;
-        border: 0.2rem solid var(--text);
+        border: 0.2rem solid var(--primary-bg);
+        background-color: var(--primary-bg);
+        color: var(--text);
     }
     .settings-input:focus, .settings-select:focus {
         outline: none !important;
@@ -115,9 +119,30 @@
         border-radius: 0.2rem;
         border: 0.2rem solid var(--primary);
     }
+    .settings-textarea-label div {
+        flex-direction: column;
+    }
+    .settings-textarea-label div > * {
+        flex-shrink: 0;
+        word-break: break-all;
+        line-height: normal;
+        word-wrap: break-word;
+        height: 5.4rem;
+    }
     .settings-textarea {
         resize: none;
+        background-color: var(--primary-bg);
+        color: var(--text);
+        border-color: var(--primary-bg);
     }
+    .settings-textarea-preview {
+        /* display: none; */
+        overflow: scroll;
+        background-color: var(--secondary-bg);
+        color: var(--text);
+        border-color: var(--secondary-bg);
+    }
+
     .settings-status {
         flex-shrink: 0;
         width: 1.2rem;
@@ -141,6 +166,54 @@
         transform-origin: 50% 50%;
         stroke-dasharray: 48;
         stroke-dashoffset: 48;
+    }
+
+    .settings-avatar-upload-form {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin: 0rem auto;
+    }
+    .settings-avatar-container {
+        width: 14rem;
+        height: 14rem;
+    }
+    .cr-boundary {
+        user-select: none;
+        border-radius: 0.5rem;
+    }
+    .cr-image {
+        user-select: none;
+    }
+    .settings-avatar-button-container {
+        position: relative;
+        width: 100%;
+        border-radius: 0.5rem;
+        background-color: var(--primary);
+        color: var(--text);
+        text-align: center;
+        padding: 0.5rem;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .settings-avatar-button-container:hover,
+    .settings-avatar-button-container:focus {
+        cursor: pointer;
+        background-color: var(--text);
+        color: var(--primary);
+    }
+    .settings-avatar-button-container span {
+        user-select: none;
+    }
+    .settings-avatar-input {
+        display: none;
+    }
+    .dragover .settings-avatar-container {
+        border-radius: 0.5rem;
+        transition: box-shadow 0.3s ease;
+        box-shadow: 0rem 0rem 0rem 0.25rem var(--primary);
+    }
+    .dragover * {
+        pointer-events: none;
     }
 
     @keyframes stroke {

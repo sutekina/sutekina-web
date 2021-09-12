@@ -18,7 +18,9 @@ require("./init").then(([modules, config, app]) => {
             res.redirect(301, req.originalUrl.replace('u', 'users'));
         });
         app.get("/connect", (req,res,next) => {
-            res.redirect(307, "https://cdn.discordapp.com/attachments/805816465961517086/805816579794403328/SutekinaSwitcher.exe");
+            req.data.page.title = "connect";
+            req.data.page.type = "connect";
+            res.render('index', req.data);    
         });
         app.get("/discord", (req,res,next) => {
             res.redirect(307, config.domains.discord);
@@ -40,12 +42,12 @@ require("./init").then(([modules, config, app]) => {
         req.data = {
             config: config,
             page: {
-                redir: req.data.page.redir || req.query.redir || '/',
+                redir: req.query.redir || '/',
                 title: `${err.status}`,
                 type: "error",
-                url: req.data.page.url || req.path
+                url: req.path
             },
-            user: req.data.user && req.data.user.id ? req.data.user : {
+            user: req.data && req.data.user && req.data.user.id ? req.data.user : {
                 id: null,
                 name: null
             },

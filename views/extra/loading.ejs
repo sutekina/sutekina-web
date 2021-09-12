@@ -46,7 +46,7 @@
         autoplay: true,
         path: '/public/media/json/openingDots.json' // the path to the animation json
     });
-    openingAnimation.setSpeed(1.2)
+    // openingAnimation.setSpeed(2)
     var loopingAnimation = lottie.loadAnimation({
         container: loopingElement, // the dom element that will contain the animation
         renderer: 'svg',
@@ -62,6 +62,6 @@
         openingAnimation.destroy();
         openingElement.style.display = "none";
         loopingAnimation.play();
-        loopingAnimation.setSpeed(2)
+        // loopingAnimation.setSpeed(2)
     });
 </script>

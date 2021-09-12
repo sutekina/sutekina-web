@@ -1,0 +1,61 @@
+<script src="/public/js/croppie.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/public/css/croppie.css">
+
+<script>
+    var file = {
+        input: document.getElementsByClassName('settings-avatar-input')[0],
+        output: document.getElementsByClassName('settings-avatar-output')[0],
+        upload: document.getElementsByClassName("settings-avatar-upload")[0],
+        form: document.getElementsByClassName('settings-avatar-upload-form')[0]
+    };
+    file.croppie = new Croppie(file.output, {
+        enableExif: false,
+        showZoomer: false,
+        viewport: {
+            type: 'circle'
+        } 
+    });
+    var loadFile = function(target) {
+        var croppieImage = document.getElementsByClassName('cr-image')[0];
+        file.croppie.bind({
+            url: URL.createObjectURL(target.files[0])
+        });
+        croppieImage.onload = function() {
+            URL.revokeObjectURL(croppieImage.src); // free memory
+        };
+    };
+    // this code isn't very beautiful but it's necessary for the dragover shit.
+    var lastenter;
+    window.addEventListener('dragenter', function(event) {
+        lastenter = event.target;
+        document.body.classList.add('dragover'); 
+    });
+    window.addEventListener('dragleave', function(event) { 
+        if(lastenter === event.target) {
+            document.body.classList.remove('dragover');
+        }
+    });
+    window.addEventListener('dragover', function(event) {
+        event.preventDefault();
+    });
+    window.addEventListener('drop', function(event) {
+        event.preventDefault();
+        // this would get the url from drag and dropped images that come from the browser.
+        // console.log(new DOMParser().parseFromString(event.dataTransfer.getData('text/html'), 'text/html').body.childNodes[0].getAttribute("src"))
+        file.input.files = event.dataTransfer.files;
+        document.body.classList.remove('dragover');
+        loadFile(file.input);
+    });
+    file.input.addEventListener("change", function(event) {
+        loadFile(event.target);
+    });
+    file.input.parentElement.addEventListener("click", function(event) {
+        file.input.click();
+    });
+    file.upload.addEventListener("click", function(event) {
+        file.croppie.result({type:'base64',circle:false, size: {width: '300', height: '300'}}).then(function(resp) {
+            document.getElementsByClassName('settings-avatar-file')[0].value = resp;
+            file.form.submit();
+        })
+    });
+</script>

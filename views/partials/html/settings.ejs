@@ -2,12 +2,12 @@
     <div class="settings-error"></div>
 
     <div class="settings-tabs-container">
-        <div class="settings-tabs-general settings-tabs">general</div>
+        <div class="settings-tabs-general settings-tabs settings-tabs-active">general</div>
         <div class="settings-tabs-password settings-tabs">password</div>
         <div class="settings-tabs-userpage settings-tabs">userpage</div>
     </div>
     
-    <div class="settings-general settings">
+    <div class="settings-general settings settings-active">
         <div class="settings-section settings-me">
             <h1 class="settings-section-title">me!</h1>
             <div class="settings-configurations-container">
@@ -139,7 +139,7 @@
                             <option value="kz" id="country-kz">Kazakhstan</option>
                             <option value="ke" id="country-ke">Kenya</option>
                             <option value="ki" id="country-ki">Kiribati</option>
-                            <option value="kr" id="country-kr">Korea</option>
+                            <option value="kr" id="country-kr">South Korea</option>
                             <option value="kp" id="country-kp">North Korea</option>
                             <option value="kw" id="country-kw">Kuwait</option>
                             <option value="kg" id="country-kg">Kyrgyzstan</option>
@@ -288,10 +288,24 @@
                 </label>
             </div>
         </div>
-        <div class="settings-section settings-socials">
-            <h1 class="settings-section-title">socials!</h1>
+        <div class="settings-section settings-avatar">
+            <h1 class="settings-section-title">avatar!</h1>
             <div class="settings-configurations-container">
-                
+
+                <form class="settings-avatar-upload-form" method="post" enctype="application/x-www-form-urlencoded" action="/account/avatar">
+                    <div class="settings-avatar-container">
+                        <img class="settings-avatar-output" src="https://<%= config.domains.avatar %>/<%= user.id %>"/>
+                    </div>
+                    <div class="settings-avatar-button-container">
+                        <span>choose avatar</span>
+                        <input type="file" class="settings-avatar-input" accept="image/png, image/jpeg">
+                    </div>
+                    <div class="settings-avatar-button-container settings-avatar-upload">
+                        <span>save</span>
+                    </div>
+                    <input type="hidden" class="settings-avatar-file" name="file">
+                </form>
+                <%- include('../js/avatarUpload') %> 
             </div>
         </div>
     </div>
@@ -304,8 +318,8 @@
         </div>
     </div>
     <div class="settings-userpage settings">
-        <div class="settings-section settings-avatar">
-            <h1 class="settings-section-title">avatar!</h1>
+        <div class="settings-section settings-socials">
+            <h1 class="settings-section-title">socials!</h1>
             <div class="settings-configurations-container">
                 
             </div>
@@ -313,13 +327,10 @@
         <div class="settings-section settings-about">
             <h1 class="settings-section-title">about!</h1>
             <div class="settings-configurations-container">
-                <label for="about" class="settings-label">
-                    <span></span>
+                <label for="about" class="settings-label settings-textarea-label">
                     <div class="settings-select-container">
-                        <textarea class="settings-input settings-textarea" name="aboout" id="about" data-settings-type="user-details" rows="5"></textarea>
-                        <svg class="settings-status" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-                            <path class="settings-status-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
-                        </svg>
+                        <textarea spellcheck="false" class="settings-input settings-nosubmit settings-textarea" id="about" data-settings-type="user-details"></textarea>
+                        <div class="settings-textarea-preview"></div>
                     </div>
                 </label>
             </div>
@@ -331,16 +342,12 @@
     let country = document.getElementsByClassName("settings-select")[0].dataset.selectedCountry;
 
     document.getElementById(`country-${country}`).selected = true;
-
-    if(location.hash) {
-        document.getElementsByClassName('settings-userpage')[0].classList.add('settings-active')
-        document.getElementsByClassName('settings-tabs-userpage')[0].classList.add('settings-tabs-active')
-    } else {
-        document.getElementsByClassName('settings-general')[0].classList.add('settings-active'); 
-        document.getElementsByClassName('settings-tabs-general')[0].classList.add('settings-tabs-active')
-    }
+    
+    document.querySelector(".settings-about .settings-textarea").addEventListener("input", (event) => {
+        document.getElementsByClassName("settings-textarea-preview")[0].innerText = event.target.value;
+    });
     window.addEventListener("change", async function(event) {
-        if(event.target.classList.contains("settings-input") || event.target.classList.contains("settings-select")) {
+        if((event.target.classList.contains("settings-input") || event.target.classList.contains("settings-select")) && !event.target.classList.contains("settings-nosubmit")) {
             let statusElement = event.target.nextElementSibling;
 
             if(statusElement.classList.contains("settings-status-active")) {
@@ -350,7 +357,7 @@
             let data = {
                 key: event.target.id,
                 type: event.target.dataset.settingsType,
-                value: event.target.value
+                value: event.target.value || " "
             };
 
             let response = await fetch("/account/settings", {
@@ -360,13 +367,17 @@
                 body: JSON.stringify(data)
             });
 
-            if(response.status === 200) return statusElement.classList.add("settings-status-active");
+            if(response.status === 200) {
+                document.getElementsByClassName("settings-error")[0].style.display = "none";
+                return statusElement.classList.add("settings-status-active");
+            }
 
             document.getElementsByClassName("settings-error")[0].style.display = "flex";
             
             response.json().then(body => document.getElementsByClassName("settings-error")[0].innerText = `${body.status} ${body.message}`);
         }
     });
+
     window.addEventListener(touchEvent, function(event) {
         if(event.target.classList.contains("settings-tabs") && !event.target.classList.contains("settings-tabs-disabled")) {
             document.getElementsByClassName(`settings-active`)[0].classList.remove("settings-active");
@@ -376,3 +387,4 @@
         };
     });
 </script>
+

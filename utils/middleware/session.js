@@ -1,7 +1,7 @@
 const {modules} = require('../../main');
 const {logging, errorHandling, mysql} = require('../.');
 module.exports = (req, res, next) => {
-    if(req.session.user_id) {
+    if(req.session.user_id && !(req.baseUrl ? req.baseUrl + req.path : req.path).startsWith("/public")) {
         query = `SELECT * FROM users WHERE id = ?`;
         mysql(modules["mysql2"].pool, query, [req.session.user_id])
             .then(({result}) => {
