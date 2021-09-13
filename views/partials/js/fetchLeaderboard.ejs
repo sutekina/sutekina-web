@@ -5,24 +5,116 @@
 
     let params = Object.fromEntries(urlSearchParams.entries());
     
-    let page = params.page ? params.page : 0;
+    let page = params.page ? params.page : 1;
+    let limit = 50;
+    let offset = (page - 1) * limit;
     let mod = params.mod ? params.mod : "vn";
     let mode = params.mode ? params.mode : "std";
-    let country = params.country ? params.country : undefined;
-    
-    let request = new Request(`${apiURL}v2/users?limit=50&offset=${page*50}&mod=${mod}&mode=${mode}&country=${country}`);
+    let country = params.country && params.country !== "all" ? params.country : "all";
+
+    let request = new Request(`${apiURL}v2/users?limit=${limit}&hasPlayed=true&offset=${offset}&mod=${mod}&mode=${mode}&country=${country}`);
+    let count = new Request(`${apiURL}v2/users?count=true&hasPlayed=true&mod=${mod}&mode=${mode}&country=${country}`);
     let playerTable = document.getElementsByClassName("player-table-body")[0];
+    document.getElementsByClassName(`options-${mod}`)[0].classList.add("options-button-active");
+    document.getElementsByClassName(`options-${mode}`)[0].classList.add("options-button-active");
+
+    document.getElementById(`country-${country}`).selected = true;
+
+    let disabledModes = {
+        vn: [],
+        rx: ["mania"],
+        ap: ["mania", "taiko", "catch"]
+    }
+
+    disabledModes[mod].forEach(disabledMode => {
+        document.getElementsByClassName(`options-${disabledMode}`)[0].classList.add(`options-button-disabled`);
+    });
     
+    let disabledMods = {
+        std: [],
+        taiko: ["ap"],
+        mania: ["rx", "ap"],
+        catch: ["ap"]
+    }
+
+    disabledMods[mode].forEach(disabledMod => {
+        document.getElementsByClassName(`options-${disabledMod}`)[0].classList.add(`options-button-disabled`);
+    });
+
     window.addEventListener("load", (e) => {
+        document.getElementsByClassName("country-select")[0].addEventListener("change", (event) => {
+            window.location.href = new URL(`leaderboard?mod=${mod}&mode=${mode}&country=${event.target.value}`, window.location.origin)
+        }); 
+
+        window.addEventListener(touchEvent, function(event) {
+            if(event.target.classList.contains("options-button") && !event.target.classList.contains("options-button-disabled")) {
+                let settings = {
+                    mod,
+                    mode
+                };
+                let buttonType = event.target.dataset.name.match(/^(vn|rx|ap)$/) ? ["mod", "mode"] : ["mode", "mod"];
+
+                window.location.href = new URL(`leaderboard?${buttonType[0]}=${event.target.dataset.name}&${buttonType[1]}=${settings[buttonType[1]]}&country=${country}`, window.location.origin)
+            }
+        });
+
+        fetch(count).then(res => {
+            return res.json();
+        }).then(({count}) => {
+            page = Number(page);
+            let wrapper = document.createElement("div");
+            let pages = Math.ceil(count/limit);
+            let buttonWindow = 5;
+            let maxLeft = (page - Math.floor(buttonWindow / 2));
+            let maxRight = (page + Math.floor(buttonWindow / 2));
+            
+            // if there are more total pages than the max button amount
+            if(pages > buttonWindow /*|| page > count //idk why i put this.*/) {
+                // if currentPage - window / 2 is less than 1 then set maxLeft to 1 and max right is the window.
+                if(maxLeft < 1) {
+                    maxLeft = 1;
+                    maxRight = buttonWindow;
+                }
+                // if currentPage + window / 2 is bigger than the total amount of pages then set maxLeft to pages - the window - 1 and maxRight to the amount of pages
+                if(maxRight > pages) {
+                    maxLeft = pages - (buttonWindow - 1);
+                    maxRight = pages;
+                    // if maxLeft is less than one set to 1
+                    if(maxLeft < 1) {
+                        maxLeft = 1;
+                    }
+                }
+
+                for(let i = maxLeft; i <= maxRight; i++) {
+                    if(i != page) wrapper.innerHTML += `<a class="pagination" href="${new URL(`leaderboard?mod=${mod}&mode=${mode}&country=${country}&page=${i}`, window.location.origin)}">${i}</a>`;
+                    if(i == page) wrapper.innerHTML += `<a class="pagination pagination-active" href="${new URL(`leaderboard?mod=${mod}&mode=${mode}&country=${country}&page=${i}`, window.location.origin)}">${i}</a>`;
+                }
+
+                if(page > 3) {
+                    wrapper.innerHTML = `<a class="pagination pagination-first" href="${new URL(`leaderboard?mod=${mod}&mode=${mode}&country=${country}&page=1`, window.location.origin)}">1</a><span class="pagination-spaceholder">...</span>` + wrapper.innerHTML;
+                }
+                if(page < (pages - 2)) {
+                    wrapper.innerHTML += `<span class="pagination-spaceholder">...</span><a class="pagination pagination-last" href="${new URL(`leaderboard?mod=${mod}&mode=${mode}&country=${country}&page=${pages}`, window.location.origin)}">${pages}</a>`;
+                }
+            } else {
+                for(let i = 0; i < pages; i++) {
+                    if(i+1 != page) wrapper.innerHTML += `<a class="pagination" href="${new URL(`leaderboard?mod=${mod}&mode=${mode}&country=${country}&page=${i + 1}`, window.location.origin)}">${i + 1}</a>`;
+                    if(i+1 == page) wrapper.innerHTML += `<a class="pagination pagination-active" href="${new URL(`leaderboard?mod=${mod}&mode=${mode}&country=${country}&page=${i + 1}`, window.location.origin)}">${i + 1}</a>`;
+                }
+            }
+            
+            for(let paginationElement of document.getElementsByClassName("pagination-container")) {
+                paginationElement.innerHTML = wrapper.innerHTML;
+            }
+        });
+
         fetch(request).then(res => {
             return res.json();
         }).then(async res => {
             for(let i = 0; i < res.length; i++) {
-                if(res[i].playCount > 0) {
-                    addUser(res[i]);
+                addUser(res[i]);
 
-                    while(await new Promise(r => setTimeout(r, 10)));
-                }
+                while(await new Promise(r => setTimeout(r, 10)));
             }
         });
     });
@@ -34,7 +126,7 @@
         rankCell.classList.add("player-rank");
         rankCell.dataset.sutekinaTitle = "rank"
         rankCell.title = "rank";
-        rankCell.appendChild(document.createTextNode("#" + (country ? user.countryRank : user.globalRank)))
+        rankCell.appendChild(document.createTextNode("#" + (country && country !== "all" ? user.countryRank : user.globalRank)))
 
         let countryCell = playerRow.insertCell();
         countryCell.classList.add("player-country");

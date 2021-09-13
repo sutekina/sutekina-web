@@ -4,6 +4,7 @@
 <script>
     var file = {
         input: document.getElementsByClassName('settings-avatar-input')[0],
+        container: document.getElementsByClassName('settings-avatar-container')[0],
         output: document.getElementsByClassName('settings-avatar-output')[0],
         upload: document.getElementsByClassName("settings-avatar-upload")[0],
         form: document.getElementsByClassName('settings-avatar-upload-form')[0]
@@ -44,15 +45,19 @@
         // console.log(new DOMParser().parseFromString(event.dataTransfer.getData('text/html'), 'text/html').body.childNodes[0].getAttribute("src"))
         file.input.files = event.dataTransfer.files;
         document.body.classList.remove('dragover');
+        if(!file.input.files[0].type.includes("image")) return file.container.classList.add("settings-avatar-error");
+        file.container.classList.remove("settings-avatar-error");
         loadFile(file.input);
     });
     file.input.addEventListener("change", function(event) {
+        if(!event.target.files[0].type.includes("image")) return file.container.classList.add("settings-avatar-error");
+        file.container.classList.remove("settings-avatar-error");
         loadFile(event.target);
     });
-    file.input.parentElement.addEventListener("click", function(event) {
+    file.input.parentElement.addEventListener(touchEvent, function(event) {
         file.input.click();
     });
-    file.upload.addEventListener("click", function(event) {
+    file.upload.addEventListener(touchEvent, function(event) {
         file.croppie.result({type:'base64',circle:false, size: {width: '300', height: '300'}}).then(function(resp) {
             document.getElementsByClassName('settings-avatar-file')[0].value = resp;
             file.form.submit();
