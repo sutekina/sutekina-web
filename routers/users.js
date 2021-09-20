@@ -19,7 +19,7 @@ module.exports = router;
 let getUser = (id, filter = "safe_name" | "id")  => {
     return new Promise((resolve, reject) => {
         mysql(pool, `SELECT id, name FROM users WHERE ${filter} = ? AND priv >= 3`, [id])
-            .then(({result}) => resolve(result))
+            .then(({results}) => resolve(results))
             .catch(error => reject(new errorHandling.SutekinaError({message:error.message, status:500, level:"error"})));
     });
 }

@@ -9,7 +9,9 @@
         if(event.target.id === "showpassword") document.getElementById("password").type = event.target.checked ? "text" : "password";
     });
     document.body.addEventListener('error', function(event) {
-        if(event.target.matches("img")) {
+        if(event.target.matches("img") && event.target.classList.contains("results-users-icon")) {
+            event.target.src = event.target.src.split("#")[0] + "#date=" + new Date().getTime();
+        } else if(event.target.matches("img")) {
             event.target.src = '/public/media/images/unknown.png';
         }
     }, true);

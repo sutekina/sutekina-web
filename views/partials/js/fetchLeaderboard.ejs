@@ -13,7 +13,6 @@
     let country = params.country && params.country !== "all" ? params.country : "all";
 
     let request = new Request(`${apiURL}v2/users?limit=${limit}&hasPlayed=true&offset=${offset}&mod=${mod}&mode=${mode}&country=${country}`);
-    let count = new Request(`${apiURL}v2/users?count=true&hasPlayed=true&mod=${mod}&mode=${mode}&country=${country}`);
     let playerTable = document.getElementsByClassName("player-table-body")[0];
     document.getElementsByClassName(`options-${mod}`)[0].classList.add("options-button-active");
     document.getElementsByClassName(`options-${mode}`)[0].classList.add("options-button-active");
@@ -58,9 +57,10 @@
             }
         });
 
-        fetch(count).then(res => {
+        fetch(request).then(res => {
             return res.json();
-        }).then(({count}) => {
+        }).then(async res => {
+            let count = res.count;
             page = Number(page);
             let wrapper = document.createElement("div");
             let pages = Math.ceil(count/limit);
@@ -106,11 +106,8 @@
             for(let paginationElement of document.getElementsByClassName("pagination-container")) {
                 paginationElement.innerHTML = wrapper.innerHTML;
             }
-        });
 
-        fetch(request).then(res => {
-            return res.json();
-        }).then(async res => {
+            res = res.results;
             for(let i = 0; i < res.length; i++) {
                 addUser(res[i]);
 

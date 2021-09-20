@@ -22,6 +22,11 @@ require("./init").then(([modules, config, app]) => {
             req.data.page.type = "connect";
             res.render('index', req.data);    
         });
+        app.get("/search", (req,res,next) => {
+            req.data.page.title = "search";
+            req.data.page.type = "search";
+            res.render('index', req.data);    
+        });
         app.get("/discord", (req,res,next) => {
             res.redirect(307, config.domains.discord);
         });
@@ -34,11 +39,12 @@ require("./init").then(([modules, config, app]) => {
     app.use((req, res, next) => next(new errorHandling.SutekinaError({status:404, level:"debug"})));
 
     app.use((err, req, res, next) => {
-        if(!err.message) err = new errorHandling.SutekinaError({message: err});
-        if(!err.status) err.status = err.statusCode || err.code || 500;
-        logging[err.level || "error"](err, {status: err.status});
+        err = err.message ? err : new errorHandling.SutekinaError({message: err});
+        err.status = err.status ? err.status : err.statusCode || err.code || 500;
+
+        logging[err.level || "error"](err.message, err);
         
-        res.statusMessage = errorHandling.ErrorStatusCodes[err.status];
+        res.statusMessage = errorHandling.ErrorStatusCodes[err.status] || errorHandling.ErrorStatusCodes[500];
         req.data = {
             config: config,
             page: {

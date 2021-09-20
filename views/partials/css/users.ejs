@@ -182,6 +182,9 @@
     .badge-verified {
         color: greenyellow;
     }
+    .badge-bot {
+        color: mediumorchid;
+    }
     .user-page-title {
         margin-bottom: 0.2rem;
         padding-bottom: 0.1rem;
@@ -243,18 +246,20 @@
         border-top-color: var(--primary);
         border-top-style: solid;
         display: flex;
+        justify-content: space-between;
+        flex-direction: row;
+    }
+    .user-extra-item-container {
+        display: flex;
+        gap: 0.6rem;
+        font-size: 0.8rem;
         flex-direction: row;
     }
     .user-extra-item {
-        margin: auto;
-        flex-basis: 20%;
-    }
-    
-    .user-extra-item div {
-        padding-top: 0.3rem;   
+        margin: auto 0rem;
+        /* flex-basis: 25%; */
     }
     .user-extra #performance-points {
-        flex-basis: 60%;
         font-size: 2.5rem;
         text-align: right;
     }

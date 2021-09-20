@@ -43,14 +43,14 @@ router.post("/login", async (req, res, next) => {
         logging.debug(`Login request for "${req.body.username}" from ${geoInfo.ip}, time elapsed: ${clock(reqTimer)}ms`);
 
         query = `SELECT id, safe_name, pw_bcrypt, priv, country FROM users WHERE safe_name = ?`;
-        let {result} = await mysql(pool, query, [req.body.username.toLowerCase().trim().replace(" ", "_")]);
-        if(!result[0]) return res.redirect(`/account/login?error=LOGIN_INVALID&redir=${req.data.page.redir}`);
-        let user = result[0];
+        let {results} = await mysql(pool, query, [req.body.username.toLowerCase().trim().replace(" ", "_")]);
+        if(!results[0]) return res.redirect(`/account/login?error=LOGIN_INVALID&redir=${req.data.page.redir}`);
+        let user = results[0];
         let passwordMd5 = new Buffer.from(crypto.createHash("md5").update(new Buffer.from(req.body.password, "utf-8")).digest("hex"), "utf-8");
 
         // ~325ms avg, i could cache but i don't want to.
-        result = await modules["bcrypt"].compare(passwordMd5, user.pw_bcrypt);
-        if(!result) return res.redirect(`/account/login?error=LOGIN_INVALID&redir=${req.data.page.redir}`);
+        results = await modules["bcrypt"].compare(passwordMd5, user.pw_bcrypt);
+        if(!results) return res.redirect(`/account/login?error=LOGIN_INVALID&redir=${req.data.page.redir}`);
 
         // code to do something if user from other country than the country they created their acc with
         // if(user.country != req.get("cf-ipcountry").toLowerCase()) 
@@ -61,7 +61,7 @@ router.post("/login", async (req, res, next) => {
         if((user.priv & 1 << 1) === 0) return res.redirect(`/account/login?error=VERIFY_ACCOUNT&redir=${req.data.page.redir}`);
 
         query = `INSERT INTO user_logins (user_id, ip_address, register, geo_info, user_login_flags, datetime) VALUES(?, INET6_ATON(?), ?, ?, ?, UTC_TIMESTAMP());`;;
-        result = await mysql(pool, query, [user.id, geoInfo.ip, false, geoInfo, 0])
+        results = await mysql(pool, query, [user.id, geoInfo.ip, false, geoInfo, 0])
         req.session.user_id = user.id;
         if(!req.body.keeplogin) req.session.cookie.expires = false;
         logging.debug(`Login took ${clock(reqTimer)}ms`);
@@ -106,9 +106,9 @@ router.post("/register", async (req, res, next) => {
     try {
         if(test.username !== true) return res.redirect(`/account/register?error=${test.username}&redir=${req.data.page.redir}`);
         let safe_name = req.body.username.toLowerCase().replace(" ", "_");
-        if((await mysql(pool, `SELECT 1 FROM users WHERE safe_name = ?`, [safe_name])).result[0]) return res.redirect(`/account/register?error=USERNAME_TAKEN&redir=${req.data.page.redir}`);
+        if((await mysql(pool, `SELECT 1 FROM users WHERE safe_name = ?`, [safe_name])).results[0]) return res.redirect(`/account/register?error=USERNAME_TAKEN&redir=${req.data.page.redir}`);
         if(test.email !== true) return res.redirect(`/account/register?error=${test.email}&redir=${req.data.page.redir}`);
-        if((await mysql(pool, `SELECT 1 FROM users WHERE email = ?`, [req.body.email])).result[0]) return res.redirect(`/account/register?error=EMAIL_TAKEN&redir=${req.data.page.redir}`);
+        if((await mysql(pool, `SELECT 1 FROM users WHERE email = ?`, [req.body.email])).results[0]) return res.redirect(`/account/register?error=EMAIL_TAKEN&redir=${req.data.page.redir}`);
         if(test.password !== true) return res.redirect(`/account/register?error=${test.password}&redir=${req.data.page.redir}`);
         if(!test.ip) return res.redirect(`/account/register?error=REGISTER_FAILED`);
         
@@ -121,8 +121,8 @@ router.post("/register", async (req, res, next) => {
         let country = req.get(req.get("cf-ipcountry").toLowerCase()) || geoInfo.country_code.toLowerCase() || "xx";
 
         query = `INSERT INTO users (name, safe_name, email, pw_bcrypt, country, creation_time, latest_activity) VALUES(?, ?, ?, ?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP());`;
-        result = (await mysql(pool, query, [req.body.username, safe_name, req.body.email, password, country])).result;
-        let userId = result.insertId;
+        results = (await mysql(pool, query, [req.body.username, safe_name, req.body.email, password, country])).results;
+        let userId = results.insertId;
         for(let mode = 0; mode < 8; mode++) {
             query = `INSERT INTO stats (id, mode) VALUES(?, ?);`;
             let {} = await mysql(pool, query, [userId, mode]);

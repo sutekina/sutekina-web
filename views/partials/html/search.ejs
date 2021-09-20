@@ -1,0 +1,169 @@
+<div class="search-container">
+    <div class="search-title">
+        search    
+    </div>
+    <div class="search-bar">
+        <div class="search-icon"></div>
+        <input type="text" placeholder="type to search.." class="search-input">
+    </div>
+    <div class="search-modes">
+        <div data-name="users" id="users-button" class="search-modes-button">
+            users <span id="users-count">0</span>
+        </div>
+        <div data-name="beatmaps" id="beatmaps-button" class="search-modes-button">
+            beatmaps <span id="beatmaps-count">0</span>
+        </div>
+        <div data-name="clans" id="clans-button" class="search-modes-button">
+            clans <span id="clans-count">0</span>
+        </div>
+    </div>
+    <!-- use in the future maybe for order etc. -->
+    <div class="search-options">
+        
+    </div>
+    <div class="search-pagination-container"></div>
+    <div class="search-results"></div>
+    <div class="search-pagination-container"></div>
+</div>
+
+<script>
+    let apiURL = new URL("https://" + document.getElementsByName("sutekina:api")[0].getAttribute('content'));
+    let avaURL = new URL("https://" + document.getElementsByName("sutekina:ava")[0].getAttribute('content'));
+    let baseUrl = new URL("https://" + document.getElementsByName("sutekina:url")[0].getAttribute('content'));
+    let urlSearchParams = new URLSearchParams(window.location.search);
+    let params = Object.fromEntries(urlSearchParams.entries());
+
+    let mode = params.m && params.m.match(/^(users|beatmaps|clans)$/) ? params.m : "users";
+    let query = params.q || "";
+
+    document.getElementById(`${mode}-button`).classList.add("search-modes-button-active");
+
+    let searchInput = document.getElementsByClassName('search-input')[0];
+    let resultsContainer = document.getElementsByClassName('search-results')[0];
+
+    if(query !== "") searchInput.value = query; 
+
+    window.addEventListener(touchEvent, function(event) {
+        if(event.target.closest(".search-modes-button")) {
+            window.location.href = new URL(`search?m=${event.target.closest(".search-modes-button").dataset.name}&q=${query}`, window.location.origin);
+        };
+    });
+
+    window.addEventListener("load", async function() {
+        searchInput.focus();
+        
+        let page = params.page ? params.page : 1;
+        // higher limits tend to make the avatar server suffer but you could crank this up
+        let limit = 6;
+        let offset = (page - 1) * limit;
+
+        let users = new Request(`${apiURL}v2/users?limit=${limit}&offset=${offset}&search=${query}&order=name&ascending=true`);
+        let beatmaps = new Request(`${apiURL}v2/beatmapsets?limit=${limit}&offset=${offset}&search=${query}`);
+        let clans = new Request(`${apiURL}v2/clans?limit=${limit}&offset=${offset}&search=${query}`);
+        
+        let results = {
+            users: await fetch(users).then(res => {
+                return res.json();
+            }),
+            beatmaps: await fetch(beatmaps).then(res => {
+                return res.json();
+            }),
+            clans: await fetch(clans).then(res => {
+                return res.json();
+            })
+        }
+
+        for(const item in results) {
+            document.getElementById(`${item}-count`).innerText = results[item].count;
+        }
+
+        pagination(results[mode].count, page, limit);
+        createList[mode](results[mode].results);
+    });
+
+    searchInput.addEventListener("change", function(event) {
+        window.location.href = new URL(`search?m=${mode}&q=${event.target.value}`, window.location.origin);
+    });
+
+    const createList = {
+        async users(users) {
+            // <div class="results-users">
+            //         <div class="results-users-icon"></div>
+            //         <div class="results-users-information">
+            //             <div class="results-users-country"></div>
+            //             <div class="results-users-name"></div>
+            //         </div>
+            //     </div>
+            // resultsContainer
+            
+            for(const user of users) {
+                let container = document.createElement('a');
+                container.href = "/users/" + user.userId;
+                container.classList.add("results-users");
+
+                container.innerHTML = `
+                    <img class="results-users-icon" src="${avaURL}${user.userId}"></img>
+                    <div class="results-users-information">
+                        <div class="results-users-country" style="background-image: url('${baseUrl}public/media/images/flags/${user.country.toUpperCase()}.png')"></div>
+                        <div class="results-users-name">${user.name}</div>
+                    </div>`;
+
+                resultsContainer.append(container)
+            }
+        },
+        async beatmaps(beatmaps) {
+
+        },
+        async clans(clans) {
+
+        }
+    }
+
+    const pagination = function(count, page, limit) {
+        page = Number(page);
+        let wrapper = document.createElement("div");
+        let pages = Math.ceil(count/limit);
+        let buttonWindow = 5;
+        let maxLeft = (page - Math.floor(buttonWindow / 2));
+        let maxRight = (page + Math.floor(buttonWindow / 2));
+        
+        // if there are more total pages than the max button amount
+        if(pages > buttonWindow /*|| page > count //idk why i put this.*/) {
+            // if currentPage - window / 2 is less than 1 then set maxLeft to 1 and max right is the window.
+            if(maxLeft < 1) {
+                maxLeft = 1;
+                maxRight = buttonWindow;
+            }
+            // if currentPage + window / 2 is bigger than the total amount of pages then set maxLeft to pages - the window - 1 and maxRight to the amount of pages
+            if(maxRight > pages) {
+                maxLeft = pages - (buttonWindow - 1);
+                maxRight = pages;
+                // if maxLeft is less than one set to 1
+                if(maxLeft < 1) {
+                    maxLeft = 1;
+                }
+            }
+
+            for(let i = maxLeft; i <= maxRight; i++) {
+                if(i != page) wrapper.innerHTML += `<a class="search-pagination" href="${new URL(`search?m=${mode}&q=${query}&page=${i}`, window.location.origin)}">${i}</a>`;
+                if(i == page) wrapper.innerHTML += `<a class="search-pagination search-pagination-active" href="${new URL(`search?m=${mode}&q=${query}&page=${i}`, window.location.origin)}">${i}</a>`;
+            }
+
+            if(page > 3) {
+                wrapper.innerHTML = `<a class="search-pagination search-pagination-first" href="${new URL(`search?m=${mode}&q=${query}&page=1`, window.location.origin)}">1</a><span class="search-pagination-spaceholder">...</span>` + wrapper.innerHTML;
+            }
+            if(page < (pages - 2)) {
+                wrapper.innerHTML += `<span class="search-pagination-spaceholder">...</span><a class="search-pagination search-pagination-last" href="${new URL(`search?m=${mode}&q=${query}&page=${pages}`, window.location.origin)}">${pages}</a>`;
+            }
+        } else {
+            for(let i = 0; i < pages; i++) {
+                if(i+1 != page) wrapper.innerHTML += `<a class="search-pagination" href="${new URL(`search?m=${mode}&q=${query}&page=${i + 1}`, window.location.origin)}">${i + 1}</a>`;
+                if(i+1 == page) wrapper.innerHTML += `<a class="search-pagination search-pagination-active" href="${new URL(`search?m=${mode}&q=${query}&page=${i + 1}`, window.location.origin)}">${i + 1}</a>`;
+            }
+        }
+        
+        for(let paginationElement of document.getElementsByClassName("search-pagination-container")) {
+            paginationElement.innerHTML = wrapper.innerHTML;
+        }
+    }
+</script>
