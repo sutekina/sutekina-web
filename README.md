@@ -32,6 +32,6 @@ node .
 # - for permission issues either run with sudo or use "sudo chown -R <user> .", preferably do the latter.
 ```
 
-# uninstalling:
+## uninstalling:
 
 generally speaking, if you are uninstalling it's pretty straightforward but you should be aware that sutekina-web creates an event scheduler in your mysql db, you can easily drop it using `DROP EVENT AddUserHistory;`.
