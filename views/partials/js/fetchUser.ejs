@@ -182,7 +182,7 @@
         document.getElementsByClassName("user-about-country")[0].title = countryCodes[user.country.toUpperCase()];
         document.getElementsByClassName("user-about-country")[0].href = new URL(`leaderboard?mod=${mod}&mode=${mode}&country=${user.country}`, window.location.origin)
         document.getElementsByClassName("user-about-country-name")[0].title = countryCodes[user.country.toUpperCase()];
-
+        
         document.getElementById("accuracy").innerText = user.accuracy.toFixed(2) + "%";
         document.getElementById("play-count").innerText = numberWithCommas(user.playCount);
         document.getElementById("total-score").innerText = numberWithCommas(user.totalScore);
@@ -190,19 +190,30 @@
         document.getElementById("max-combo").innerText = numberWithCommas(user.maxCombo);
         document.getElementById("global-rank").innerText = "#" + numberWithCommas(user.globalRank);
         document.getElementById("country-rank").innerText = "#" + numberWithCommas(user.countryRank);
-
+        
         // TODO
+        
+        let userHistory = await fetch(new Request(`${apiURL}v2/users/${username}/history?mod=${mod}&mode=${mode}`)).then(res => {
+            return res.json();
+        });
 
         let ranksOverTime = [];
         let ranksLimit = 90;
         let chartHeight = 100;
-        for(let i = 1; i < (ranksLimit + 1); i++) {
-            // let res = Math.round(Math.random() * (100 / i)) ;
-            // let res = Math.round(Math.log(i * i) * 100);
-            let res = i
-            ranksOverTime.push(res);
-        }
 
+        if(!userHistory[0]) {
+            ranksOverTime = new Array(ranksLimit).fill(user.globalRank);
+        } else {
+            ranksOverTime.push(userHistory[0].globalRank);
+            for(const history of userHistory) {
+                let seconds = (+new Date() - new Date(history.datetime)) / 1000;
+                ranksOverTime[ranksLimit - Math.floor(seconds / 86400)] = history.globalRank;
+            }
+            for(let i = 1; i < ranksLimit; i++) {
+                if(ranksOverTime[i]) continue;
+                ranksOverTime[i] = ranksOverTime[ranksOverTime.length - 1];
+            }
+        }
         ranksOverTime[ranksLimit] = user.globalRank;
 
         let worstRank = Math.max(...ranksOverTime);
