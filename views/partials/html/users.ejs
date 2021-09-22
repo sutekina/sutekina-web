@@ -64,7 +64,7 @@
             <div class="user-page-about">
                 <div class="user-page-title">
                     <h1 class="">about me!</h1>
-
+                    
                     <div class="user-badges"></div>
                 </div>
                 <p class="user-page-content">
@@ -72,21 +72,36 @@
                 </p>
             </div>
         </div>
-        <div class="user-rank">
-            <div class="user-rank-container global-rank">
-                <h1>global rank</h1>
-                <div id="global-rank"></div>
+        <div class="user-chart">
+            <div class="user-chart-container">
+                <svg viewBox="0 0 900 100" preserveAspectRatio="none" class="user-chart-svg">
+                    <polyline class="user-chart-polyline" points=""></polyline>
+                </svg>
+                <div class="user-chart-hover">
+                    <div class="user-chart-hover-line"></div>
+                    <div class="user-chart-hover-circle"></div>
+                    <div class="user-chart-hover-info" data-float="left">
+                        <div class="user-chart-hover-rank"></div>
+                        <div class="user-chart-hover-date"></div>
+                    </div>
+                </div>
             </div>
-            <div class="user-rank-container country-rank">
-                <h1>country rank</h1>
-                <div id="country-rank"></div>
+            <div class="user-rank">
+                <div class="user-rank-container global-rank">
+                    <h1>global rank</h1>
+                    <div id="global-rank"></div>
+                </div>
+                <div class="user-rank-container country-rank">
+                    <h1>country rank</h1>
+                    <div id="country-rank"></div>
+                </div>
             </div>
         </div>
         <div class="user-extra">
             <!-- <div id="play-time"></div> -->
             <div class="user-extra-item-container">
-                <div class="user-extra-item" id="created-at">joined </div>
-                <div class="user-extra-item" id="latest-activity">last active </div>
+                <div class="user-extra-item" id="created-at"></div>
+                <div class="user-extra-item" id="latest-activity"></div>
             </div>
 
             <div id="performance-points"></div>

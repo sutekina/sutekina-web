@@ -43,6 +43,12 @@
         "discord": "https://discord.com/invite/xRCMXJ7JPh",
         "github:": "https://github.com/sutekina/"
     },
+    "local": {
+        "api": {
+            "host": "localhost",
+            "port": "4001"
+        }
+    },
     "settings": {
         "username": {
             "minimum": 2,

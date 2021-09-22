@@ -11,7 +11,8 @@
     let countryCodes;
     let bitwiseMods;
     let countryEmojis;
-
+    
+    let userRanks = [];
     let currentBestOffset = 5;
     let currentRecentOffset = 5;
 
@@ -52,6 +53,56 @@
                 document.getElementsByClassName("user")[0].style.opacity = "1";
                 document.getElementsByClassName("user")[0].style.visibility = "visible";
             });            
+        });
+        let chartSvg = document.getElementsByClassName("user-chart-svg")[0];
+        let chartHover = document.getElementsByClassName("user-chart-hover")[0];
+        let chartLine = document.getElementsByClassName("user-chart-hover-line")[0];
+        let chartCircle = document.getElementsByClassName("user-chart-hover-circle")[0];
+        let chartInfo = document.getElementsByClassName("user-chart-hover-info")[0];
+
+        let previousClosest = 0;
+        chartHover.addEventListener("mouseenter", (event) => {
+            for(const chartChild of chartHover.children) {
+                chartChild.style.opacity = "1";
+            }
+        });
+        chartHover.addEventListener("mousemove", (event) => {
+            if(event.target.closest(".user-chart-hover-info")) {
+                chartInfo.style.right = "unset";
+                chartInfo.style.left = "unset";
+
+                chartInfo.dataset.float === "left" ? chartInfo.style.right = "1rem" : chartInfo.style.left = "1rem"; 
+                chartInfo.dataset.float === "left" ? chartInfo.dataset.float = "right" : chartInfo.dataset.float = "left"; 
+            }
+
+            if(!userRanks[0] || !event.target.classList.contains("user-chart-hover")) return;
+            
+            let interval = chartSvg.clientWidth / (userRanks.length - 1);
+            let intervalArray = [];
+            let lastIntervalItem = 0;
+
+            for(let i = 0; i < userRanks.length; i++) {
+                intervalArray.push(lastIntervalItem);
+                lastIntervalItem += interval;
+            };
+            
+            let x = event.offsetX;
+            let closest = intervalArray.reduce((a, b) => {
+                return Math.abs(b - x) < Math.abs(a - x) ? b : a;
+            });
+            
+            let heightPercentage = userRanks[intervalArray.indexOf(closest)].percentage;
+
+            chartLine.style.transform = `translateX(${closest}px)`
+            chartCircle.style.transform = `translate(${closest}px, ${(heightPercentage / 100) * chartSvg.clientHeight}px)`;
+            chartInfo.children[0].innerText = `global rank: #${userRanks[intervalArray.indexOf(closest)].rank}`
+            chartInfo.children[1].innerText = `${daysAgo(userRanks[intervalArray.indexOf(closest)].date)}`
+            previousClosest = closest;
+        });
+        chartHover.addEventListener("mouseleave", (event) => {
+            for(const chartChild of chartHover.children) {
+                chartChild.style.opacity = "0";
+            }
         });
     });
     window.addEventListener(touchEvent, async (e) => {
@@ -140,9 +191,55 @@
         document.getElementById("global-rank").innerText = "#" + numberWithCommas(user.globalRank);
         document.getElementById("country-rank").innerText = "#" + numberWithCommas(user.countryRank);
 
-        document.getElementById("created-at").innerHTML += `<b>${dateAgo(new Date(user.creationTime * 1000).getTime())}</b>`;
+        // TODO
+
+        let ranksOverTime = [];
+        let ranksLimit = 90;
+        let chartHeight = 100;
+        for(let i = 1; i < (ranksLimit + 1); i++) {
+            // let res = Math.round(Math.random() * (100 / i)) ;
+            // let res = Math.round(Math.log(i * i) * 100);
+            let res = i
+            ranksOverTime.push(res);
+        }
+
+        ranksOverTime[ranksLimit] = user.globalRank;
+
+        let worstRank = Math.max(...ranksOverTime);
+        let bestRank = Math.min(...ranksOverTime);
+        
+        let polyline = document.getElementsByClassName("user-chart-polyline")[0];
+        let points = "";
+        
+        for(let i = 0; i < ranksOverTime.length; i++) {
+            let rank = ranksOverTime[i];
+            let res = Math.abs(bestRank - rank);
+
+            percentage = (res / (worstRank - bestRank)) * chartHeight;
+            // if someones values are all the same value then worstRank - bestRank would be 0
+            // and then it'd try to divide by 0 which isn't mathematically possible 
+            // therefore it'll become not a number
+
+            // so if that happens we set the percentage to 50 because we know all numbers have to be the same.
+            if(isNaN(percentage)) percentage = 50;
+
+            // generate date
+            let generatedDate = new Date();
+            generatedDate.setDate(new Date().getDate() - (ranksOverTime.length - 1 - i));
+
+            points += `${i * 10}, ${percentage}\n`;
+            userRanks[i] = {
+                rank,
+                percentage,
+                date: generatedDate
+            }
+        }
+
+        polyline.setAttribute("points", points);
+
+        document.getElementById("created-at").innerHTML = `joined <b>${dateAgo(new Date(user.creationTime * 1000).getTime())}</b>`;
         document.getElementById("created-at").title = new Date(user.creationTime * 1000).toLocaleString();
-        document.getElementById("latest-activity").innerHTML += `<b>${dateAgo(new Date(user.latestActivity * 1000).getTime())}</b>`;
+        document.getElementById("latest-activity").innerHTML = `last seen <b>${dateAgo(new Date(user.latestActivity * 1000).getTime())}</b>`;
         document.getElementById("latest-activity").title = new Date(user.latestActivity * 1000).toLocaleString();
         // document.getElementById("play-time").innerText = playTimeAgo(user.playTime);
         // document.getElementById("play-time").title = `approx. ${Math.round(user.playTime / (60*60))} hours`;
@@ -349,8 +446,8 @@
           [58060800000, 'centuries', 2903040000] // 60*60*24*7*4*12*100*20, 60*60*24*7*4*12*100
         ];
         let seconds = (+new Date() - time) / 1000,
-          token = 'ago',
-          list_choice = 1;
+            token = 'ago',
+            list_choice = 1;
         if (Math.floor(seconds) == 0) {
             return 'just now'
         }
@@ -368,6 +465,13 @@
             }
         }
         return time;
+    }
+
+    function daysAgo(time) {
+        let seconds = (+new Date() - time) / 1000,
+            day = 86400; // 60*60*24
+
+        return seconds < (day * 2) ? (seconds < day ? "now" : "1 day ago") : `${Math.floor(seconds / day)} days ago`;
     }
 
     // <div class="user-badge badge-admin">ADM</div>
@@ -420,4 +524,8 @@
             name: "DEV"
         }
     }
+
+    // Array.prototype.closestNumber = (x) => {
+    //     return 
+    // }
 </script>
