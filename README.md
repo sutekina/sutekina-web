@@ -2,6 +2,8 @@
 nodejs frontend implementation for cmyui's gulag.
 the code isn't good, i tried to make it easy to work with but that came at the cost of the code, for prettier code look at sutekina-api. xx
 
+every page is focused to be mobile and desktop friendly :]
+
 ## requirements
 `NODE JS LTS`
 `MYSQL (tested w/ 5.7.33)`
