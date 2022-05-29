@@ -3,5 +3,6 @@ module.exports = {
     logging: require('./logging'),
     clock: require("./clock"),
     mysql: require("./mysql"),
-    request: require("./request")
+    request: require("./request"),
+    Cache: require("./cache")
 }

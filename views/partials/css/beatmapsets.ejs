@@ -1,0 +1,451 @@
+<style>
+    @font-face {
+        font-family:hehe;
+        src: url('/public/media/font/fa-extra.woff2');
+        font-weight:400;
+        font-style:normal
+    }
+
+    main {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem 0;
+    }
+    main > * {
+        background-color: var(--secondary-bg);
+        border-radius: 0.5rem;
+        width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+    .options {
+        background-color: unset !important;
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+        gap: 0.2rem;
+    }
+    .options-button {
+        border-radius: 0.5rem;
+        text-align: center;
+        padding: 0.7rem 0.5rem;
+        background-color: var(--primary);
+        flex-basis: 6rem;
+        flex-shrink: 0;
+        flex-grow: 1;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .options-button:hover:not(.options-button-disabled) {
+        cursor: pointer;
+    }
+    .options-button-active, .options-button:hover:not(.options-button-disabled) {
+        background-color: var(--text);
+        color: var(--primary);
+    }
+    .options-button-disabled {
+        background-color: var(--thirdendary-bg);
+    }
+
+    .beatmapset-header {
+        display: flex;
+        flex-direction: row;
+
+        position: relative;
+        background-size: cover;
+        background-position: 50%;
+        padding: 0rem 2rem;
+    }
+    .beatmapset-header:before {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 100%;
+        content: "";
+        background-color: hsla(200,10%,15%,60%);
+    }
+    .beatmapset-header > * {
+        text-shadow: 0 0.1rem 0.1rem rgb(0 0 0 / 75%);
+        flex-shrink: 0;
+        /* flex-grow: 0; */
+        position: relative;
+    }
+    .beatmapset-header-main {
+        flex: 1;
+        padding: 1rem 0rem;
+        gap: 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;   
+    }
+    .beatmap-difficulty-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+    .beatmapset-nodes-container {
+        margin: 0rem -0.5rem 0rem;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: fit-content;
+        justify-content: left;
+        border-radius: 0.5rem;
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+    .beatmapset-nodes {
+        --diff-color: gold;
+        color: var(--diff-color);
+        text-shadow: none;
+        padding: 0.4rem;
+        margin: 0.08rem;
+        font-size: 1.4rem;
+        opacity: 0.6;
+
+        flex: none;
+        font-family: hehe;
+        font-weight: 400;
+        -webkit-font-smoothing: antialiased;
+        display: inline-block;
+        font-style: normal;
+        font-variant: normal;
+        text-rendering: auto;
+        line-height: 1;
+        box-sizing: border-box;
+
+        transition: all 0.3s ease;
+    }
+    .beatmapset-nodes-active, .beatmapset-nodes:hover {
+        opacity: 1;
+        border-radius: 0.5rem;
+        background-color: rgba(0, 0, 0, 0.8);
+        box-shadow: inset 0 0 0 0.1rem var(--text);
+    }
+    /* std */
+    .beatmapset-nodes-mode-0:before {
+        content: "\e800";
+        box-sizing: border-box;
+    }
+    /* taiko */
+    .beatmapset-nodes-mode-1:before {
+        content: "\e803";
+    }
+    /* ctb */
+    .beatmapset-nodes-mode-2:before {
+        content: "\e801";
+    }
+    /* mania */
+    .beatmapset-nodes-mode-3:before {
+        content: "\e802";
+    }
+    .beatmap-version {
+        font-weight: 600;
+    }
+    .beatmap-star-rating {
+        visibility: hidden;
+        color: var(--osu-color);
+        font-size: 0.8rem;
+    }
+    .beatmap-title-container {
+        display: flex;
+        gap: 0.6rem;
+        flex-direction: column;
+    }
+    .beatmap-title {
+        font-size: 2rem;
+        font-weight: 700;
+    }
+    .beatmap-artist {
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+    .beatmap-creator-container {
+        display: flex;
+        flex-direction: row;
+        gap: 0.4rem;
+    }
+    .beatmap-creator-icon {
+        display: block;
+        height: 4rem;
+        width: 4rem;
+        border-radius: 0.5rem;
+        background-color: rgba(0, 0, 0, 0.4);
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+        transition: box-shadow 0.3s ease;
+    }
+    .beatmap-creator-icon:hover {
+        box-shadow: 0 0 0 0.2rem var(--text);
+    }
+    .beatmap-creator-name {
+        justify-content: center;
+        display: flex;
+        flex-direction: column;
+        font-weight: 500;
+        gap: 0.2rem;
+    }
+    .beatmap-creator-name a {
+        font-weight: 700;
+        color: var(--osu-color);
+    }
+    .beatmapset-buttons-container {
+        display: flex;
+        gap: 0.5rem;
+    }
+    .download-button {
+        display: block;
+        height: 100%;
+        width: 2rem;
+        background-image: url("/public/media/images/download.svg");
+        background-position: center;
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+    .beatmapset-buttons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 2.2rem;
+        padding: 0.5rem;
+        font-weight: 600;
+        font-size: 0.8rem;
+        background-color: rgba(0, 0, 0, 0.4);
+        border-radius: 0.5rem;
+        text-shadow: none;
+        transition: all 0.3s ease;
+    }   
+    .beatmapset-buttons:hover {
+        box-shadow: inset 0 0 0 0.1rem var(--text);
+    } 
+    .beatmapset-header-stats {
+        padding-top: 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 0.5rem;
+        align-items: flex-end;
+    }
+    #beatmapset-status {
+        text-align: center;
+        width: fit-content;
+        font-size: 0.9rem;
+        font-weight: 700;
+        border-radius: 2rem;
+        padding: 0.6rem 1.5rem;
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+    .beatmap-stats {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        width: 18rem;
+    }
+    .beatmap-stats > * {
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+    .beatmap-audio-preview {
+        border-radius: 1rem 1rem 0rem 0rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        padding: 0.6rem;
+        transition: background-color 0.3s ease;
+    }
+    .beatmap-audio-preview:hover {
+        background-color: rgba(0, 0, 0, 0.8);
+        cursor: pointer;
+    }
+    .beatmap-audio-preview[data-audio-playing=true] .beatmap-audio-button {
+        --icon: url("/public/media/images/pause.svg");
+    }
+    .beatmap-audio-button {
+        --icon: url("/public/media/images/play.svg");
+        background-image: var(--icon);
+        background-position: center;
+        background-size: contain;
+        background-repeat: no-repeat;
+        height: 1rem;
+        width: 1rem;
+    }
+    .beatmap-audio-time-elapsed {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: calc(var(--progress)*100%);
+        background-color: var(--osu-color);
+        height: 0.2rem;
+        transition: width 0.2s ease;
+    }
+    .beatmap-stats-specific {
+        padding: 0.6rem 1.5rem;
+        display: flex;
+        gap: 1rem;
+        justify-content: space-evenly;
+        font-size: 0.8rem;
+    }
+    .beatmap-stats-table-container {
+        padding: 0.6rem 1.5rem;
+    }
+    .beatmap-stats-table-container table {
+        width: 100%;
+    }
+    .beatmap-stats-table-container tbody {
+        width: 100%;
+    }
+    .beatmap-stats-table-container tbody > * {
+        gap: 0.4rem;
+        font-size: 0.8rem;
+    }
+    .beatmap-table-label {
+        padding: 0.15rem 0rem;
+        font-weight: 400;
+        white-space: nowrap;
+        text-align: left;
+    }
+    .beatmap-table-value {
+        padding: 0.15rem 0rem;
+        font-weight: 400;
+        text-align: center;
+    }
+    .beatmap-table-bar-container {
+        padding: 0rem 0.4rem;
+        width: 100%;
+        vertical-align: middle;
+    }
+    .beatmap-table-bar {
+        width: 100%;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        height: 0.25rem;
+        background-color: var(--primary-bg);
+    }
+    .beatmap-table-bar-fill {
+        height: 100%;
+        background-color: var(--text);
+    }
+    .beatmap-table-sr-fill {
+        background-color: var(--osu-color);
+    }
+    .beatmap-leaderboard {
+        display: flex;
+        padding: 1rem 2rem;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .beatmap-leaderboard-button-container {
+        display: flex;
+        flex-wrap: wrap;
+        border-image: linear-gradient(90deg,transparent,#fff,transparent) 1;
+        border-bottom: 1px solid;
+        border-top-width: 0;
+        gap: 2rem;
+        justify-content: center;
+        padding: 0rem 0.8rem;
+        font-weight: 600;
+    }
+    .beatmap-leaderboard-button {
+        flex-shrink: 0;
+        transition: box-shadow 0.3s ease;
+        padding: 0.6rem 0rem;
+    }
+    .beatmap-leaderboard-button-active, .beatmap-leaderboard-button:hover:not(.beatmap-leaderboard-button-active) {
+        box-shadow: inset 0rem -0.2rem 0rem 0rem var(--primary);
+        cursor: pointer;
+    }
+    .beatmap-leaderboard-button-active:hover {
+        cursor: pointer;
+        box-shadow: inset 0rem -0.3rem 0rem 0rem var(--text);
+    }
+    .beatmap-top-score {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 1rem;
+        box-shadow: 0 0.2rem 0.5rem rgb(0 0 0 / 75%);
+        border-radius: 0.5rem;
+        background-color: var(--thirdendary-bg);
+    }
+    .beatmap-top-score-user {
+        display: flex;
+        flex-direction: row;
+        gap: 0.5rem;
+    }
+    .beatmap-top-score-avatar {
+        display: block;
+        height: 5rem;
+        width: 5rem;
+        border-radius: 0.5rem;
+        background-color: rgba(0, 0, 0, 0.4);
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+        transition: box-shadow 0.3s ease;
+    }
+    .beatmap-top-score-avatar:hover {
+        box-shadow: 0 0 0 0.2rem var(--text);
+    }
+    .beatmap-top-score-user-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        justify-content: center;
+    }
+    .beatmap-top-score-user-name {
+        font-weight: 600;
+        margin: 0.1rem 0rem;
+        font-size: 1.2rem;
+        transition: color 0.3s ease;
+    }
+    .beatmap-top-score-user-name:hover {
+        color: var(--text-hover);
+    }
+    .beatmap-top-score-time-ago {
+        font-size: 0.7rem;
+        font-weight: 400;
+    }
+    .beatmap-top-score-user-country {
+        height: 1.2rem;
+        width: 1.8rem;
+        border-radius: 0.3rem;
+        box-shadow: 0 0.1rem 0.1rem rgb(0 0 0 / 20%);
+
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
+    }
+    .beatmap-top-score-accuracy-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    .beatmap-top-score-grade {
+        height: 1.5rem;
+        width: 100%;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: contain;
+    }
+    @media (max-width: 800px) {
+        .beatmap-stats {
+            width: 100%;
+        }
+        .beatmapset-header {
+            flex-direction: column;
+        }
+        .beatmapset-header-main {
+            padding: 0rem;
+            padding-top: 1rem;
+        }
+        .beatmapset-header-stats {
+            padding: 0rem;
+        }
+    }
+</style>

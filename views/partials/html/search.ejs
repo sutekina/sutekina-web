@@ -54,12 +54,12 @@
         
         let page = params.page ? params.page : 1;
         // higher limits tend to make the avatar server suffer but you could crank this up
-        let limit = 6;
+        let limit = 12;
         let offset = (page - 1) * limit;
 
-        let users = new Request(`${apiURL}v2/users?limit=${limit}&offset=${offset}&search=${query}&order=name&ascending=true`);
-        let beatmaps = new Request(`${apiURL}v2/beatmapsets?limit=${limit}&offset=${offset}&search=${query}`);
-        let clans = new Request(`${apiURL}v2/clans?limit=${limit}&offset=${offset}&search=${query}`);
+        let users = new Request(`${apiURL}v2/users?limit=${mode === "users"? limit : 0}&offset=${offset}&search=${query}&order=name&ascending=true`);
+        let beatmaps = new Request(`${apiURL}v2/beatmapsets?limit=${mode === "beatmaps"? limit : 0}&offset=${offset}&search=${query}`);
+        let clans = new Request(`${apiURL}v2/clans?limit=${mode === "clans"? limit : 0}&offset=${offset}&search=${query}`);
         
         let results = {
             users: await fetch(users).then(res => {
@@ -102,7 +102,7 @@
                 container.classList.add("results-users");
 
                 container.innerHTML = `
-                    <img class="results-users-icon" src="${avaURL}${user.userId}"></img>
+                    <img class="results-users-icon" src="${avaURL}${user.userId}?size=64&quality=50"></img>
                     <div class="results-users-information">
                         <div class="results-users-country" style="background-image: url('${baseUrl}public/media/images/flags/${user.country.toUpperCase()}.png')"></div>
                         <div class="results-users-name">${user.name}</div>

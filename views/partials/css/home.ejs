@@ -1,80 +1,153 @@
 <style>
-	.title {
-		font-size: 2rem;
-		overflow-wrap: break-word;
-	}
-	.container {
-		box-sizing: border-box;
-		background-color: var(--secondary-bg);
-		text-align: center;
-		border-radius: 0.5rem;
-		margin: 1rem;
-		padding: 1rem;
-	}
-	.question-group {
-		margin-top: 2rem;
+	.main-container {
+		display: block;
+	} 
+	main {
 		display: flex;
-		flex-wrap: wrap;
-	}
-	.question {
-		min-width: 13rem;
-		display:flex;
-		flex: 1 1;
-		flex-wrap: wrap;
-		gap: 0.5rem;
 		flex-direction: column;
-		margin: 1rem;
+		min-width: 100%;
+		max-width: 100%;
+		padding: 0rem;
 	}
-	.question-title {
-		font-size: 1.5rem;
-		word-wrap: break-word;
+	home {
+		height: 40%;
+		width: 100%;
+		display: flex;
+		flex-direction: row;
+		gap: 0.5rem;
+		background-color: var(--secondary-bg);
 	}
-	.question-answer {
-		font-size: 1.1rem;
-		word-wrap: break-word;
-	}
-
-	.button {
-		display: inline-block;
-		border-radius: 0.5rem;
-		background-color: var(--primary);
-		border: none;
-		color: var(--primary-background);
-		text-align: center;
-		font-size: 1rem;
-		padding: 1rem;
-		width: 20rem;
-		transition: all 0.5s;
-		cursor: pointer;
-		margin: 1rem;
-	}
-	.button span {
-		cursor: pointer;
-		display: inline-block;
+	home a {
+		flex-shrink: 0;
 		position: relative;
-		transition: 0.5s;
-		font-family: 'Exo 2';
-	}
+		z-index: 1;
 
-	.button span:after {
-		content: '\00bb';
+		display: block;
+		overflow: visible;
+		width: 20%;
+	}
+	home img {
+		user-drag: none;
+		-webkit-user-drag: none;
+		user-select: none;
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+		position: relative;
+		overflow: visible;
+		z-index: 1;
+		width: 100%;
+		height: 100%;
+		object-position: top;
+		object-fit: cover;
+	}
+	info {
+		word-break: break-word;
+		padding: 1rem;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+	count-container div {
+		font-size: 0.8rem;
+		padding: 0.2rem 2rem;
+		border-radius: 1rem;
+		display: inline-flex;
+		gap: 0.8rem;
+		background-color: var(--primary-bg);
+	}
+	count {
+		font-weight: 700;
+	}
+	count#online {
+		color: gold;
+	}
+	count#total {
+		color: var(--primary);
+	}
+	info h1 {
+		font-size: 3rem;
+	}
+	info p {
+		margin-top: 0.5rem;
+		font-size: 1.2rem;
+	}
+	connect {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		width: 100%;
+		padding: 1rem;
+		background-color: var(--primary-bg);
+	}
+	connect h1 {
+		font-size: 2rem;
+		text-align: center;
+	}
+	connect ul {
+		display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-direction: row;
+        flex-wrap: wrap;
+	}
+	connect li {
+		overflow: hidden;
+		position: relative;
+		border-radius: 0.5rem;
+		background-color: var(--secondary-bg);
+		flex-basis: 20rem;
+	}
+	connect li::before {
+		content: '';
 		position: absolute;
-		opacity: 0;
+		pointer-events: none;
+		left: 0;
 		top: 0;
-		right: -20px;
-		transition: 0.5s;
+		border-radius: 0.5rem;
+		width: 100%;
+		height: 100%;
+		transition: box-shadow 0.3s ease;
 	}
-	.button:hover span {
-		padding-right: 25px;
+	
+	connect span {
+		display: block;
+		line-height: 1.2;
+		padding: 0.5rem;
+		overflow-wrap: break-word;
+        font-size: 0.7rem;
 	}
-	.button:hover span:after {
-		opacity: 1;
-		right: 0;
+	connect code {
+		font-size: 0.6rem;
+        padding: 0.05rem 0.15rem;
+        border-radius: 0.5rem;
+        background-color: var(--primary-bg);
 	}
-
-	@media(max-width: 600px) {
-		.button {
-			width: 13rem;
+	connect div {
+		border-radius: 0.5rem;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        width: 100%;
+        height: 10rem;
+	}
+	@media(max-width: 900px) {
+		home {
+			height: unset;
+		}
+		home a {
+			display: none;
+		}
+		info {
+			padding: 2rem;
+		}
+		count-container {
+			display: flex;
+			justify-content: center;
+		}
+		info h1 {
+			font-size: 2rem;
+			text-align: center;
 		}
 	}
 </style>

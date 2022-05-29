@@ -1,17 +1,157 @@
-<%= JSON.stringify(page.beatmapSet)%>
-
-<div class="options"></div>
-<div class="options"></div>
-
 <div class="beatmapsets-container">
-    <div class="beatmapset-header">
+    <div class="beatmapset-header" style="background-image: url('https://assets.ppy.sh/beatmaps/<%- page.beatmapSet[0].beatmapSetId %>/covers/cover.jpg');">
+        <div class="beatmapset-header-main">
+            <div class="beatmap-difficulty-container">
+                <div class="beatmapset-nodes-container">
+                    <% page.beatmapSet.forEach((beatmap, i) => { %>
+                        <a data-beatmap-index="<%- i %>" id="beatmap-<%- beatmap.beatmapId %>" class="beatmapset-nodes <% if (beatmap.beatmapId == page.activeBeatmap.beatmapId) { %>beatmapset-nodes-active<% } %> beatmapset-nodes-mode-<%- beatmap.mode %>" href="/beatmaps/<%- beatmap.beatmapId %>"></a>
+                    <% }) %>
+                </div>
+                
+                <div class="beatmap-version">
+                    <span class="beatmap-difficulty"><%= page.activeBeatmap.version %></span>
+                    <span class="beatmap-star-rating"></span>
+                </div>
+            </div>
 
+            <div class="beatmap-title-container">
+                <div class="beatmap-title">
+                    <%= page.beatmapSet[0].title %> 
+                </div>
+                <div class="beatmap-artist">
+                    <%= page.beatmapSet[0].artist %> 
+                </div>
+            </div>
+            <div class="beatmap-creator-container">
+                <a class="beatmap-creator-icon" style="background-image: url('<%= page.creatorId ? `https://a.ppy.sh/${page.creatorId}?ilovedick` : `http://${config.domains.avatar}/0` %>');" href="https://osu.ppy.sh/users/<%= page.creatorId ? page.creatorId : page.beatmapSet[0].creator %>"></a>
+                <div class="beatmap-creator-name">
+                    mapped by <a href="https://osu.ppy.sh/users/<%= page.creatorId ? page.creatorId : page.activeBeatmap.creator %>"><%= page.activeBeatmap.creator %></a>
+                </div>
+            </div>
+            <div class="beatmapset-buttons-container">
+                <a href="https://api.chimu.moe/v1/download/<%= page.activeBeatmap.beatmapSetId %>?n=0" class="beatmapset-buttons"><i class="download-button"></i></a>
+                <a href="osu://dl/<%= page.activeBeatmap.beatmapSetId %>" class="beatmapset-buttons">osu!direct</a>
+            </div>
+        </div>
+        <div class="beatmapset-header-stats">
+            <div id="beatmapset-status"></div>
+            <div class="beatmap-stats">
+                <div class="beatmap-audio-preview" data-audio-playing="false">
+                    <div class="beatmap-audio-button"></div>
+                    <div class="beatmap-audio-time-elapsed"></div>
+                </div>
+                <div class="beatmap-stats-specific">
+                    <div id="length"></div>
+                    <div id="bpm"><%= Math.round(page.activeBeatmap.bpm * 100) / 100 %>bpm</div>
+                </div>
+                <div class="beatmap-stats-table-container">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th class="beatmap-table-label">circle size</th>
+                                <td class="beatmap-table-bar-container"><div class="beatmap-table-bar"><div class="beatmap-table-bar-fill bar-cs" data-name="circleSize"></div></div></td>
+                                <td class="beatmap-table-value"><%= Math.round(page.activeBeatmap.circleSize * 100) / 100 %></td>
+                            </tr>
+                            <tr id="beatmap-table-hp">
+                                <th class="beatmap-table-label">hp drain</th>
+                                <td class="beatmap-table-bar-container"><div class="beatmap-table-bar"><div class="beatmap-table-bar-fill bar-hp" data-name="healthPoints"></div></div></td>
+                                <td class="beatmap-table-value"><%= Math.round(page.activeBeatmap.healthPoints * 100) / 100 %></td>
+                            </tr>
+                            <tr id="beatmap-table-od">
+                                <th class="beatmap-table-label">accuracy</th>
+                                <td class="beatmap-table-bar-container"><div class="beatmap-table-bar"><div class="beatmap-table-bar-fill" data-name="overallDifficulty"></div></div></td>
+                                <td class="beatmap-table-value"><%= Math.round(page.activeBeatmap.overallDifficulty * 100) / 100 %></td>
+                            </tr>
+                            <tr id="beatmap-table-ar">
+                                <th class="beatmap-table-label">approach rate</th>
+                                <td class="beatmap-table-bar-container"><div class="beatmap-table-bar"><div class="beatmap-table-bar-fill" data-name="approachRate"></div></div></td>
+                                <td class="beatmap-table-value"><%= Math.round(page.activeBeatmap.approachRate * 10) / 10 %></td>
+                            </tr>
+                            <tr id="beatmap-table-ar">
+                                <th class="beatmap-table-label">star rating</th>
+                                <td class="beatmap-table-bar-container"><div class="beatmap-table-bar"><div class="beatmap-table-bar-fill beatmap-table-sr-fill" data-name="difficultyRating"></div></div></td>
+                                <td class="beatmap-table-value"><%= Math.round(page.activeBeatmap.difficultyRating * 100) / 100 %></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="beatmapset-info">
-
+        <!-- could be used for map description / tags idk. -->
     </div>
 </div>
 
-<div class="beatmapset-leaderboard">
-    
+<div class="options">
+    <div class="options-button options-vn" data-name="vn">vanilla</div>
+    <div class="options-button options-rx" data-name="rx">relax</div>
+    <div class="options-button options-ap" data-name="ap">autopilot</div>  
 </div>
+<div class="options">
+    <div class="options-button options-std" data-name="std">standard</div>
+    <div class="options-button options-taiko" data-name="taiko">taiko</div>
+    <div class="options-button options-catch" data-name="catch">catch</div>
+    <div class="options-button options-mania" data-name="mania">mania</div>
+</div>
+
+<div class="beatmap-leaderboard">
+    <div class="beatmap-leaderboard-button-container">
+        <div class="beatmap-leaderboard-button beatmap-leaderboard-button-active">
+            global ranking
+        </div>
+        <div class="beatmap-leaderboard-button">
+            country ranking
+        </div>
+    </div>
+    <div class="beatmap-leaderboard-mods-container" style="display: none;">
+
+    </div>
+    <% if(page.selfScore[0]) { %>
+        <div class="beatmap-top-score">
+            <div class="beatmap-top-score-user">
+                <a class="beatmap-top-score-avatar" style="background-image: url('https://<%= config.domains.avatar %>/<%= user.id %>');" href="/users/<%= user.id %>"></a>
+                <div class="beatmap-top-score-user-info">
+                    <a class="beatmap-top-score-user-name" href="/users/<%= user.id %>"><%= user.name %></a>
+                    <div class="beatmap-top-score-time-ago"></div>
+                    <a href="/leaderboard?country=jp">
+                        <div class="beatmap-top-score-user-country" style="background-image: url('/public/media/images/flags/<%= user.country.toUpperCase() %>.png');"></div>
+                    </a>
+                </div>
+            </div>
+            <div class="beatmap-top-score-stats">
+                <div class="beatmap-top-score-stats-top">
+
+                </div>
+                <div class="beatmap-top-score-stats-bottom">
+                    <div class="beatmap-top-score-hits">
+                        <div class="beatmap-top-score-300s"></div>
+                        <div class="beatmap-top-score-100s"></div>
+                        <div class="beatmap-top-score-50s"></div>
+                        <div class="beatmap-top-score-misses"></div>
+                    </div>
+                    <div class="beatmap-top-score-pp"></div>
+                    <div class="beatmap-top-score-mods"></div>
+                </div>
+            </div>
+            <div class="beatmap-top-score-accuracy-container">
+                <div class="beatmap-top-score-grade" style="background-image: url('/public/media/images/grades/<%= page.selfScore[0].grade %>.svg')"></div>
+                <div class="beatmap-top-score-accuracy"><%= Math.round(page.selfScore[0].accuracy * 100) / 100 %>%</div>
+            </div>
+        </div>
+    <% } %>
+    <div class="beatmap-leaderboard-scores-container" style="display: none;">
+        
+    </div>
+</div>
+
+<script>
+    // the syntax highlighting considers this to be an error but it isn't dw
+    var beatmapSet = JSON.parse(`<%- JSON.stringify(page.beatmapSet).replace("`", "\`") %>`);
+    var beatmapScores = JSON.parse(`<%- JSON.stringify(page.beatmapScores).replace("`", "\`") %>`);
+    var activeBeatmap = JSON.parse(`<%- JSON.stringify(page.activeBeatmap).replace("`", "\`") %>`);
+    var selfScore = JSON.parse(`<%- JSON.stringify(page.selfScore).replace("`", "\`") %>`);
+    console.log(selfScore)
+</script>
+
+<%- include('../js/beatmapsets') %>

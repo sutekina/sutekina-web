@@ -17,6 +17,12 @@ require("./init").then(([modules, config, app]) => {
         app.get("/u/*", (req,res,next) => {
             res.redirect(301, req.originalUrl.replace('u', 'users'));
         });
+        app.get("/b/*", (req,res,next) => {
+            res.redirect(301, req.originalUrl.replace('b', 'beatmaps'));
+        });
+        app.get("/s/*", (req,res,next) => {
+            res.redirect(301, req.originalUrl.replace('s', 'beatmapsets'));
+        });
         app.get("/connect", (req,res,next) => {
             req.data.page.title = "connect";
             req.data.page.type = "connect";

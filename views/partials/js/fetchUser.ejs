@@ -193,10 +193,10 @@
         
         // TODO
         
-        let userHistory = await fetch(new Request(`${apiURL}v2/users/${username}/history?mod=${mod}&mode=${mode}`)).then(res => {
+        let userHistory = await fetch(new Request(`${apiURL}v2/users/${username}/history?mod=${mod}&mode=${mode}&order=datetime&ascending=true`)).then(res => {
             return res.json();
         });
-
+        
         let ranksOverTime = [];
         let ranksLimit = 90;
         let chartHeight = 100;
@@ -207,11 +207,17 @@
             ranksOverTime.push(userHistory[0].globalRank);
             for(const history of userHistory) {
                 let seconds = (+new Date() - new Date(history.datetime)) / 1000;
-                ranksOverTime[ranksLimit - Math.floor(seconds / 86400)] = history.globalRank;
+                let index = (ranksLimit - 1) - Math.floor(seconds / 86400)
+                if(index < 0) continue;
+                ranksOverTime[index] = history.globalRank;
             }
+
             for(let i = 1; i < ranksLimit; i++) {
                 if(ranksOverTime[i]) continue;
-                ranksOverTime[i] = ranksOverTime[ranksOverTime.length - 1];
+                // pretty curve
+                // if(i > (ranksLimit/2)) ranksOverTime[i] = Math.round(Math.log(ranksLimit - i) + user.globalRank);
+                // if(i <= (ranksLimit/2)) ranksOverTime[i] = Math.round(Math.log(i) + user.globalRank) ;
+                ranksOverTime[i] = ranksOverTime[i - 1];
             }
         }
         ranksOverTime[ranksLimit] = user.globalRank;
@@ -247,16 +253,22 @@
         }
 
         polyline.setAttribute("points", points);
+    
+        for(const grade in user) {
+            if(!grade.startsWith("grades")) continue;
+            
+            document.getElementById(grade).innerText = user[grade];
+        }
 
+        document.getElementById("play-time").innerText = playTimeAgo(user.playTime);
+        document.getElementById("play-time").title = `approx. ${Math.round(user.playTime / (60*60))} hours`;
+    
+        document.getElementById("performance-points").innerText = user.pp + "pp";
+        
         document.getElementById("created-at").innerHTML = `joined <b>${dateAgo(new Date(user.creationTime * 1000).getTime())}</b>`;
         document.getElementById("created-at").title = new Date(user.creationTime * 1000).toLocaleString();
         document.getElementById("latest-activity").innerHTML = `last seen <b>${dateAgo(new Date(user.latestActivity * 1000).getTime())}</b>`;
         document.getElementById("latest-activity").title = new Date(user.latestActivity * 1000).toLocaleString();
-        // document.getElementById("play-time").innerText = playTimeAgo(user.playTime);
-        // document.getElementById("play-time").title = `approx. ${Math.round(user.playTime / (60*60))} hours`;
-    
-        document.getElementById("performance-points").innerText = user.pp + "pp";
-        
         let badgeList = document.getElementsByClassName("user-badges")[0]
         if(!badgeList.hasChildNodes()) {
             let i = 1; let privList = []; let privs = user.privilege;
@@ -440,20 +452,20 @@
 
     function dateAgo (time) {
         let time_formats = [
-          [60, 'seconds', 1], // 60
+        [60, 'seconds', 1], // 60
           [120, '1 minute ago', '1 minute from now'], // 60*2
           [3600, 'minutes', 60], // 60*60, 60
           [7200, '1 hour ago', '1 hour from now'], // 60*60*2
           [86400, 'hours', 3600], // 60*60*24, 60*60
           [172800, 'yesterday', 'tomorrow'], // 60*60*24*2
           [604800, 'days', 86400], // 60*60*24*7, 60*60*24
-          [1209600, '1 week', 'next week'], // 60*60*24*7*4*2
+          [1209600, '1 week ago', 'next week'], // 60*60*24*7*4*2
           [2419200, 'weeks', 604800], // 60*60*24*7*4, 60*60*24*7
-          [4838400, '1 month', 'next month'], // 60*60*24*7*4*2
+          [4838400, '1 month ago', 'next month'], // 60*60*24*7*4*2
           [29030400, 'months', 2419200], // 60*60*24*7*4*12, 60*60*24*7*4
-          [58060800, '1 year', 'next year'], // 60*60*24*7*4*12*2
+          [58060800, '1 year ago', 'next year'], // 60*60*24*7*4*12*2
           [2903040000, 'years', 29030400], // 60*60*24*7*4*12*100, 60*60*24*7*4*12
-          [5806080000, '1 century', 'next century'], // 60*60*24*7*4*12*100*2
+          [5806080000, '1 century ago', 'next century'], // 60*60*24*7*4*12*100*2
           [58060800000, 'centuries', 2903040000] // 60*60*24*7*4*12*100*20, 60*60*24*7*4*12*100
         ];
         let seconds = (+new Date() - time) / 1000,

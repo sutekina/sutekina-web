@@ -3,9 +3,11 @@ const {logging, errorHandling} = require('../utils');
 const router = modules['express'].Router();
 
 router.get("/", (req, res, next) => {
-    req.data.page.title = `clans`;
-    req.data.page.type = "clanslist";
-    res.render('index', req.data);
+    next({code: 501, message: "Not Implemented", level:"debug"});
+    
+    // req.data.page.title = `clans`;
+    // req.data.page.type = "clanslist";
+    // res.render('index', req.data);
 });
 
 router.get("/:clan", (req, res, next) => {

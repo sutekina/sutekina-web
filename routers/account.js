@@ -116,9 +116,9 @@ router.post("/register", async (req, res, next) => {
         
         let passwordMd5 = new Buffer.from(crypto.createHash("md5").update(new Buffer.from(req.body.password, "utf-8")).digest("hex"), "utf-8");
         let password = await modules["bcrypt"].hash(passwordMd5, await modules["bcrypt"].genSalt(12));
-    
+
         // best case use cloudflare ipcountry otherwise use geoInfo country code, geoInfo isn't the best way because people could in theory intercept what geoInfo sends easily since it's done client-side.
-        let country = req.get(req.get("cf-ipcountry").toLowerCase()) || geoInfo.country_code.toLowerCase() || "xx";
+        let country = req.get("cf-ipcountry") ? req.get("cf-ipcountry").toLowerCase() : (geoInfo.country_code.toLowerCase() || "xx");
 
         query = `INSERT INTO users (name, safe_name, email, pw_bcrypt, country, creation_time, latest_activity) VALUES(?, ?, ?, ?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP());`;
         results = (await mysql(pool, query, [req.body.username, safe_name, req.body.email, password, country])).results;
@@ -211,7 +211,6 @@ router.post("/avatar", (req, res, next) => {
 
 module.exports = router;
 
-
 function testPassword(password) {
     if(!password) return "NO_PASSWORD";
     if(password.length < config.settings.password.minimum) return "PASSWORD_TOO_SHORT";
@@ -249,6 +248,8 @@ function testEmail(email) {
 }
 
 function testIP(ip) {
+    // if user has adblock enabled or if geoiplookup for some reason doesn't respond the ip will be set to 0.0.0.0, could handle:
+    // if(ip === "0.0.0.0");
     const regExp = new RegExp(/((^\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\s*$)|(^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$))/g);
 
     return regExp.test(ip);

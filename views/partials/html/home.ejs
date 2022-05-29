@@ -1,23 +1,40 @@
-<div class="container">
-    <h1 class=title>Welcome to Sutekina!</h1>
-    <div class="question-group">
-        <div class="question">
-            <h2 class="question-title">What is this?</h2>
-            <p class="question-answer">Sutekina is a private osu! server based on cmyui's Gulag, meaning it acts very similarly to the official osu! servers but with some small differences. It's most notable difference is the language in which the backend was written in and the addition of relax and autoplay leaderboards.</p>   
-        </div>
-        <div class="question">
-            <h2 class="question-title">What is different from bancho!?</h2>
-            <p class="question-answer">We offer the same services as the official osu! servers do such as fully functional mutiplayer lobbies, country and friends leaderboard, spectating, etc. The main difference is the language in which the server is written in, the addition of free osu!supporter for every user and the ability to play relax and autoplay. </p>
-        </div>
-        <div class="question">
-            <h2 class="question-title">Can I get banned on bancho! for playing on here?</h2>
-            <p class="question-answer">Of course not. Playing on Sutekina will not get your account banned anywhere since we are not affiliated with osu! in any way. Accessing other servers than the official one is also not against osu!'s terms of services having therefore no risks of getting your account restricted.</p>   
-        </div>
-    </div>
-    <a href="/connect">
-        <button class="button" style="vertical-align:middle"><span>how to connect?</span></button>
+<home>
+    <a href="https://www.pixiv.net/en/artworks/94256480">
+        <img src="/public/media/images/home.png"></img>
     </a>
-</div>
+    <info>
+        <count-container>
+            <div>
+                <span>
+                    <count id="online"><%= page.userCount.online %></count> ONLINE
+                </span>
+                <span>
+                    <count id="total"><%= page.userCount.total %></count> TOTAL
+                </span>
+            </div>
+        </count-container>
+        <h1>osu!<%= config.app_name %></h1>
+        <p>sutekina is a private osu! server based on cmyui's gulag, meaning it acts very similarly to the official osu! servers but with some extra features.</p>   
+    </info>
+</home>
+
+<connect>
+    <h1>how to connect?</h1>
+    <ul>
+        <li>
+            <div style="background-image: url(/public/media/images/connect/shortcut.PNG);"></div>
+            <span>create a shortcut from the osu.exe in your osu folder.</span>
+        </li>
+        <li>
+            <div style="background-image: url(/public/media/images/connect/properties.PNG);"></div>
+            <span>right click the shortcut and open properties.</span>
+        </li>
+        <li>
+            <div style="background-image: url(/public/media/images/connect/devserver.PNG);"></div>
+            <span>add <code>-devserver <%= config.domains.base %></code> to the target section.</span>
+        </li>
+    </ul>
+</connect>
 
 
 

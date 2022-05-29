@@ -133,7 +133,12 @@
     document.getElementsByClassName("login-form")[0].addEventListener("submit", async e => {
         e.preventDefault()
         document.getElementsByClassName("login-button")[0].classList.add("login-button-disabled");
-        const result = await fetch("https://json.geoiplookup.io/").then(res => res.json())
+        const result = await fetch("https://json.geoiplookup.io/").then(res => res.json()).catch(e => {
+            console.log("IP Fetch failed, AdBlocker active?");
+            return {
+                ip: "0.0.0.0"
+            };
+        });
         result.date = new Date().getTime();
         document.getElementById("geo-info").value = JSON.stringify(result);
         e.target.submit();

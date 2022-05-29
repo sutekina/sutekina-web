@@ -5,19 +5,19 @@
 
     let params = Object.fromEntries(urlSearchParams.entries());
     
-    let page = params.page ? params.page : 1;
+    let page = params.page && Math.abs(parseInt(params.page)) ? Math.abs(parseInt(params.page)) : 1;
     let limit = 50;
     let offset = (page - 1) * limit;
-    let mod = params.mod ? params.mod : "vn";
-    let mode = params.mode ? params.mode : "std";
+    let mod = params.mod&&params.mod.match(/^(vn|rx|ap)$/)?params.mod:"vn";
+    let mode = params.mode&&((mod === "rx"&&params.mode !== "mania")||(mod === "ap"&&!params.mode.match(/^(mania|taiko|catch)$/))||(mod === "vn")) ? params.mode : "std";
     let country = params.country && params.country !== "all" ? params.country : "all";
 
     let request = new Request(`${apiURL}v2/users?limit=${limit}&hasPlayed=true&offset=${offset}&mod=${mod}&mode=${mode}&country=${country}`);
     let playerTable = document.getElementsByClassName("player-table-body")[0];
     document.getElementsByClassName(`options-${mod}`)[0].classList.add("options-button-active");
     document.getElementsByClassName(`options-${mode}`)[0].classList.add("options-button-active");
-
-    document.getElementById(`country-${country}`).selected = true;
+    
+    document.getElementById(`country-${document.getElementById(`country-${country.toLowerCase()}`) ? country.toLowerCase() : "all"}`).selected = true;
 
     let disabledModes = {
         vn: [],

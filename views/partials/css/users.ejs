@@ -15,6 +15,8 @@
         box-sizing: border-box;
     }
     .options {
+        background-color: unset !important;
+        gap: 0.2rem;
         padding: 0rem !important;
         overflow: hidden;
         display: flex;
@@ -22,6 +24,7 @@
         flex-direction: row;
     }
     .options-button {
+        border-radius: 0.5rem;
         text-align: center;
         padding: 0.7rem 0.5rem;
         background-color: var(--primary);
@@ -207,8 +210,9 @@
         word-break: break-all;
     }
     .user-chart {
-        /* display: flex;
-        flex-direction: row; */
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
         margin-top: 1.34rem;
         border-top-width: 0.15rem;
         border-top-color: var(--primary);
@@ -217,12 +221,15 @@
         padding-bottom: 0.2rem;
     }
     .user-chart-container {
-        /* display: none; */
-        height: 6rem;
-        width: 100%;
+        display: flex;
+        flex-grow: 1;
+        height: 5rem;
+        margin: 0.5rem;
+        max-width: 100%;
         position: relative;
     }
     .user-chart-svg {
+        box-sizing: border-box;
         width: 100%;
         height: 100%;
         -webkit-user-select: none;       
@@ -230,7 +237,7 @@
         -ms-user-select: none;
         user-select: none;
     }
-
+    
     .user-chart-hover {
         position: absolute;
         width: 100%;
@@ -279,36 +286,90 @@
         border-radius: 0.5rem;
         padding: 0.4rem;
         font-size: 0.8rem;
-        background-color: var(--primary-bg);
+        background-color: var(--dark);
     }
     .user-chart-polyline {
         stroke: var(--osu-color);
         stroke-width: 0.2rem;
         fill: none;
     }
-    .user-rank {
-        width: 100%;
+    .user-chart-info {
+        order: -1;
+        flex-basis: 100%;
+        justify-content: space-between;
+    }
+    .user-chart-info, .user-chart-info > * {
         display: flex;
         flex-direction: row;
-        align-items: flex-start;
+    }
+    .user-numbers {
+        gap: 1rem;
+    }
+    .user-grades {
+        gap: 0.2rem;
+        flex-wrap: wrap;
+        text-align: center;
+        font-size: 0.6rem;
+    }
+    .user-grades-container, .user-numbers-container {
+        display: flex;
+        justify-content: center;
+        gap: 0.2rem;
+        flex-direction: column;
+    }
+    .grades-icon {
+        --grade-icon-bg: url("/public/media/images/grades/F.svg");
+        height: 1rem;
+        width: 2rem;
+        background-image: var(--grade-icon-bg);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: contain;
+    }
+    .gradesXH-icon {
+        --grade-icon-bg: url("/public/media/images/grades/XH.svg");
+    }
+    .gradesX-icon {
+        --grade-icon-bg: url("/public/media/images/grades/X.svg");
+    }
+    .gradesSH-icon {
+        --grade-icon-bg: url("/public/media/images/grades/SH.svg");
+    }
+    .gradesS-icon {
+        --grade-icon-bg: url("/public/media/images/grades/S.svg");
+    }
+    .gradesA-icon {
+        --grade-icon-bg: url("/public/media/images/grades/A.svg");
+    }
+    .user-rank {
+        box-shadow: inset 0rem 0.3rem 0rem 0rem var(--secondary-bg), inset 0rem 0.45rem 0rem 0rem var(--primary);
+        /* border-top-width: 0.15rem;
+        border-top-color: var(--primary);
+        border-top-style: solid; */
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: space-evenly;
     }
     .user-rank-container {
-        flex-basis: 50%;
+        display: flex;
+        justify-content: space-evenly;
+        flex-direction: column;
     }
     .user-rank-container h1 {
         padding: 0rem;
         font-size: 1rem;
-        padding-top: 0.1rem;
         text-align: left;
     }
     .user-rank-container div {
         font-size: 1.5rem;
-    }
-    .country-rank {
         text-align: right;
     }
     .country-rank h1 {
-        text-align: right;
+        font-size: 0.8rem;
+    }
+    .country-rank div {
+        font-size: 1.2rem;
     }
 
     .user-extra {
@@ -326,7 +387,7 @@
     .user-extra-item-container {
         display: flex;
         gap: 0.6rem;
-        /* font-size: 0.8rem; */
+        font-size: 0.8rem;
         flex-direction: row;
     }
     .user-extra-item {
@@ -519,9 +580,23 @@
         .user-about-name {
             max-width: 16ch;
         }
-        
         .score-checkbox:hover {
             cursor:pointer;
+        }
+        .user-rank {
+            flex-basis: 100%;
+            box-shadow: unset;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        .country-rank h1 {
+            font-size: 1rem ;
+        }
+        .country-rank div {
+            font-size: 1.5rem ;
+        }
+        .global-rank div {
+            text-align: left;
         }
     } 
 

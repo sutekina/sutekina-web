@@ -37,9 +37,9 @@
         "multipleStatements": true
     },
     "domains": {
-        "avatar": "a.sutekina.tk",
-        "base": "sutekina.tk",
-        "api": "api.sutekina.tk",
+        "avatar": "a.sutekina.xyz",
+        "base": "sutekina.xyz",
+        "api": "api.sutekina.xyz",
         "discord": "https://discord.com/invite/xRCMXJ7JPh",
         "github:": "https://github.com/sutekina/"
     },
@@ -48,6 +48,9 @@
             "host": "localhost",
             "port": "4001"
         }
+    },
+    "authentication": {
+        "osu": "OSU-API-TOKEN"
     },
     "settings": {
         "username": {

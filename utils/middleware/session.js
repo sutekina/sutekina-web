@@ -6,7 +6,6 @@ module.exports = (req, res, next) => {
         query = `SELECT * FROM users WHERE id = ?`;
         mysql(pool, query, [req.session.user_id])
             .then(({results}) => {
-                console.log()
                 if(!results[0]) req.session.destroy((err) => {
                     if(err) return next(new errorHandling.SutekinaError({message:err.message, status:500, level:"error"}));
                     return res.redirect(req.data.page.redir);

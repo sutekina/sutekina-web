@@ -1,0 +1,173 @@
+<script type="module">
+    let urlSearchParams = new URLSearchParams(window.location.search);
+    let params = Object.fromEntries(urlSearchParams.entries());
+    let mod = params.mod&&params.mod.match(/^(vn|rx|ap)$/)?params.mod:"vn";
+    let mode = params.mode&&((mod === "rx"&&params.mode !== "mania")||(mod === "ap"&&!params.mode.match(/^(mania|taiko|catch)$/))||(mod === "vn")) ? params.mode : "std";
+
+    document.getElementsByClassName(`options-${mod}`)[0].classList.add("options-button-active");
+    document.getElementsByClassName(`options-${mode}`)[0].classList.add("options-button-active");
+
+    let disabledModes = {
+        vn: [],
+        rx: ["mania"],
+        ap: ["mania", "taiko", "catch"]
+    }
+
+    disabledModes[mod].forEach(disabledMode => {
+        document.getElementsByClassName(`options-${disabledMode}`)[0].classList.add(`options-button-disabled`);
+    });
+    
+    let disabledMods = {
+        std: [],
+        taiko: ["ap"],
+        mania: ["rx", "ap"],
+        catch: ["ap"]
+    }
+
+    disabledMods[mode].forEach(disabledMod => {
+        document.getElementsByClassName(`options-${disabledMod}`)[0].classList.add(`options-button-disabled`);
+    });
+
+    let playInterval;
+
+    const audioPreview = new Audio(`https://b.ppy.sh/preview/${activeBeatmap.beatmapSetId}.mp3`);
+    document.getElementsByClassName("beatmap-audio-preview")[0].addEventListener(touchEvent, (event) => {
+        if(!audioPreview.paused) return audioPreview.pause();
+        audioPreview.play();
+    });
+
+    audioPreview.addEventListener("play", (event) => {
+        document.getElementsByClassName("beatmap-audio-preview")[0].dataset.audioPlaying = "true";
+        playInterval = setInterval(() => {
+            document.getElementsByClassName("beatmap-audio-time-elapsed")[0].style.setProperty("--progress", audioPreview.currentTime / audioPreview.duration);
+        }, 100);
+    });
+
+    audioPreview.addEventListener("pause", (event) => {
+        if(audioPreview.ended) return;
+        document.getElementsByClassName("beatmap-audio-preview")[0].dataset.audioPlaying = "false";
+        clearInterval(playInterval);
+        audioPreview.pause();
+    });
+
+    audioPreview.addEventListener("ended", (event) => {
+        document.getElementsByClassName("beatmap-audio-preview")[0].dataset.audioPlaying = "false";
+        clearInterval(playInterval);
+        document.getElementsByClassName("beatmap-audio-time-elapsed")[0].style.setProperty("--progress", 0);
+    });
+   
+    let totalLength = activeBeatmap.totalLength;
+    totalLength = Number(totalLength);
+    let h = Math.floor(totalLength / 3600);
+    let m = Math.floor(totalLength % 3600 / 60);
+    let s = Math.floor(totalLength % 3600 % 60);
+    document.getElementById("length").innerText = `${h >= 1 ? `${h}:` : ''}${m}:${s > 10 ? s : '0' + s }`;
+
+    const beatmapStatuses = {
+        "-1": "NOT SUBMITTED",
+        "0": "PENDING",
+        "1": "UPDATE AVAILABLE",
+        "2": "RANKED",
+        "3": "APPROVED",
+        "4": "QUALIFIED",
+        "5": "LOVED",
+    }
+    document.getElementById("beatmapset-status").innerText = beatmapStatuses[activeBeatmap.beatmapStatus];
+    
+    const barFillElements = document.getElementsByClassName("beatmap-table-bar-fill")
+    for(const tableBar in barFillElements) {
+        if(isNaN(tableBar)) continue;
+        let num = activeBeatmap[barFillElements[tableBar].dataset.name];
+        barFillElements[tableBar].style.width = `${num < 10 ? num / 10 * 100 : 100}%`
+        barFillElements[tableBar].title = `${num < 10 ? Math.round(num / 10 * 100) : 100}% / 10`
+    }
+
+    window.addEventListener(touchEvent, function(event) {
+        if(event.target.classList.contains("options-button") && !event.target.classList.contains("options-button-disabled")) {
+            let settings = {
+                mod,
+                mode
+            };
+            let buttonType = event.target.dataset.name.match(/^(vn|rx|ap)$/) ? ["mod", "mode"] : ["mode", "mod"];
+
+            window.location.href = new URL(`${window.location.pathname}?${buttonType[0]}=${event.target.dataset.name}&${buttonType[1]}=${settings[buttonType[1]]}`, window.location.origin)
+        }
+    });
+
+    let nodesContainer = document.getElementsByClassName("beatmapset-nodes-container")[0];
+    let beatmapDifficulty = document.getElementsByClassName("beatmap-difficulty")[0];
+    let beatmapSR = document.getElementsByClassName("beatmap-star-rating")[0]; 
+
+    nodesContainer.addEventListener("mouseover", (event) => {
+        if(event.target.classList.contains("beatmapset-nodes")) {
+            beatmapDifficulty.innerText = beatmapSet[event.target.dataset.beatmapIndex].version;
+            beatmapSR.innerText = `star rating ${beatmapSet[event.target.dataset.beatmapIndex].difficultyRating.toFixed(2)}`;
+            beatmapSR.style.visibility = "visible"
+        }
+    });
+
+    nodesContainer.addEventListener("mouseleave", (event) => {
+        beatmapDifficulty.innerText = activeBeatmap.version;
+        beatmapSR.innerText = `star rating`;
+        beatmapSR.style.visibility = "hidden"
+    });
+
+    let beatmapSetNodes = document.getElementsByClassName("beatmapset-nodes");
+    
+    // this code is disgraceful
+    for(const bsn in beatmapSetNodes) {
+        if(isNaN(bsn)) continue;
+        let beatmapToNode = beatmapSet[beatmapSetNodes[bsn].dataset.beatmapIndex];
+        let hsl = `hsl(0, 0%, 0%)`;
+        if(beatmapToNode.difficultyRating < 4.5) {
+            hsl = `hsl(${(-beatmapToNode.difficultyRating) / 4.5 * 180 + 180}, 100%, 60%)`;
+        } else if (beatmapToNode.difficultyRating < 6) {
+            hsl = `hsl(${(-beatmapToNode.difficultyRating - 4) / 4.5 * 180 + 360}, 100%, 60%)`;
+        } else if(beatmapToNode.difficultyRating < 8.5) {
+            hsl = `hsl(${(-beatmapToNode.difficultyRating - 4) / 4.5 * 180 + 360}, 100%, ${(-beatmapToNode.difficultyRating + 6) / 2.5 * 60 + 60}%)`;
+        }
+        beatmapSetNodes[bsn].style.setProperty("--diff-color", hsl);
+    }
+
+    if(selfScore[0]) document.getElementsByClassName("beatmap-top-score-time-ago")[0].innerText = `achieved ${dateAgo(new Date(selfScore[0].playtime))}`;
+
+    function dateAgo (time) {
+        let time_formats = [
+          [60, 'seconds', 1], // 60
+          [120, '1 minute ago', '1 minute from now'], // 60*2
+          [3600, 'minutes', 60], // 60*60, 60
+          [7200, '1 hour ago', '1 hour from now'], // 60*60*2
+          [86400, 'hours', 3600], // 60*60*24, 60*60
+          [172800, 'yesterday', 'tomorrow'], // 60*60*24*2
+          [604800, 'days', 86400], // 60*60*24*7, 60*60*24
+          [1209600, '1 week ago', 'next week'], // 60*60*24*7*4*2
+          [2419200, 'weeks', 604800], // 60*60*24*7*4, 60*60*24*7
+          [4838400, '1 month ago', 'next month'], // 60*60*24*7*4*2
+          [29030400, 'months', 2419200], // 60*60*24*7*4*12, 60*60*24*7*4
+          [58060800, '1 year ago', 'next year'], // 60*60*24*7*4*12*2
+          [2903040000, 'years', 29030400], // 60*60*24*7*4*12*100, 60*60*24*7*4*12
+          [5806080000, '1 century ago', 'next century'], // 60*60*24*7*4*12*100*2
+          [58060800000, 'centuries', 2903040000] // 60*60*24*7*4*12*100*20, 60*60*24*7*4*12*100
+        ];
+        let seconds = (+new Date() - time) / 1000,
+            token = 'ago',
+            list_choice = 1;
+        if (Math.floor(seconds) == 0) {
+            return 'just now'
+        }
+        if (seconds < 0) {
+            seconds = Math.abs(seconds);
+            token = 'from now';
+            list_choice = 2;
+        }
+        let i = 0, format;
+        while (format = time_formats[i++]) {
+            if (seconds < format[0]) {
+                if (typeof format[2] == 'string') return format[list_choice];
+                
+                return Math.floor(seconds / format[2]) + ' ' + format[1] + ' ' + token;
+            }
+        }
+        return time;
+    }
+</script>
