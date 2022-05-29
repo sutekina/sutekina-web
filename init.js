@@ -125,7 +125,7 @@ module.exports = new Promise(async(resolve, reject) => {
         }
     }));
     
-    if(config.middleware.use_cors) {
+    if(config.middleware.use_cors && false) {
         let cors_origin = (config.protocol.https ? "https://" : "http://") + config.domains.base;
         
         app.use(modules["cors"]({
