@@ -120,7 +120,7 @@ module.exports = new Promise(async(resolve, reject) => {
             domain: config.domains.base,
             httpOnly: true,
             sameSite: true,
-            secure: config.protocol.https,
+            secure: false, //config.protocol.https,
             maxAge: 315569259747
         }
     }));
