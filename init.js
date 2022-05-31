@@ -73,7 +73,9 @@ module.exports = new Promise(async(resolve, reject) => {
     async function mysql_boot() {
         try {
             logging.info("Running mysql boot queries.");
-            const { stderr } = await exec(`mysql --user=${config.mysql.user} --password="${config.mysql.password}" --port=${config.mysql.port} --host=${config.mysql.host} ${config.mysql.database} < ./ext/db.sql`);
+            let stderr = (await exec(`mysql --user=${config.mysql.user} --password="${config.mysql.password}" --port=${config.mysql.port} --host=${config.mysql.host} ${config.mysql.database} < ./ext/db.sql`)).stderr;
+            if(stderr) logging[stderr.includes("Warning") ? "warn" : "fatal"](stderr.message ? stderr.message.trim() : stderr.trim(), stderr);
+            stderr = (await exec(`mysql --user=${config.mysql.user} --password="${config.mysql.password}" --port=${config.mysql.port} --host=${config.mysql.host} ${config.mysql.database} < ./ext/update.db.sql`)).stderr;
             if(stderr) logging[stderr.includes("Warning") ? "warn" : "fatal"](stderr.message ? stderr.message.trim() : stderr.trim(), stderr);
             logging.info(`Successfully ran mysql boot queries, time elapsed: ${clock(mysql_boot_time)}ms.`)
             mysql_ready = true;

@@ -52,10 +52,10 @@ CALL AddUserDetails();
 CREATE TABLE IF NOT EXISTS `user_history` (
   `user_history_id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NOT NULL,
-  `modmode` INT NOT NULL COMMENT 'These are mod + mode. e.g: std+vn = 0.',
+  `modmode` TINYINT NOT NULL COMMENT 'These are mod + mode. e.g: std+vn = 0.',
   `global_rank` INT NOT NULL,
   `pp` INT NOT NULL,
-  `rscore` INT NOT NULL,
+  `rscore` BIGINT(21) NOT NULL,
   `datetime` DATETIME NOT NULL COMMENT 'These are saved with UTC_TIMESTAMP().',
   PRIMARY KEY (`user_history_id`),
   UNIQUE INDEX `user_history_id_UNIQUE` (`user_history_id` ASC))
@@ -73,22 +73,22 @@ BEGIN
   DECLARE modmodes INT;
   DECLARE modmodesI INT;
 
-  SELECT COUNT(*) FROM users INTO n;
+  SELECT COUNT(*) FROM users WHERE u.priv >> 0 INTO n;
 
 	SET i = 0;
   SET modmodes = 7;
 
-  -- this is kinda shitty its O(n^2) but it's okay since it'll be happening as a separate process in the background and won't be blocking.
+  -- this is kinda shitty its O(n*modmodes) but it's okay since it'll be happening as a separate process in the background and won't be blocking.
   -- this whole daily stats thing is somewhat questionable since it'll scale really badly storage wise since each user is worth 8 rows (user * 8 modmodes)
 	WHILE i < n DO
     SET modmodesI = 0;
     WHILE modmodesI <= modmodes DO
       INSERT INTO `user_history` (`user_id`,`modmode`,`global_rank`,`pp`,`rscore`,`datetime`)
         SELECT i, modmodesI, 
-        (SELECT (SELECT COUNT(*)+1 FROM stats ss JOIN users uu USING(id) WHERE ss.pp > s.pp AND ss.mode = s.mode AND uu.priv & 1) FROM stats s WHERE id = i AND mode = modmodesI),
+        (SELECT (SELECT COUNT(*)+1 FROM stats ss JOIN users uu USING(id) WHERE ss.pp > s.pp AND ss.mode = s.mode AND uu.priv >> 0) FROM stats s WHERE id = i AND mode = modmodesI),
         (SELECT pp FROM stats WHERE id = i AND mode = modmodesI),
         (SELECT rscore FROM stats WHERE id = i AND mode = modmodesI),
-        utc_timestamp() FROM DUAL WHERE EXISTS(SELECT * FROM users WHERE id = i );
+        utc_timestamp() FROM DUAL WHERE EXISTS(SELECT * FROM users WHERE id = i AND priv >> 0);
 
       SET modmodesI = modmodesI + 1;
     END WHILE;
@@ -103,3 +103,8 @@ CREATE EVENT IF NOT EXISTS `AddUserHistory`
 ON SCHEDULE EVERY 1 DAY
 STARTS TIMESTAMP(NOW() + INTERVAL 1 MINUTE) 
 DO CALL AddUserHistory();
+
+CREATE EVENT IF NOT EXISTS `ClearUserHistory`
+ON SCHEDULE EVERY 90 DAY
+STARTS TIMESTAMP(NOW() + INTERVAL 1 MINUTE) 
+DO TRUNCATE TABLE user_history;
