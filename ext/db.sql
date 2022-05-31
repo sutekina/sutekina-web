@@ -73,7 +73,7 @@ BEGIN
   DECLARE modmodes INT;
   DECLARE modmodesI INT;
 
-  SELECT COUNT(*) FROM users WHERE u.priv >> 0 INTO n;
+  SELECT COUNT(*) FROM users WHERE priv >> 0 INTO n;
 
 	SET i = 0;
   SET modmodes = 7;
