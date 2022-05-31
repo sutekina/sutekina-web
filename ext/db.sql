@@ -78,7 +78,7 @@ BEGIN
 	SET i = 0;
   SET modmodes = 7;
 
-  -- this is kinda shitty its O(n^2) but it's okay since it'll be happening as a separate process in the background and won't be blocking.
+  -- this is kinda shitty its O(n*modmodes) but it's okay since it'll be happening as a separate process in the background and won't be blocking.
   -- this whole daily stats thing is somewhat questionable since it'll scale really badly storage wise since each user is worth 8 rows (user * 8 modmodes)
 	WHILE i < n DO
     SET modmodesI = 0;
