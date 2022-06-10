@@ -73,7 +73,7 @@ BEGIN
   DECLARE modmodes INT;
   DECLARE modmodesI INT;
 
-  SELECT COUNT(*) FROM users WHERE priv >> 0 INTO n;
+  SELECT COUNT(*) FROM users WHERE priv >= 3 INTO n;
 
 	SET i = 0;
   SET modmodes = 7;
@@ -88,7 +88,7 @@ BEGIN
         (SELECT (SELECT COUNT(*)+1 FROM stats ss JOIN users uu USING(id) WHERE ss.pp > s.pp AND ss.mode = s.mode AND uu.priv >> 0) FROM stats s WHERE id = i AND mode = modmodesI),
         (SELECT pp FROM stats WHERE id = i AND mode = modmodesI),
         (SELECT rscore FROM stats WHERE id = i AND mode = modmodesI),
-        utc_timestamp() FROM DUAL WHERE EXISTS(SELECT * FROM users WHERE id = i AND priv >> 0);
+        utc_timestamp() FROM DUAL WHERE EXISTS(SELECT * FROM users WHERE id = i AND priv >= 3);
 
       SET modmodesI = modmodesI + 1;
     END WHILE;
